@@ -51,6 +51,13 @@
         "projectId": "93199f3c-013c-4ed5-b726-7f7d7bd7fb50"
       }
     },
+      "package": "com.selu383.sp26.po3.g07"
+      "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "93199f3c-013c-4ed5-b726-7f7d7bd7fb50"
+      }
+    },
     "owner": "usernikz"
   }
 }
