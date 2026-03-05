@@ -69,14 +69,20 @@ public static class SeedHelper
         });
     }
 
-    private static async Task AddLocations(DataContext dataContext)
+private static async Task AddLocations(DataContext dataContext)
+{
+    if (dataContext.Set<Location>().Any())
     {
-        dataContext.Set<Location>().AddRange(
-            new Location { Name = "Location 1", Address = "123 Main St", TableCount = 10 },
-            new Location { Name = "Location 2", Address = "456 Oak Ave", TableCount = 20 },
-            new Location { Name = "Location 3", Address = "789 Pine Ln", TableCount = 15 }
-        );
+        return;
+    }
 
-        await dataContext.SaveChangesAsync();
+    dataContext.Set<Location>().AddRange(
+        new Location { Name = "Location 1", Address = "123 Main St", TableCount = 10 },
+        new Location { Name = "Location 2", Address = "456 Oak Ave", TableCount = 20 },
+        new Location { Name = "Location 3", Address = "789 Pine Ln", TableCount = 15 }
+    );
+
+    await dataContext.SaveChangesAsync();
+    
     }
 }
