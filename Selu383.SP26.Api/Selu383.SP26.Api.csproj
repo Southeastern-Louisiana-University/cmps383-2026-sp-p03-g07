@@ -17,7 +17,7 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.0.0" />
   </ItemGroup>
 
-  <ItemGroup>
+  <ItemGroup Condition="'$(SKIP_WEB_PROJECT_REFERENCE)' != 'true' and '$(DOTNET_RUNNING_IN_CONTAINER)' != 'true'">
     <ProjectReference Include="..\Selu383.SP26.Web\Selu383.SP26.Web.esproj" />
   </ItemGroup>
 

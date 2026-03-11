@@ -1,0 +1,51 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Developer
+      MSSQL_SA_PASSWORD: Your_password123
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql_data:/var/opt/mssql
+
+  api:
+    build:
+      context: .
+      dockerfile: Selu383.SP26.Api/Dockerfile
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      SKIP_WEB_PROJECT_REFERENCE: "true"
+      ConnectionStrings__DataContext: Server=db,1433;Database=SP26-P03-G07;User Id=sa;Password=Your_password123;TrustServerCertificate=True;Encrypt=False
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/src
+      - nuget_cache:/root/.nuget/packages
+    working_dir: /src
+    command: dotnet watch run --project Selu383.SP26.Api/Selu383.SP26.Api.csproj --urls http://0.0.0.0:8080
+
+  web:
+    build:
+      context: ./Selu383.SP26.Web
+      dockerfile: Dockerfile
+    depends_on:
+      - api
+    environment:
+      CHOKIDAR_USEPOLLING: "true"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./Selu383.SP26.Web:/app
+      - web_node_modules:/app/node_modules
+    working_dir: /app
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+
+volumes:
+  nuget_cache:
+  sql_data:
+  web_node_modules:

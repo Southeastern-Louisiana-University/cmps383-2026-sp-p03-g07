@@ -33,9 +33,31 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+await using (var scope = app.Services.CreateAsyncScope())
 {
-    await SeedHelper.MigrateAndSeed(scope.ServiceProvider);
+    var logger = scope.ServiceProvider
+        .GetRequiredService<ILoggerFactory>()
+        .CreateLogger("Startup");
+
+    const int maxAttempts = 12;
+    for (var attempt = 1; attempt <= maxAttempts; attempt++)
+    {
+        try
+        {
+            await SeedHelper.MigrateAndSeed(scope.ServiceProvider);
+            break;
+        }
+        catch (Exception ex) when (attempt < maxAttempts)
+        {
+            logger.LogWarning(
+                ex,
+                "Database migration attempt {Attempt} of {MaxAttempts} failed. Retrying in 5 seconds.",
+                attempt,
+                maxAttempts);
+
+            await Task.Delay(TimeSpan.FromSeconds(5));
+        }
+    }
 }
 
 // Configure the HTTP request pipeline.
