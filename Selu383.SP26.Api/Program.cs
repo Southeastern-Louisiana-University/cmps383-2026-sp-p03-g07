@@ -3,6 +3,11 @@ using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
+var spaDevServerUrl = builder.Configuration["Spa:DevServerUrl"] ?? "http://localhost:5173";
+var isRunningInContainer = string.Equals(
+    Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
+    "true",
+    StringComparison.OrdinalIgnoreCase);
 
 // Add services to the container.
 builder.Services.AddDbContext<DataContext>(options =>
@@ -45,7 +50,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!isRunningInContainer)
+{
+    app.UseHttpsRedirection();
+}
 
 app
     .UseRouting()
@@ -62,7 +70,7 @@ if(app.Environment.IsDevelopment())
 {
     app.UseSpa(x =>
     {
-        x.UseProxyToSpaDevelopmentServer("http://localhost:5173");
+        x.UseProxyToSpaDevelopmentServer(spaDevServerUrl);
     });
 }
 else

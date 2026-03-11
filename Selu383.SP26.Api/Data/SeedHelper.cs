@@ -1,3 +1,4 @@
+using Microsoft.Data.SqlClient;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Features.Auth;
@@ -11,7 +12,7 @@ public static class SeedHelper
     {
         var dataContext = serviceProvider.GetRequiredService<DataContext>();
 
-        await dataContext.Database.MigrateAsync();
+        await MigrateDatabase(dataContext);
 
         await AddRoles(serviceProvider);
         await AddUsers(serviceProvider);
@@ -71,6 +72,11 @@ public static class SeedHelper
 
     private static async Task AddLocations(DataContext dataContext)
     {
+        if (await dataContext.Locations.AnyAsync())
+        {
+            return;
+        }
+
         dataContext.Set<Location>().AddRange(
             new Location { Name = "Location 1", Address = "123 Main St", TableCount = 10 },
             new Location { Name = "Location 2", Address = "456 Oak Ave", TableCount = 20 },
@@ -78,5 +84,25 @@ public static class SeedHelper
         );
 
         await dataContext.SaveChangesAsync();
+    }
+
+    private static async Task MigrateDatabase(DataContext dataContext)
+    {
+        const int maxAttempts = 10;
+
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                await dataContext.Database.MigrateAsync();
+                return;
+            }
+            catch (SqlException) when (attempt < maxAttempts)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(3));
+            }
+        }
+
+        await dataContext.Database.MigrateAsync();
     }
 }
