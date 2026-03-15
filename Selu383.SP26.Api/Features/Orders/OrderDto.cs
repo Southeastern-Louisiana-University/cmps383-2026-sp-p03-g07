@@ -18,4 +18,12 @@ public class OrderDto
     public int? TableNumber { get; set; }
 
     public decimal Total { get; set; }
+
+    public decimal DiscountAmount { get; set; } = 0;
+
+    public int? RedemptionId { get; set; }
+
+    public string? Note { get; set; }
+
+    public List<OrderItemDto> Items { get; set; } = new();
 }
