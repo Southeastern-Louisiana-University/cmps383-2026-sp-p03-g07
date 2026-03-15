@@ -131,8 +131,38 @@ public class RewardsController(DataContext dataContext) : ControllerBase
             RewardId = reward.Id,
             RewardName = reward.Name,
             PointCost = reward.PointCost,
-            RedeemedAt = redemption.RedeemedAt
+            RedeemedAt = redemption.RedeemedAt,
+            IsUsed = false,
+            RewardType = reward.RewardType,
+            DiscountValue = reward.DiscountValue,
+            FreeMenuItemId = reward.FreeMenuItemId
         });
+    }
+
+    [HttpGet("rewards/active")]
+    [Authorize]
+    public ActionResult<List<RewardRedemptionDto>> GetActiveRedemptions()
+    {
+        var userId = User.GetCurrentUserId()!.Value;
+
+        var results = dataContext.Set<RewardRedemption>()
+            .Include(x => x.Reward)
+            .Where(x => x.UserId == userId && !x.IsUsed)
+            .Select(x => new RewardRedemptionDto
+            {
+                Id = x.Id,
+                RewardId = x.RewardId,
+                RewardName = x.Reward!.Name,
+                PointCost = x.Reward.PointCost,
+                RedeemedAt = x.RedeemedAt,
+                IsUsed = x.IsUsed,
+                RewardType = x.Reward.RewardType,
+                DiscountValue = x.Reward.DiscountValue,
+                FreeMenuItemId = x.Reward.FreeMenuItemId
+            })
+            .ToList();
+
+        return Ok(results);
     }
 
     [HttpGet("rewards/redemptions")]
@@ -151,7 +181,11 @@ public class RewardsController(DataContext dataContext) : ControllerBase
                 RewardId = x.RewardId,
                 RewardName = x.Reward!.Name,
                 PointCost = x.Reward.PointCost,
-                RedeemedAt = x.RedeemedAt
+                RedeemedAt = x.RedeemedAt,
+                IsUsed = x.IsUsed,
+                RewardType = x.Reward.RewardType,
+                DiscountValue = x.Reward.DiscountValue,
+                FreeMenuItemId = x.Reward.FreeMenuItemId
             })
             .ToList();
 

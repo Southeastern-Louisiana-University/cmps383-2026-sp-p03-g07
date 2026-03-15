@@ -83,4 +83,35 @@ public class MenuController(DataContext dataContext) : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }
+
+    [HttpPut("{id}")]
+    public ActionResult<MenuItemDto> Update(int id, MenuItemDto dto)
+    {
+        var item = dataContext.Set<MenuItem>().FirstOrDefault(x => x.Id == id);
+        if (item == null) return NotFound();
+
+        item.Name = dto.Name;
+        item.Description = dto.Description;
+        item.Category = dto.Category;
+        item.Price = dto.Price;
+        item.IsAvailable = dto.IsAvailable;
+        item.LocationId = dto.LocationId;
+
+        dataContext.SaveChanges();
+
+        dto.Id = item.Id;
+        return Ok(dto);
+    }
+
+    [HttpDelete("{id}")]
+    public ActionResult Delete(int id)
+    {
+        var item = dataContext.Set<MenuItem>().FirstOrDefault(x => x.Id == id);
+        if (item == null) return NotFound();
+
+        dataContext.Set<MenuItem>().Remove(item);
+        dataContext.SaveChanges();
+
+        return NoContent();
+    }
 }

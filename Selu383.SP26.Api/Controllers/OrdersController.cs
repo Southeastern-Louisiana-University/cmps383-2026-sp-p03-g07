@@ -4,6 +4,7 @@ using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Extensions;
 using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Orders;
+using Selu383.SP26.Api.Features.Rewards;
 using Microsoft.EntityFrameworkCore;
 
 namespace Selu383.SP26.Api.Controllers;
@@ -20,31 +21,41 @@ public class OrdersController(DataContext dataContext) : ControllerBase
         var user = await dataContext.Set<User>().FirstOrDefaultAsync(u => u.UserName == userName);
         if (user == null) return Unauthorized();
 
-        var orders = await dataContext.Set<Order>()
-            .Where(x => x.UserId == user.Id)
-            .Select(x => new OrderDto
+        var isAdmin = User.IsInRole(RoleNames.Admin);
+
+        var query = dataContext.Set<Order>().Include(o => o.Items).AsQueryable();
+        if (!isAdmin)
+            query = query.Where(x => x.UserId == user.Id);
+
+        var orders = await query.OrderByDescending(x => x.Id).Select(x => new OrderDto
+        {
+            Id = x.Id,
+            UserId = x.UserId,
+            LocationId = x.LocationId,
+            OrderType = x.OrderType,
+            Status = x.Status,
+            TableNumber = x.TableNumber,
+            Total = x.Total,
+            DiscountAmount = x.DiscountAmount,
+            RedemptionId = x.RedemptionId,
+            Note = x.Note,
+            Items = x.Items.Select(i => new OrderItemDto
             {
-                Id = x.Id,
-                UserId = x.UserId,
-                LocationId = x.LocationId,
-                OrderType = x.OrderType,
-                Status = x.Status,
-                TableNumber = x.TableNumber,
-                Total = x.Total
-            }).ToListAsync();
+                MenuItemId = i.MenuItemId,
+                Name = i.Name,
+                Quantity = i.Quantity,
+                Price = i.Price
+            }).ToList()
+        }).ToListAsync();
 
         return Ok(orders);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<OrderDto> GetById(int id)
+    public async Task<ActionResult<OrderDto>> GetById(int id)
     {
-        var order = dataContext.Set<Order>().FirstOrDefault(x => x.Id == id);
-
-        if (order == null)
-        {
-            return NotFound();
-        }
+        var order = await dataContext.Set<Order>().Include(o => o.Items).FirstOrDefaultAsync(x => x.Id == id);
+        if (order == null) return NotFound();
 
         return Ok(new OrderDto
         {
@@ -54,43 +65,98 @@ public class OrdersController(DataContext dataContext) : ControllerBase
             OrderType = order.OrderType,
             Status = order.Status,
             TableNumber = order.TableNumber,
-            Total = order.Total
+            Total = order.Total,
+            DiscountAmount = order.DiscountAmount,
+            RedemptionId = order.RedemptionId,
+            Note = order.Note,
+            Items = order.Items.Select(i => new OrderItemDto
+            {
+                MenuItemId = i.MenuItemId,
+                Name = i.Name,
+                Quantity = i.Quantity,
+                Price = i.Price
+            }).ToList()
         });
     }
 
     [HttpPost]
-    public ActionResult<OrderDto> Create(OrderDto dto)
+    public async Task<ActionResult<OrderDto>> Create(OrderDto dto)
     {
+        // Use the authenticated user's ID if logged in, otherwise use guest (0)
+        int resolvedUserId = dto.UserId;
+        var userName = User.GetCurrentUserName();
+        if (!string.IsNullOrEmpty(userName))
+        {
+            var currentUser = await dataContext.Set<User>().FirstOrDefaultAsync(u => u.UserName == userName);
+            if (currentUser != null) resolvedUserId = currentUser.Id;
+        }
+
+        decimal discountAmount = 0;
+
+        if (dto.RedemptionId.HasValue)
+        {
+            var redemption = await dataContext.Set<RewardRedemption>()
+                .Include(r => r.Reward)
+                .FirstOrDefaultAsync(r => r.Id == dto.RedemptionId.Value && !r.IsUsed);
+
+            if (redemption?.Reward != null)
+            {
+                if (redemption.Reward.RewardType == "discount")
+                    discountAmount = Math.Round(dto.Total * (redemption.Reward.DiscountValue / 100), 2);
+
+                redemption.IsUsed = true;
+            }
+        }
+
+        var finalTotal = dto.Total - discountAmount;
+
         var order = new Order
         {
-            UserId = dto.UserId,
+            UserId = resolvedUserId,
             LocationId = dto.LocationId,
             OrderType = dto.OrderType,
-            Status = dto.Status,
+            Status = "Received",
             TableNumber = dto.TableNumber,
-            Total = dto.Total
+            Total = finalTotal,
+            DiscountAmount = discountAmount,
+            RedemptionId = dto.RedemptionId,
+            Note = dto.Note
         };
 
         dataContext.Set<Order>().Add(order);
-        dataContext.SaveChanges();
+        await dataContext.SaveChangesAsync();
+
+        foreach (var item in dto.Items)
+        {
+            dataContext.Set<OrderItem>().Add(new OrderItem
+            {
+                OrderId = order.Id,
+                MenuItemId = item.MenuItemId,
+                Name = item.Name,
+                Quantity = item.Quantity,
+                Price = item.Price
+            });
+        }
+
+        await dataContext.SaveChangesAsync();
 
         dto.Id = order.Id;
+        dto.Total = finalTotal;
+        dto.DiscountAmount = discountAmount;
+        dto.Status = order.Status;
 
         return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }
 
     [HttpPut("{id}/status")]
-    public ActionResult UpdateStatus(int id, [FromBody] string status)
+    [Authorize]
+    public async Task<ActionResult> UpdateStatus(int id, [FromBody] string status)
     {
-        var order = dataContext.Set<Order>().FirstOrDefault(x => x.Id == id);
-
-        if (order == null)
-        {
-            return NotFound();
-        }
+        var order = await dataContext.Set<Order>().FirstOrDefaultAsync(x => x.Id == id);
+        if (order == null) return NotFound();
 
         order.Status = status;
-        dataContext.SaveChanges();
+        await dataContext.SaveChangesAsync();
 
         return Ok();
     }
