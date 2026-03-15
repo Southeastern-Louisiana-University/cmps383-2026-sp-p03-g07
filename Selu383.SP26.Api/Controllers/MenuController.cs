@@ -16,6 +16,7 @@ public class MenuController(DataContext dataContext) : ControllerBase
             {
                 Id = x.Id,
                 Name = x.Name,
+                Description = x.Description,
                 Category = x.Category,
                 Price = x.Price,
                 IsAvailable = x.IsAvailable,
@@ -37,6 +38,7 @@ public class MenuController(DataContext dataContext) : ControllerBase
         {
             Id = item.Id,
             Name = item.Name,
+            Description = item.Description,
             Category = item.Category,
             Price = item.Price,
             IsAvailable = item.IsAvailable,
@@ -53,6 +55,7 @@ public class MenuController(DataContext dataContext) : ControllerBase
             {
                 Id = x.Id,
                 Name = x.Name,
+                Description = x.Description,
                 Category = x.Category,
                 Price = x.Price,
                 IsAvailable = x.IsAvailable,
@@ -66,6 +69,7 @@ public class MenuController(DataContext dataContext) : ControllerBase
         var item = new MenuItem
         {
             Name = dto.Name,
+            Description = dto.Description,
             Category = dto.Category,
             Price = dto.Price,
             IsAvailable = dto.IsAvailable,
