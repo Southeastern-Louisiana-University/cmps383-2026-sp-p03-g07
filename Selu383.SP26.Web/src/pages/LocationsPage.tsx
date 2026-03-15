@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
-import { API_BASE_URL } from "../services/api";
-
-type Location = {
-  id: number;
-  name: string;
-  address: string;
-  isOpen: boolean;
-};
+import { getLocations } from "../services/locationService";
+import type { Location } from "../services/locationService";
 
 export default function LocationsPage() {
   const [locations, setLocations] = useState<Location[]>([]);
@@ -14,50 +8,55 @@ export default function LocationsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/locations`)
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        setLocations(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load locations:", err);
-        setError("Could not load locations.");
-        setLoading(false);
-      });
+    getLocations()
+      .then(setLocations)
+      .catch(() => setError("Could not load locations."))
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div>Loading locations...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) return <div className="loading">Loading locations...</div>;
+  if (error) return <div className="loading">{error}</div>;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Locations</h1>
-
-      {locations.length === 0 ? (
-        <p>No locations found.</p>
-      ) : (
-        locations.map((location) => (
-          <div
-            key={location.id}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              padding: "12px",
-              marginBottom: "12px",
-            }}
-          >
-            <h3>{location.name}</h3>
-            <p>{location.address}</p>
-            <p>{location.isOpen ? "Open" : "Closed"}</p>
+    <div className="page">
+      <h1 className="page-title">Our Locations</h1>
+      <div className="locations-grid">
+        {locations.map((loc) => (
+          <div key={loc.id} className="location-card">
+            <h3>{loc.name}</h3>
+            <div className="location-detail">
+              <span>📍</span>
+              <span>{loc.address}, {loc.city}, {loc.state} {loc.zip}</span>
+            </div>
+            {loc.phone && (
+              <div className="location-detail">
+                <span>📞</span>
+                <span>{loc.phone}</span>
+              </div>
+            )}
+            {loc.hoursOfOperation && (
+              <div className="location-detail">
+                <span>🕐</span>
+                <span>{loc.hoursOfOperation}</span>
+              </div>
+            )}
+            <div className="location-detail">
+              <span>🪑</span>
+              <span>{loc.tableCount} tables</span>
+            </div>
+            {loc.latitude !== 0 && (
+              <a
+                href={`https://maps.google.com/?q=${loc.latitude},${loc.longitude}`}
+                target="_blank"
+                rel="noreferrer"
+                style={{ display: "inline-block", marginTop: "0.75rem", fontSize: "0.85rem" }}
+              >
+                View on Google Maps →
+              </a>
+            )}
           </div>
-        ))
-      )}
+        ))}
+      </div>
     </div>
   );
 }
