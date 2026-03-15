@@ -25,7 +25,7 @@ export default function Navbar() {
         <li><NavLink to="/feedback">Feedback</NavLink></li>
         {user ? (
           <>
-            <li><NavLink to="/profile">Orders</NavLink></li>
+            <li><NavLink to="/profile">Profile</NavLink></li>
             <li><NavLink to="/rewards">Rewards</NavLink></li>
             {user.roles.includes("Admin") && (
               <li><NavLink to="/admin" style={{ color: "var(--amber)", fontWeight: 700 }}>Admin</NavLink></li>
