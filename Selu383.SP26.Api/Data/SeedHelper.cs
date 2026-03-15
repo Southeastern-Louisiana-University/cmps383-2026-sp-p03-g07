@@ -146,14 +146,29 @@ public static class SeedHelper
     {
         if (await dataContext.Rewards.AnyAsync())
         {
+            // Update existing rewards that are missing RewardType
+            var rewards = await dataContext.Set<Reward>().ToListAsync();
+            var changed = false;
+            foreach (var r in rewards)
+            {
+                if (string.IsNullOrEmpty(r.RewardType))
+                {
+                    if (r.Name == "10% Off Order") { r.RewardType = "discount"; r.DiscountValue = 10; changed = true; }
+                    else if (r.Name == "Free Upgrade") { r.RewardType = "discount"; r.DiscountValue = 5; changed = true; }
+                    else if (r.Name == "Free Coffee") { r.RewardType = "free_item"; r.FreeMenuItemId = 1; changed = true; }
+                    else if (r.Name == "Free Pastry") { r.RewardType = "free_item"; r.FreeMenuItemId = 8; changed = true; }
+                    else { r.RewardType = "discount"; r.DiscountValue = 10; changed = true; }
+                }
+            }
+            if (changed) await dataContext.SaveChangesAsync();
             return;
         }
 
         dataContext.Set<Reward>().AddRange(
-            new Reward { Name = "Free Coffee", Description = "Redeem for any size drip coffee or cold brew.", PointCost = 100, IsActive = true },
-            new Reward { Name = "Free Pastry", Description = "Redeem for any pastry in our bakery case.", PointCost = 75, IsActive = true },
-            new Reward { Name = "10% Off Order", Description = "Get 10% off your entire order.", PointCost = 50, IsActive = true },
-            new Reward { Name = "Free Upgrade", Description = "Upgrade any drink to the next size for free.", PointCost = 25, IsActive = true }
+            new Reward { Name = "Free Coffee", Description = "Redeem for any size drip coffee or cold brew.", PointCost = 100, IsActive = true, RewardType = "free_item", FreeMenuItemId = 1 },
+            new Reward { Name = "Free Pastry", Description = "Redeem for any pastry in our bakery case.", PointCost = 75, IsActive = true, RewardType = "free_item", FreeMenuItemId = 8 },
+            new Reward { Name = "10% Off Order", Description = "Get 10% off your entire order.", PointCost = 50, IsActive = true, RewardType = "discount", DiscountValue = 10 },
+            new Reward { Name = "Free Upgrade", Description = "Upgrade any drink to the next size for free.", PointCost = 25, IsActive = true, RewardType = "discount", DiscountValue = 5 }
         );
 
         await dataContext.SaveChangesAsync();

@@ -20,6 +20,7 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
     public DbSet<Location> Locations { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<Order> Orders { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Feedback> Feedback { get; set; }
     public DbSet<Reward> Rewards { get; set; }
