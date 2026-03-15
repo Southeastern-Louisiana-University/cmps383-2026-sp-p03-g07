@@ -83,10 +83,10 @@ app.MapControllers();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSpa(x =>
-    {
-        x.UseProxyToSpaDevelopmentServer(spaDevServerUrl);
-    });
+    app.UseWhen(
+        ctx => !ctx.Request.Path.StartsWithSegments("/api"),
+        spaApp => spaApp.UseSpa(x => x.UseProxyToSpaDevelopmentServer(spaDevServerUrl))
+    );
 }
 else
 {
