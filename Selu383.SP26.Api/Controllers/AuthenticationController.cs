@@ -31,6 +31,32 @@ public class AuthenticationController : ControllerBase
         return Ok(resultDto);
     }
 
+    [HttpPost("register")]
+    public async Task<ActionResult<UserDto>> Register(LoginDto dto)
+    {
+        if (await userManager.FindByNameAsync(dto.UserName) != null)
+        {
+            return BadRequest();
+        }
+
+        var user = new User
+        {
+            UserName = dto.UserName
+        };
+
+        var createResult = await userManager.CreateAsync(user, dto.Password);
+        if (!createResult.Succeeded)
+        {
+            return BadRequest();
+        }
+
+        await userManager.AddToRoleAsync(user, RoleNames.User);
+        await signInManager.SignInAsync(user, false);
+
+        var resultDto = await GetUserDto(userManager.Users).SingleAsync(x => x.Id == user.Id);
+        return Ok(resultDto);
+    }
+
     [HttpPost("login")]
     public async Task<ActionResult<UserDto>> Login(LoginDto dto)
     {
@@ -65,7 +91,8 @@ public class AuthenticationController : ControllerBase
         {
             Id = x.Id,
             UserName = x.UserName!,
-            Roles = x.UserRoles.Select(y => y.Role!.Name).ToArray()!
+            Roles = x.UserRoles.Select(y => y.Role!.Name).ToArray()!,
+            Points = x.Points
         });
     }
 }

@@ -1,6 +1,10 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.RateLimiting;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Auth;
+using Selu383.SP26.Api.Services;
+using System.Threading.RateLimiting;
+
 var builder = WebApplication.CreateBuilder(args);
 var spaDevServerUrl = builder.Configuration["Spa:DevServerUrl"] ?? "http://localhost:5173";
 var isRunningInContainer = string.Equals(
@@ -32,6 +36,24 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<DataContext>();
+
+builder.Services.AddMemoryCache();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddScoped<AnalyticsService>();
+builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<PushNotificationService>();
+builder.Services.AddScoped<StarEarningService>();
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+    options.AddFixedWindowLimiter("api", config =>
+    {
+        config.PermitLimit = 120;
+        config.Window = TimeSpan.FromMinutes(1);
+        config.QueueLimit = 0;
+        config.AutoReplenishment = true;
+    });
+});
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -75,6 +97,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors("AllowFrontend");
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

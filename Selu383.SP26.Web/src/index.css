@@ -1,68 +1,78 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color: #f6efcf;
+  background:
+    radial-gradient(circle at top left, rgba(221, 191, 113, 0.22), transparent 24%),
+    radial-gradient(circle at 100% 0%, rgba(118, 133, 38, 0.18), transparent 28%),
+    linear-gradient(180deg, #384210 0%, #1f2710 44%, #11170d 100%);
+  --panel: linear-gradient(180deg, rgba(65, 75, 22, 0.82), rgba(24, 31, 18, 0.96));
+  --border: rgba(246, 239, 207, 0.12);
+  --text-main: #f6efcf;
+  --text-soft: rgba(246, 239, 207, 0.84);
+  --text-muted: rgba(246, 239, 207, 0.62);
+  --shadow: 0 28px 64px rgba(12, 16, 8, 0.32);
+  --accent-gold: #d8bb74;
+  --accent-gold-light: #f3e4ad;
+  --accent-gold-deep: #ac8540;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+* {
+  box-sizing: border-box;
 }
-a:hover {
-  color: #535bf2;
+
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  background: inherit;
+  color: var(--text-main);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  letter-spacing: 0.03em;
+}
+
+::selection {
+  background: rgba(216, 187, 116, 0.3);
 }

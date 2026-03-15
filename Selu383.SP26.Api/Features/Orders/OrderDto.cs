@@ -18,4 +18,16 @@ public class OrderDto
     public int? TableNumber { get; set; }
 
     public decimal Total { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+
+    public string PickupName { get; set; } = string.Empty;
+
+    public string SpecialInstructions { get; set; } = string.Empty;
+
+    public string PaymentStatus { get; set; } = "Pending";
+
+    public int StarsEarned { get; set; }
+
+    public List<OrderItemDto> Items { get; set; } = [];
 }

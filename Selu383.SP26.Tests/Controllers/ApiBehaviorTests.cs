@@ -105,14 +105,13 @@ public class ApiBehaviorTests
     {
         using var webClient = context.GetStandardWebClient();
         var bobId = context.GetBobUserId();
-        var sueId = context.GetSueUserId();
         var locationId = context.GetAnyLocationId();
 
         await webClient.AssertLoggedInAsBob();
 
         var createResponse = await webClient.PostAsJsonAsync("/api/orders", new
         {
-            userId = sueId,
+            userId = -1,
             locationId,
             orderType = "pickup",
             status = "completed",
@@ -132,12 +131,13 @@ public class ApiBehaviorTests
         bobOrders![0].Id.Should().Be(createdOrder.Id);
 
         await webClient.AssertLoggedOut();
-        await webClient.AssertLoggedInAsSue();
+        var isolatedUser = await webClient.RegisterAsync($"orderscope{Guid.NewGuid():N}");
+        isolatedUser.Should().NotBeNull();
 
-        var sueOrdersResponse = await webClient.GetAsync("/api/orders");
-        sueOrdersResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var sueOrders = await sueOrdersResponse.Content.ReadAsJsonAsync<List<OrderDto>>();
-        sueOrders.Should().BeEmpty();
+        var isolatedOrdersResponse = await webClient.GetAsync("/api/orders");
+        isolatedOrdersResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var isolatedOrders = await isolatedOrdersResponse.Content.ReadAsJsonAsync<List<OrderDto>>();
+        isolatedOrders.Should().BeEmpty();
 
         var forbiddenGetResponse = await webClient.GetAsync($"/api/orders/{createdOrder.Id}");
         forbiddenGetResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
@@ -176,14 +176,13 @@ public class ApiBehaviorTests
     {
         using var webClient = context.GetStandardWebClient();
         var bobId = context.GetBobUserId();
-        var sueId = context.GetSueUserId();
         var locationId = context.GetAnyLocationId();
 
         await webClient.AssertLoggedInAsBob();
 
         var createResponse = await webClient.PostAsJsonAsync("/api/reservations", new
         {
-            userId = sueId,
+            userId = -1,
             locationId,
             reservationTime = DateTime.UtcNow.AddDays(1),
             partySize = 3,
@@ -203,12 +202,13 @@ public class ApiBehaviorTests
         bobReservations![0].Id.Should().Be(createdReservation.Id);
 
         await webClient.AssertLoggedOut();
-        await webClient.AssertLoggedInAsSue();
+        var isolatedUser = await webClient.RegisterAsync($"reservationscope{Guid.NewGuid():N}");
+        isolatedUser.Should().NotBeNull();
 
-        var sueReservationsResponse = await webClient.GetAsync("/api/reservations");
-        sueReservationsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var sueReservations = await sueReservationsResponse.Content.ReadAsJsonAsync<List<ReservationDto>>();
-        sueReservations.Should().BeEmpty();
+        var isolatedReservationsResponse = await webClient.GetAsync("/api/reservations");
+        isolatedReservationsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var isolatedReservations = await isolatedReservationsResponse.Content.ReadAsJsonAsync<List<ReservationDto>>();
+        isolatedReservations.Should().BeEmpty();
 
         var forbiddenGetResponse = await webClient.GetAsync($"/api/reservations/{createdReservation.Id}");
         forbiddenGetResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);

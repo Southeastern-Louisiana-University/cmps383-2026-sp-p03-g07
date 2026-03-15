@@ -10,6 +10,46 @@ internal static class AuthenticationHelpers
 {
     internal const string DefaultUserPassword = "Password123!";
 
+    internal static async Task<UserDto?> RegisterAsync(
+        this HttpClient webClient,
+        string userName,
+        string password = DefaultUserPassword)
+    {
+        try
+        {
+            var responseMessage = await webClient.PostAsJsonAsync("/api/authentication/register", new LoginDto
+            {
+                UserName = userName,
+                Password = password
+            });
+            return await AssertLoginFunctions(responseMessage);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
+    internal static async Task<UserDto?> LoginAsync(
+        this HttpClient webClient,
+        string userName,
+        string password = DefaultUserPassword)
+    {
+        try
+        {
+            var responseMessage = await webClient.PostAsJsonAsync("/api/authentication/login", new LoginDto
+            {
+                UserName = userName,
+                Password = password
+            });
+            return await AssertLoginFunctions(responseMessage);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
+    }
+
     internal static async Task<bool> LogoutAsync(this HttpClient webClient)
     {
         try
@@ -26,53 +66,17 @@ internal static class AuthenticationHelpers
 
     internal static async Task<UserDto?> LoginAsAdminAsync(this HttpClient webClient)
     {
-        try
-        {
-            var responseMessage = await webClient.PostAsJsonAsync("/api/authentication/login", new LoginDto
-            {
-                UserName = "galkadi",
-                Password = DefaultUserPassword
-            });
-            return await AssertLoginFunctions(responseMessage);
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        return await webClient.LoginAsync("galkadi");
     }
 
     internal static async Task<UserDto?> LoginAsBobAsync(this HttpClient webClient)
     {
-        try
-        {
-            var responseMessage = await webClient.PostAsJsonAsync("/api/authentication/login", new LoginDto
-            {
-                UserName = "bob",
-                Password = DefaultUserPassword
-            });
-            return await AssertLoginFunctions(responseMessage);
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        return await webClient.LoginAsync("bob");
     }
 
     internal static async Task<UserDto?> LoginAsSueAsync(this HttpClient webClient)
     {
-        try
-        {
-            var responseMessage = await webClient.PostAsJsonAsync("/api/authentication/login", new LoginDto
-            {
-                UserName = "sue",
-                Password = DefaultUserPassword
-            });
-            return await AssertLoginFunctions(responseMessage);
-        }
-        catch (Exception)
-        {
-            return null;
-        }
+        return await webClient.LoginAsync("sue");
     }
 
     internal static async Task<UserDto> AssertLoginFunctions(this HttpResponseMessage httpResponse)

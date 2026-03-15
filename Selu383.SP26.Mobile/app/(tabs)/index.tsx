@@ -1,98 +1,199 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+import { locationService } from '@/services/locationService';
+import { menuService } from '@/services/menuService';
+import { useAuth } from '@/store/authStore';
+import { useCart } from '@/store/cartStore';
+import { useRewards } from '@/store/rewardsStore';
+import type { Location, MenuItem } from '@/types/app';
 
 export default function HomeScreen() {
-  return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
+  const { user } = useAuth();
+  const { items } = useCart();
+  const { balance } = useRewards();
+  const [locations, setLocations] = useState<Location[]>([]);
+  const [featuredItems, setFeaturedItems] = useState<MenuItem[]>([]);
 
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+  useEffect(() => {
+    void Promise.all([locationService.getLocations(), menuService.getMenu()]).then(
+      ([nextLocations, nextMenu]) => {
+        setLocations(nextLocations.slice(0, 2));
+        setFeaturedItems(nextMenu.filter((item) => item.isFeatured).slice(0, 2));
+      },
+    );
+  }, []);
+
+  return (
+    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <View style={styles.heroCard}>
+        <Text style={styles.eyebrow}>Mobile quick order</Text>
+        <Text style={styles.heroTitle}>Coffee ready before you park.</Text>
+        <Text style={styles.heroCopy}>
+          Jump from featured drinks to checkout, then watch your order move through pickup.
+        </Text>
+        <View style={styles.row}>
+          <Pressable style={styles.primaryButton} onPress={() => router.push('/(tabs)/menu')}>
+            <Text style={styles.primaryButtonText}>Browse menu</Text>
+          </Pressable>
+          <Pressable style={styles.secondaryButton} onPress={() => router.push('/cart')}>
+            <Text style={styles.secondaryButtonText}>Cart {items.length}</Text>
+          </Pressable>
+        </View>
+      </View>
+
+      <View style={styles.metricsRow}>
+        <View style={styles.metricCard}>
+          <Text style={styles.metricLabel}>Stars</Text>
+          <Text style={styles.metricValue}>{balance?.points ?? 0}</Text>
+          <Text style={styles.metricCopy}>{balance?.currentTier ?? 'Sign in'} tier</Text>
+        </View>
+        <View style={styles.metricCard}>
+          <Text style={styles.metricLabel}>Profile</Text>
+          <Text style={styles.metricValue}>{user?.userName ?? 'Guest'}</Text>
+          <Text style={styles.metricCopy}>{user ? 'Signed in' : 'Tap profile to login'}</Text>
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Featured</Text>
+        {featuredItems.map((item) => (
+          <View key={item.id} style={styles.listCard}>
+            <View>
+              <Text style={styles.cardTitle}>{item.name}</Text>
+              <Text style={styles.cardCopy}>{item.description}</Text>
+            </View>
+            <Text style={styles.priceText}>${item.price.toFixed(2)}</Text>
+          </View>
+        ))}
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Nearby stores</Text>
+        {locations.map((location) => (
+          <Pressable key={location.id} style={styles.listCard} onPress={() => router.push('/locations')}>
+            <View>
+              <Text style={styles.cardTitle}>{location.name}</Text>
+              <Text style={styles.cardCopy}>{location.address}</Text>
+            </View>
+            <Text style={styles.cardBadge}>Map</Text>
+          </Pressable>
+        ))}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
+  screen: {
+    flex: 1,
+    backgroundColor: '#f6efe7',
+  },
+  content: {
+    gap: 16,
+    padding: 20,
+    paddingBottom: 40,
+  },
+  heroCard: {
+    gap: 12,
+    borderRadius: 28,
+    padding: 20,
+    backgroundColor: '#1d2d3c',
+  },
+  eyebrow: {
+    color: '#f2c57d',
+    letterSpacing: 2,
+    textTransform: 'uppercase',
+  },
+  heroTitle: {
+    color: '#fff7ef',
+    fontSize: 30,
+    fontWeight: '700',
+  },
+  heroCopy: {
+    color: '#d4dce3',
+    fontSize: 16,
+  },
+  row: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+    gap: 12,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  primaryButton: {
+    borderRadius: 999,
+    backgroundColor: '#f0b45b',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  primaryButtonText: {
+    color: '#2c1908',
+    fontWeight: '700',
+  },
+  secondaryButton: {
+    borderRadius: 999,
+    backgroundColor: '#314656',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+  },
+  secondaryButtonText: {
+    color: '#fff7ef',
+    fontWeight: '600',
+  },
+  metricsRow: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  metricCard: {
+    flex: 1,
+    gap: 6,
+    borderRadius: 24,
+    backgroundColor: '#fffaf4',
+    padding: 16,
+  },
+  metricLabel: {
+    color: '#7f6b59',
+    textTransform: 'uppercase',
+  },
+  metricValue: {
+    color: '#1f1a17',
+    fontSize: 22,
+    fontWeight: '700',
+  },
+  metricCopy: {
+    color: '#6c5b4d',
+  },
+  section: {
+    gap: 10,
+  },
+  sectionTitle: {
+    color: '#1f1a17',
+    fontSize: 20,
+    fontWeight: '700',
+  },
+  listCard: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+    borderRadius: 22,
+    backgroundColor: '#fffaf4',
+    padding: 16,
+  },
+  cardTitle: {
+    color: '#1f1a17',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  cardCopy: {
+    color: '#6c5b4d',
+    marginTop: 4,
+    maxWidth: 240,
+  },
+  priceText: {
+    color: '#8a5124',
+    fontWeight: '700',
+  },
+  cardBadge: {
+    color: '#8a5124',
+    fontWeight: '700',
   },
 });

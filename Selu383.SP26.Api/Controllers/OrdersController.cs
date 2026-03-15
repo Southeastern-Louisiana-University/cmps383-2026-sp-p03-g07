@@ -1,20 +1,24 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Extensions;
 using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Locations;
 using Selu383.SP26.Api.Features.Orders;
+using Selu383.SP26.Api.Services;
 
 namespace Selu383.SP26.Api.Controllers;
 
 [ApiController]
 [Route("api/orders")]
-public class OrdersController(DataContext dataContext) : ControllerBase
+public class OrdersController(
+    DataContext dataContext,
+    PushNotificationService pushNotificationService) : ControllerBase
 {
     [Authorize]
     [HttpGet]
-    public ActionResult<IEnumerable<OrderDto>> GetAll()
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetAll()
     {
         var currentUserId = User.GetCurrentUserId();
         if (currentUserId == null)
@@ -26,29 +30,28 @@ public class OrdersController(DataContext dataContext) : ControllerBase
             .Where(x => x.ManagerId == currentUserId)
             .Select(x => x.Id);
 
-        var orders = dataContext.Set<Order>()
+        var orders = await dataContext.Orders
+            .Include(x => x.Items)
             .Where(x =>
                 User.IsInRole(RoleNames.Admin)
                 || x.UserId == currentUserId
                 || managedLocationIds.Contains(x.LocationId))
-            .Select(x => new OrderDto
-            {
-                Id = x.Id,
-                UserId = x.UserId,
-                LocationId = x.LocationId,
-                OrderType = x.OrderType,
-                Status = x.Status,
-                TableNumber = x.TableNumber,
-                Total = x.Total
-            })
-            .ToList();
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
 
-        return Ok(orders);
+        return Ok(orders.Select(MapDto));
+    }
+
+    [Authorize]
+    [HttpGet("history")]
+    public Task<ActionResult<IEnumerable<OrderDto>>> GetHistory()
+    {
+        return GetAll();
     }
 
     [Authorize]
     [HttpGet("{id}")]
-    public ActionResult<OrderDto> GetById(int id)
+    public async Task<ActionResult<OrderDto>> GetById(int id)
     {
         var currentUserId = User.GetCurrentUserId();
         if (currentUserId == null)
@@ -56,7 +59,9 @@ public class OrdersController(DataContext dataContext) : ControllerBase
             return Unauthorized();
         }
 
-        var order = dataContext.Set<Order>().FirstOrDefault(x => x.Id == id);
+        var order = await dataContext.Orders
+            .Include(x => x.Items)
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (order == null)
         {
@@ -71,21 +76,19 @@ public class OrdersController(DataContext dataContext) : ControllerBase
             return Forbid();
         }
 
-        return Ok(new OrderDto
-        {
-            Id = order.Id,
-            UserId = order.UserId,
-            LocationId = order.LocationId,
-            OrderType = order.OrderType,
-            Status = order.Status,
-            TableNumber = order.TableNumber,
-            Total = order.Total
-        });
+        return Ok(MapDto(order));
+    }
+
+    [Authorize]
+    [HttpGet("{id}/track")]
+    public Task<ActionResult<OrderDto>> Track(int id)
+    {
+        return GetById(id);
     }
 
     [Authorize]
     [HttpPost]
-    public ActionResult<OrderDto> Create(OrderDto dto)
+    public async Task<ActionResult<OrderDto>> Create(OrderDto dto)
     {
         var currentUserId = User.GetCurrentUserId();
         if (currentUserId == null)
@@ -93,13 +96,60 @@ public class OrdersController(DataContext dataContext) : ControllerBase
             return Unauthorized();
         }
 
-        if (dto.Total < 0 || dto.TableNumber <= 0)
+        if (dto.Total < 0)
         {
             return BadRequest();
         }
 
-        var locationExists = dataContext.Set<Location>().Any(x => x.Id == dto.LocationId);
+        if (string.Equals(dto.OrderType, "dine-in", StringComparison.OrdinalIgnoreCase)
+            && (!dto.TableNumber.HasValue || dto.TableNumber <= 0))
+        {
+            return BadRequest();
+        }
+
+        var locationExists = await dataContext.Locations.AnyAsync(x => x.Id == dto.LocationId);
         if (!locationExists)
+        {
+            return BadRequest();
+        }
+
+        var resolvedItems = new List<OrderItem>();
+        if (dto.Items.Count > 0)
+        {
+            foreach (var itemDto in dto.Items)
+            {
+                if (itemDto.Quantity <= 0)
+                {
+                    return BadRequest();
+                }
+
+                var menuItem = await dataContext.MenuItems
+                    .FirstOrDefaultAsync(x => x.Id == itemDto.MenuItemId && x.LocationId == dto.LocationId);
+
+                if (menuItem == null)
+                {
+                    return BadRequest();
+                }
+
+                var unitPrice = itemDto.UnitPrice > 0 ? itemDto.UnitPrice : menuItem.Price;
+                resolvedItems.Add(new OrderItem
+                {
+                    MenuItemId = menuItem.Id,
+                    ItemName = string.IsNullOrWhiteSpace(itemDto.ItemName) ? menuItem.Name : itemDto.ItemName,
+                    Quantity = itemDto.Quantity,
+                    UnitPrice = unitPrice,
+                    Total = unitPrice * itemDto.Quantity,
+                    Customizations = itemDto.Customizations,
+                    SpecialInstructions = itemDto.SpecialInstructions
+                });
+            }
+        }
+
+        var total = dto.Total > 0
+            ? dto.Total
+            : resolvedItems.Sum(x => x.Total);
+
+        if (total <= 0)
         {
             return BadRequest();
         }
@@ -111,22 +161,29 @@ public class OrdersController(DataContext dataContext) : ControllerBase
             OrderType = dto.OrderType,
             Status = Order.DefaultStatus,
             TableNumber = dto.TableNumber,
-            Total = dto.Total
+            Total = total,
+            CreatedAt = DateTime.UtcNow,
+            PickupName = dto.PickupName,
+            SpecialInstructions = dto.SpecialInstructions,
+            PaymentStatus = "Pending",
+            Items = resolvedItems
         };
 
-        dataContext.Set<Order>().Add(order);
-        dataContext.SaveChanges();
+        dataContext.Orders.Add(order);
+        await dataContext.SaveChangesAsync();
 
-        dto.Id = order.Id;
-        dto.UserId = order.UserId;
-        dto.Status = order.Status;
+        await pushNotificationService.SendAsync(
+            currentUserId.Value,
+            "InApp",
+            "Order received",
+            $"Order #{order.Id} is in the queue for {order.OrderType}.");
 
-        return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
+        return CreatedAtAction(nameof(GetById), new { id = order.Id }, MapDto(order));
     }
 
     [Authorize]
     [HttpPut("{id}/status")]
-    public ActionResult UpdateStatus(int id, [FromBody] string status)
+    public async Task<ActionResult> UpdateStatus(int id, [FromBody] string status)
     {
         var currentUserId = User.GetCurrentUserId();
         if (currentUserId == null)
@@ -139,7 +196,7 @@ public class OrdersController(DataContext dataContext) : ControllerBase
             return BadRequest();
         }
 
-        var order = dataContext.Set<Order>().FirstOrDefault(x => x.Id == id);
+        var order = await dataContext.Orders.FirstOrDefaultAsync(x => x.Id == id);
 
         if (order == null)
         {
@@ -155,8 +212,93 @@ public class OrdersController(DataContext dataContext) : ControllerBase
         }
 
         order.Status = status;
-        dataContext.SaveChanges();
+        await dataContext.SaveChangesAsync();
+
+        await pushNotificationService.SendAsync(
+            order.UserId,
+            "Push",
+            "Order update",
+            $"Order #{order.Id} is now {status}.");
 
         return Ok();
+    }
+
+    [Authorize]
+    [HttpPost("{id}/reorder")]
+    public async Task<ActionResult<OrderDto>> Reorder(int id)
+    {
+        var currentUserId = User.GetCurrentUserId();
+        if (currentUserId == null)
+        {
+            return Unauthorized();
+        }
+
+        var originalOrder = await dataContext.Orders
+            .Include(x => x.Items)
+            .FirstOrDefaultAsync(x => x.Id == id && x.UserId == currentUserId);
+
+        if (originalOrder == null)
+        {
+            return NotFound();
+        }
+
+        var newOrder = new Order
+        {
+            UserId = currentUserId.Value,
+            LocationId = originalOrder.LocationId,
+            OrderType = originalOrder.OrderType,
+            Status = Order.DefaultStatus,
+            TableNumber = originalOrder.TableNumber,
+            Total = originalOrder.Total,
+            PickupName = originalOrder.PickupName,
+            SpecialInstructions = originalOrder.SpecialInstructions,
+            Items = originalOrder.Items.Select(x => new OrderItem
+            {
+                MenuItemId = x.MenuItemId,
+                ItemName = x.ItemName,
+                Quantity = x.Quantity,
+                UnitPrice = x.UnitPrice,
+                Total = x.Total,
+                Customizations = x.Customizations,
+                SpecialInstructions = x.SpecialInstructions
+            }).ToList()
+        };
+
+        dataContext.Orders.Add(newOrder);
+        await dataContext.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(GetById), new { id = newOrder.Id }, MapDto(newOrder));
+    }
+
+    private static OrderDto MapDto(Order order)
+    {
+        return new OrderDto
+        {
+            Id = order.Id,
+            UserId = order.UserId,
+            LocationId = order.LocationId,
+            OrderType = order.OrderType,
+            Status = order.Status,
+            TableNumber = order.TableNumber,
+            Total = order.Total,
+            CreatedAt = order.CreatedAt,
+            PickupName = order.PickupName,
+            SpecialInstructions = order.SpecialInstructions,
+            PaymentStatus = order.PaymentStatus,
+            StarsEarned = order.StarsEarned,
+            Items = order.Items
+                .Select(x => new OrderItemDto
+                {
+                    Id = x.Id,
+                    MenuItemId = x.MenuItemId,
+                    ItemName = x.ItemName,
+                    Quantity = x.Quantity,
+                    UnitPrice = x.UnitPrice,
+                    Total = x.Total,
+                    Customizations = x.Customizations,
+                    SpecialInstructions = x.SpecialInstructions
+                })
+                .ToList()
+        };
     }
 }

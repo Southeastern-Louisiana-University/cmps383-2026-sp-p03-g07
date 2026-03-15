@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Rewards;
 using System.Security.Claims;
+using Selu383.SP26.Api.Services;
 
 namespace Selu383.SP26.Api.Controllers;
 
@@ -12,10 +13,17 @@ namespace Selu383.SP26.Api.Controllers;
 public class RewardsController : ControllerBase
 {
     private readonly DataContext _context;
+    private readonly PushNotificationService _pushNotificationService;
+    private readonly StarEarningService _starEarningService;
 
-    public RewardsController(DataContext context)
+    public RewardsController(
+        DataContext context,
+        PushNotificationService pushNotificationService,
+        StarEarningService starEarningService)
     {
         _context = context;
+        _pushNotificationService = pushNotificationService;
+        _starEarningService = starEarningService;
     }
 
     // GET /api/rewards - Get all available rewards
@@ -30,11 +38,33 @@ public class RewardsController : ControllerBase
                 Name = r.Name,
                 Description = r.Description,
                 PointsCost = r.PointsCost,
-                IsActive = r.IsActive
+                IsActive = r.IsActive,
+                TierName = r.TierName,
+                OfferType = r.OfferType,
+                DiscountAmount = r.DiscountAmount,
+                BonusStars = r.BonusStars
             })
             .ToListAsync();
 
         return Ok(rewards);
+    }
+
+    [HttpGet("tiers")]
+    public async Task<ActionResult<IEnumerable<RewardTierDto>>> GetTiers()
+    {
+        var tiers = await _context.RewardTiers
+            .OrderBy(x => x.MinPoints)
+            .Select(x => new RewardTierDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                MinPoints = x.MinPoints,
+                Benefits = x.Benefits,
+                AccentColor = x.AccentColor
+            })
+            .ToListAsync();
+
+        return Ok(tiers);
     }
 
     // GET /api/rewards/my-points - Get current user's points balance
@@ -54,10 +84,7 @@ public class RewardsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(new PointsBalanceDto
-        {
-            Points = user.Points
-        });
+        return Ok(_starEarningService.BuildBalance(user.Points));
     }
 
     // POST /api/rewards/redeem/{rewardId} - Redeem a reward
@@ -96,11 +123,19 @@ public class RewardsController : ControllerBase
         {
             UserId = userId,
             RewardId = rewardId,
-            RedeemedAt = DateTime.UtcNow
+            RedeemedAt = DateTime.UtcNow,
+            RewardName = reward.Name,
+            PointsSpent = reward.PointsCost
         };
 
         _context.UserRewards.Add(userReward);
         await _context.SaveChangesAsync();
+
+        await _pushNotificationService.SendAsync(
+            userId,
+            "SMS",
+            "Reward redeemed",
+            $"{reward.Name} redeemed for {reward.PointsCost} stars.");
 
         return Ok(new { message = "Reward redeemed successfully", remainingPoints = user.Points });
     }
@@ -118,15 +153,12 @@ public class RewardsController : ControllerBase
 
         var history = await _context.UserRewards
             .Where(ur => ur.UserId == userId)
-            .Join(_context.Rewards,
-                ur => ur.RewardId,
-                r => r.Id,
-                (ur, r) => new
-                {
-                    rewardName = r.Name,
-                    pointsCost = r.PointsCost,
-                    redeemedAt = ur.RedeemedAt
-                })
+            .Select(ur => new
+            {
+                rewardName = ur.RewardName,
+                pointsCost = ur.PointsSpent,
+                redeemedAt = ur.RedeemedAt
+            })
             .OrderByDescending(x => x.redeemedAt)
             .ToListAsync();
 

@@ -17,4 +17,16 @@ public class Order
     public int? TableNumber { get; set; }
 
     public decimal Total { get; set; }
+
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    public string PickupName { get; set; } = string.Empty;
+
+    public string SpecialInstructions { get; set; } = string.Empty;
+
+    public string PaymentStatus { get; set; } = "Pending";
+
+    public int StarsEarned { get; set; }
+
+    public ICollection<OrderItem> Items { get; set; } = new List<OrderItem>();
 }
