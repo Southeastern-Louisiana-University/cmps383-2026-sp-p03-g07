@@ -13,9 +13,23 @@ public class MenuItemDto
     [Required]
     public string Category { get; set; } = string.Empty;
 
+    public string Description { get; set; } = string.Empty;
+
     public decimal Price { get; set; }
 
     public bool IsAvailable { get; set; }
 
     public int LocationId { get; set; }
+
+    public string ImageUrl { get; set; } = string.Empty;
+
+    public int Calories { get; set; }
+
+    public bool IsFeatured { get; set; }
+
+    public int InventoryCount { get; set; }
+
+    public string PreparationTag { get; set; } = string.Empty;
+
+    public List<MenuCustomizationDto> Customizations { get; set; } = [];
 }

@@ -56,6 +56,11 @@ public class LocationsController(DataContext dataContext) : ControllerBase
             return BadRequest();
         }
 
+        if (dto.ManagerId != null && !dataContext.Set<User>().Any(x => x.Id == dto.ManagerId))
+        {
+            return BadRequest();
+        }
+
         var location = new Location
         {
             Name = dto.Name,
@@ -94,14 +99,24 @@ public class LocationsController(DataContext dataContext) : ControllerBase
             return Forbid();
         }
 
+        if (User.IsInRole(RoleNames.Admin))
+        {
+            if (dto.ManagerId != null && !dataContext.Set<User>().Any(x => x.Id == dto.ManagerId))
+            {
+                return BadRequest();
+            }
+
+            location.ManagerId = dto.ManagerId;
+        }
+
         location.Name = dto.Name;
         location.Address = dto.Address;
         location.TableCount = dto.TableCount;
-        location.ManagerId = dto.ManagerId;
 
         dataContext.SaveChanges();
 
         dto.Id = location.Id;
+        dto.ManagerId = location.ManagerId;
 
         return Ok(dto);
     }

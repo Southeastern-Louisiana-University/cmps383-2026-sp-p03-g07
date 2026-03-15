@@ -28,35 +28,33 @@ public sealed class WebTestContext : IDisposable
 
     public IServiceProvider GetServices()
     {
-        if (webHostFactory == null)
-        {
-            webHostFactory = new WebHostFactory<Program>(SqlServerTestDatabaseProvider.GetConnectionString());
-        }
-
-        return webHostFactory.Services;
+        EnsureFactory();
+        return webHostFactory!.Services;
     }
 
     public HttpClient GetStandardWebClient()
     {
-        if (webHostFactory == null)
-        {
-            webHostFactory = new WebHostFactory<Program>(SqlServerTestDatabaseProvider.GetConnectionString());
-        }
-
-        if (cleanNeeded)
-        {
-            webHostFactory.Dispose();
-            SqlServerTestDatabaseProvider.ClearData();
-            cleanNeeded = false;
-        }
-
+        EnsureFactory();
         var cookieContainer = new CookieContainer(100);
-        return webHostFactory.CreateDefaultClient(new RedirectHandler(10), new NonSecureCookieHandler(cookieContainer));
+        return webHostFactory!.CreateDefaultClient(new RedirectHandler(10), new NonSecureCookieHandler(cookieContainer));
     }
 
     public void Dispose()
     {
         cleanNeeded = true;
+    }
+
+    private void EnsureFactory()
+    {
+        if (cleanNeeded)
+        {
+            webHostFactory?.Dispose();
+            webHostFactory = null;
+            SqlServerTestDatabaseProvider.ClearData();
+            cleanNeeded = false;
+        }
+
+        webHostFactory ??= new WebHostFactory<Program>(SqlServerTestDatabaseProvider.GetConnectionString());
     }
 
     public class WebHostFactory<TStartup> : WebApplicationFactory<TStartup> where TStartup : class
@@ -70,6 +68,7 @@ public sealed class WebTestContext : IDisposable
 
         protected override void ConfigureWebHost(IWebHostBuilder x)
         {
+            x.UseEnvironment("Development");
             x.ConfigureAppConfiguration(y =>
             {
                 y.Add(new MemoryConfigurationSource
@@ -77,6 +76,7 @@ public sealed class WebTestContext : IDisposable
                     InitialData = new List<KeyValuePair<string, string?>>
                     {
                         new("ConnectionStrings:DataContext", connectionString),
+                        new("Spa:DevServerUrl", "http://127.0.0.1:65535"),
                         new("Logging:LogLevel:Microsoft", "Error"),
                         new("Logging:LogLevel:Microsoft.Hosting.Lifetime", "Error"),
                         new("Logging:LogLevel:Default", "Error")

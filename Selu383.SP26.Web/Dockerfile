@@ -1,10 +1,10 @@
 FROM node:22-alpine
 WORKDIR /app
 
-COPY Selu383.SP26.Web/package*.json ./
+COPY package*.json ./
 RUN npm ci
 
-COPY Selu383.SP26.Web/ .
+COPY . .
 
 EXPOSE 5173
 
