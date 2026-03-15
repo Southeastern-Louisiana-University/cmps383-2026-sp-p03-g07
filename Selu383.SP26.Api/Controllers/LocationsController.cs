@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Extensions;
 using Selu383.SP26.Api.Features.Auth;
@@ -21,6 +20,13 @@ public class LocationsController(DataContext dataContext) : ControllerBase
                 Id = x.Id,
                 Name = x.Name,
                 Address = x.Address,
+                City = x.City,
+                State = x.State,
+                Zip = x.Zip,
+                Phone = x.Phone,
+                HoursOfOperation = x.HoursOfOperation,
+                Latitude = x.Latitude,
+                Longitude = x.Longitude,
                 TableCount = x.TableCount,
                 ManagerId = x.ManagerId,
             });
@@ -42,6 +48,13 @@ public class LocationsController(DataContext dataContext) : ControllerBase
             Id = result.Id,
             Name = result.Name,
             Address = result.Address,
+            City = result.City,
+            State = result.State,
+            Zip = result.Zip,
+            Phone = result.Phone,
+            HoursOfOperation = result.HoursOfOperation,
+            Latitude = result.Latitude,
+            Longitude = result.Longitude,
             TableCount = result.TableCount,
             ManagerId = result.ManagerId,
         });
@@ -60,6 +73,13 @@ public class LocationsController(DataContext dataContext) : ControllerBase
         {
             Name = dto.Name,
             Address = dto.Address,
+            City = dto.City,
+            State = dto.State,
+            Zip = dto.Zip,
+            Phone = dto.Phone,
+            HoursOfOperation = dto.HoursOfOperation,
+            Latitude = dto.Latitude,
+            Longitude = dto.Longitude,
             TableCount = dto.TableCount,
             ManagerId = dto.ManagerId
         };
@@ -96,6 +116,13 @@ public class LocationsController(DataContext dataContext) : ControllerBase
 
         location.Name = dto.Name;
         location.Address = dto.Address;
+        location.City = dto.City;
+        location.State = dto.State;
+        location.Zip = dto.Zip;
+        location.Phone = dto.Phone;
+        location.HoursOfOperation = dto.HoursOfOperation;
+        location.Latitude = dto.Latitude;
+        location.Longitude = dto.Longitude;
         location.TableCount = dto.TableCount;
         location.ManagerId = dto.ManagerId;
 
