@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import "./App.css";
-import { API_BASE_URL } from "./services/api";
+import { API_BASE_URL } from "../services/api";
 
 type Location = {
   id: number;
@@ -9,7 +8,7 @@ type Location = {
   isOpen: boolean;
 };
 
-function App() {
+export default function LocationsPage() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -33,20 +32,16 @@ function App() {
       });
   }, []);
 
+  if (loading) return <div>Loading locations...</div>;
+  if (error) return <div>{error}</div>;
+
   return (
     <div style={{ padding: "20px" }}>
-      <h1>Caffeinated Lions</h1>
-      <h2>Locations</h2>
+      <h1>Locations</h1>
 
-      {loading && <p>Loading locations...</p>}
-      {error && <p>{error}</p>}
-
-      {!loading && !error && locations.length === 0 && (
+      {locations.length === 0 ? (
         <p>No locations found.</p>
-      )}
-
-      {!loading &&
-        !error &&
+      ) : (
         locations.map((location) => (
           <div
             key={location.id}
@@ -61,9 +56,8 @@ function App() {
             <p>{location.address}</p>
             <p>{location.isOpen ? "Open" : "Closed"}</p>
           </div>
-        ))}
+        ))
+      )}
     </div>
   );
 }
-
-export default App;

@@ -171,6 +171,7 @@ Then open:
 
 If you use `zsh` on macOS, the command above works as written. If you prefer another shell, set the environment variable using that shell's syntax.
 
+
 ## 6. Mobile App
 
 The mobile app is optional and separate from the Docker stack.

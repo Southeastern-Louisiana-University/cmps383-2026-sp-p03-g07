@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Auth;
 
+
 var builder = WebApplication.CreateBuilder(args);
 var spaDevServerUrl = builder.Configuration["Spa:DevServerUrl"] ?? "http://localhost:5173";
 var isRunningInContainer = string.Equals(
@@ -9,9 +10,28 @@ var isRunningInContainer = string.Equals(
     "true",
     StringComparison.OrdinalIgnoreCase);
 
-// Add services to the container.
+// Register services
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext")));
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "http://localhost:5174",
+                "http://localhost:8081",
+                "http://localhost:19006",
+                "http://10.0.2.2:8081",
+                "https://selu383-sp26-p03-g07.azurewebsites.net"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 builder.Services.AddIdentity<User, Role>()
     .AddEntityFrameworkStores<DataContext>();
@@ -32,7 +52,6 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -43,7 +62,7 @@ using (var scope = app.Services.CreateScope())
     await SeedHelper.MigrateAndSeed(scope.ServiceProvider);
 }
 
-// Configure the HTTP request pipeline.
+// Configure middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -55,18 +74,14 @@ if (!isRunningInContainer)
     app.UseHttpsRedirection();
 }
 
-app
-    .UseRouting()
-    .UseAuthentication()
-    .UseAuthorization()
-    .UseEndpoints(x =>
-    {
-        x.MapControllers();
-    });
-
 app.UseStaticFiles();
+app.UseRouting();
+app.UseCors("AllowFrontend");
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
 
-if(app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSpa(x =>
     {
@@ -83,3 +98,4 @@ app.Run();
 //see: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0
 // Hi 383 - this is added so we can test our web project automatically
 public partial class Program { }
+
