@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Orders;
 
@@ -9,9 +10,9 @@ namespace Selu383.SP26.Api.Controllers;
 public class OrdersController(DataContext dataContext) : ControllerBase
 {
     [HttpGet]
-    public IQueryable<OrderDto> GetAll()
+    public async Task<ActionResult<IEnumerable<OrderDto>>> GetAll()
     {
-        return dataContext.Set<Order>()
+        var orders = await dataContext.Set<Order>()
             .Select(x => new OrderDto
             {
                 Id = x.Id,
@@ -21,13 +22,17 @@ public class OrdersController(DataContext dataContext) : ControllerBase
                 Status = x.Status,
                 TableNumber = x.TableNumber,
                 Total = x.Total
-            });
+            })
+            .ToListAsync();
+
+        return Ok(orders);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<OrderDto> GetById(int id)
+    public async Task<ActionResult<OrderDto>> GetById(int id)
     {
-        var order = dataContext.Set<Order>().FirstOrDefault(x => x.Id == id);
+        var order = await dataContext.Set<Order>()
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (order == null)
         {
@@ -47,30 +52,32 @@ public class OrdersController(DataContext dataContext) : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<OrderDto> Create(OrderDto dto)
+    public async Task<ActionResult<OrderDto>> Create(OrderDto dto)
     {
         var order = new Order
         {
             UserId = dto.UserId,
             LocationId = dto.LocationId,
             OrderType = dto.OrderType,
-            Status = dto.Status,
+            Status = string.IsNullOrWhiteSpace(dto.Status) ? "Received" : dto.Status,
             TableNumber = dto.TableNumber,
             Total = dto.Total
         };
 
         dataContext.Set<Order>().Add(order);
-        dataContext.SaveChanges();
+        await dataContext.SaveChangesAsync();
 
         dto.Id = order.Id;
+        dto.Status = order.Status;
 
         return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }
 
     [HttpPut("{id}/status")]
-    public ActionResult UpdateStatus(int id, [FromBody] string status)
+    public async Task<ActionResult> UpdateStatus(int id, [FromBody] string status)
     {
-        var order = dataContext.Set<Order>().FirstOrDefault(x => x.Id == id);
+        var order = await dataContext.Set<Order>()
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (order == null)
         {
@@ -78,7 +85,7 @@ public class OrdersController(DataContext dataContext) : ControllerBase
         }
 
         order.Status = status;
-        dataContext.SaveChanges();
+        await dataContext.SaveChangesAsync();
 
         return Ok();
     }

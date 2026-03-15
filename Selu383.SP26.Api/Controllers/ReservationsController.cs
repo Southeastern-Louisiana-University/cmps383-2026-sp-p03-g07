@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Reservations;
 
@@ -9,9 +10,9 @@ namespace Selu383.SP26.Api.Controllers;
 public class ReservationsController(DataContext dataContext) : ControllerBase
 {
     [HttpGet]
-    public IQueryable<ReservationDto> GetAll()
+    public async Task<ActionResult<IEnumerable<ReservationDto>>> GetAll()
     {
-        return dataContext.Set<Reservation>()
+        var reservations = await dataContext.Set<Reservation>()
             .Select(x => new ReservationDto
             {
                 Id = x.Id,
@@ -20,13 +21,17 @@ public class ReservationsController(DataContext dataContext) : ControllerBase
                 ReservationTime = x.ReservationTime,
                 PartySize = x.PartySize,
                 Status = x.Status
-            });
+            })
+            .ToListAsync();
+
+        return Ok(reservations);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<ReservationDto> GetById(int id)
+    public async Task<ActionResult<ReservationDto>> GetById(int id)
     {
-        var reservation = dataContext.Set<Reservation>().FirstOrDefault(x => x.Id == id);
+        var reservation = await dataContext.Set<Reservation>()
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (reservation == null)
         {
@@ -45,7 +50,7 @@ public class ReservationsController(DataContext dataContext) : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult<ReservationDto> Create(ReservationDto dto)
+    public async Task<ActionResult<ReservationDto>> Create(ReservationDto dto)
     {
         var reservation = new Reservation
         {
@@ -53,13 +58,14 @@ public class ReservationsController(DataContext dataContext) : ControllerBase
             LocationId = dto.LocationId,
             ReservationTime = dto.ReservationTime,
             PartySize = dto.PartySize,
-            Status = dto.Status
+            Status = string.IsNullOrWhiteSpace(dto.Status) ? "Confirmed" : dto.Status
         };
 
         dataContext.Set<Reservation>().Add(reservation);
-        dataContext.SaveChanges();
+        await dataContext.SaveChangesAsync();
 
         dto.Id = reservation.Id;
+        dto.Status = reservation.Status;
 
         return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Menu;
 
@@ -9,9 +10,9 @@ namespace Selu383.SP26.Api.Controllers;
 public class MenuController(DataContext dataContext) : ControllerBase
 {
     [HttpGet]
-    public IQueryable<MenuItemDto> GetAll()
+    public async Task<ActionResult<IEnumerable<MenuItemDto>>> GetAll()
     {
-        return dataContext.Set<MenuItem>()
+        var items = await dataContext.Set<MenuItem>()
             .Select(x => new MenuItemDto
             {
                 Id = x.Id,
@@ -20,13 +21,17 @@ public class MenuController(DataContext dataContext) : ControllerBase
                 Price = x.Price,
                 IsAvailable = x.IsAvailable,
                 LocationId = x.LocationId
-            });
+            })
+            .ToListAsync();
+
+        return Ok(items);
     }
 
     [HttpGet("{id}")]
-    public ActionResult<MenuItemDto> GetById(int id)
+    public async Task<ActionResult<MenuItemDto>> GetById(int id)
     {
-        var item = dataContext.Set<MenuItem>().FirstOrDefault(x => x.Id == id);
+        var item = await dataContext.Set<MenuItem>()
+            .FirstOrDefaultAsync(x => x.Id == id);
 
         if (item == null)
         {
@@ -45,9 +50,9 @@ public class MenuController(DataContext dataContext) : ControllerBase
     }
 
     [HttpGet("location/{locationId}")]
-    public IQueryable<MenuItemDto> GetByLocation(int locationId)
+    public async Task<ActionResult<IEnumerable<MenuItemDto>>> GetByLocation(int locationId)
     {
-        return dataContext.Set<MenuItem>()
+        var items = await dataContext.Set<MenuItem>()
             .Where(x => x.LocationId == locationId)
             .Select(x => new MenuItemDto
             {
@@ -57,11 +62,14 @@ public class MenuController(DataContext dataContext) : ControllerBase
                 Price = x.Price,
                 IsAvailable = x.IsAvailable,
                 LocationId = x.LocationId
-            });
+            })
+            .ToListAsync();
+
+        return Ok(items);
     }
 
     [HttpPost]
-    public ActionResult<MenuItemDto> Create(MenuItemDto dto)
+    public async Task<ActionResult<MenuItemDto>> Create(MenuItemDto dto)
     {
         var item = new MenuItem
         {
@@ -73,7 +81,7 @@ public class MenuController(DataContext dataContext) : ControllerBase
         };
 
         dataContext.Set<MenuItem>().Add(item);
-        dataContext.SaveChanges();
+        await dataContext.SaveChangesAsync();
 
         dto.Id = item.Id;
 

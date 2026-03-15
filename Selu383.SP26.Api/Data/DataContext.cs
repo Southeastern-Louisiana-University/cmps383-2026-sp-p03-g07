@@ -24,14 +24,5 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DataContext).Assembly);
-
-        // Configure decimal precision for MenuItem.Price and Order.Total
-        modelBuilder.Entity<MenuItem>()
-            .Property(m => m.Price)
-            .HasColumnType("decimal(18,2)");
-
-        modelBuilder.Entity<Order>()
-            .Property(o => o.Total)
-            .HasColumnType("decimal(18,2)");
     }
 }

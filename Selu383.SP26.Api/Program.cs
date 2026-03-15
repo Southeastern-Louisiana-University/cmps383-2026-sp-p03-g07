@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Auth;
+
 var builder = WebApplication.CreateBuilder(args);
 var spaDevServerUrl = builder.Configuration["Spa:DevServerUrl"] ?? "http://localhost:5173";
 var isRunningInContainer = string.Equals(
