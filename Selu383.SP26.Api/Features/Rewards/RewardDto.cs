@@ -11,4 +11,10 @@ public class RewardDto
     public int PointCost { get; set; }
 
     public bool IsActive { get; set; }
+
+    public string RewardType { get; set; } = "discount";
+
+    public decimal DiscountValue { get; set; } = 0;
+
+    public int? FreeMenuItemId { get; set; }
 }

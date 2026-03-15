@@ -11,4 +11,13 @@ public class Reward
     public int PointCost { get; set; }
 
     public bool IsActive { get; set; } = true;
+
+    // "discount" or "free_item"
+    public string RewardType { get; set; } = "discount";
+
+    // For discount rewards: percent off (e.g. 10 = 10% off)
+    public decimal DiscountValue { get; set; } = 0;
+
+    // For free_item rewards: which menu item to add for free
+    public int? FreeMenuItemId { get; set; }
 }

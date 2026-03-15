@@ -11,4 +11,6 @@ public class RewardRedemption
     public virtual Reward? Reward { get; set; }
 
     public DateTime RedeemedAt { get; set; } = DateTime.UtcNow;
+
+    public bool IsUsed { get; set; } = false;
 }

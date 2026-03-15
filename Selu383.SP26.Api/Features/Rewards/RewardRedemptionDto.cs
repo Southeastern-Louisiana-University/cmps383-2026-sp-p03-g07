@@ -11,4 +11,12 @@ public class RewardRedemptionDto
     public int PointCost { get; set; }
 
     public DateTime RedeemedAt { get; set; }
+
+    public bool IsUsed { get; set; }
+
+    public string RewardType { get; set; } = "discount";
+
+    public decimal DiscountValue { get; set; }
+
+    public int? FreeMenuItemId { get; set; }
 }
