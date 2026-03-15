@@ -2,17 +2,21 @@ import { API_BASE_URL } from "@/constants/api";
 
 export type OrderItem = {
   menuItemId: number;
+  name: string;
   quantity: number;
   price: number;
 };
 
 export type Order = {
   id: number;
+  userId: number;
   locationId: number;
   orderType: string;
   status: string;
   tableNumber?: number;
   total: number;
+  discountAmount: number;
+  note?: string;
   items: OrderItem[];
 };
 
@@ -30,6 +34,12 @@ export async function createOrder(order: Omit<Order, "id">): Promise<Order> {
 export async function getOrders(): Promise<Order[]> {
   const res = await fetch(`${API_BASE_URL}/api/orders`, { credentials: "include" });
   if (!res.ok) throw new Error("Failed to load orders.");
+  return res.json();
+}
+
+export async function getOrderById(id: number): Promise<Order> {
+  const res = await fetch(`${API_BASE_URL}/api/orders/${id}`, { credentials: "include" });
+  if (!res.ok) throw new Error("Order not found.");
   return res.json();
 }
 
