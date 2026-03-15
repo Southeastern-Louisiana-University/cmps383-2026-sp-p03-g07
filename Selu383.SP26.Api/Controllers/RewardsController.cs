@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Extensions;
+using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Rewards;
 
 namespace Selu383.SP26.Api.Controllers;
@@ -163,6 +164,50 @@ public class RewardsController(DataContext dataContext) : ControllerBase
             .ToList();
 
         return Ok(results);
+    }
+
+    [HttpGet("admin/users")]
+    [Authorize(Roles = RoleNames.Admin)]
+    public async Task<ActionResult<List<object>>> GetAllUsers()
+    {
+        var users = await dataContext.Set<User>()
+            .Select(u => new { u.Id, u.UserName, u.DisplayName })
+            .ToListAsync();
+        var points = await dataContext.Set<UserPoints>().ToListAsync();
+        var result = users.Select(u => new {
+            u.Id,
+            u.UserName,
+            u.DisplayName,
+            Balance = points.FirstOrDefault(p => p.UserId == u.Id)?.Balance ?? 0
+        }).OrderBy(u => u.UserName).ToList<object>();
+        return Ok(result);
+    }
+
+    [HttpPost("admin/award-points")]
+    [Authorize(Roles = RoleNames.Admin)]
+    public async Task<ActionResult> AwardPoints([FromBody] AwardPointsDto dto)
+    {
+        if (dto.Amount <= 0) return BadRequest("Amount must be positive.");
+
+        var userPoints = await dataContext.Set<UserPoints>().FirstOrDefaultAsync(x => x.UserId == dto.UserId);
+        if (userPoints == null)
+        {
+            userPoints = new UserPoints { UserId = dto.UserId, Balance = 0 };
+            dataContext.Set<UserPoints>().Add(userPoints);
+        }
+
+        userPoints.Balance += dto.Amount;
+
+        dataContext.Set<PointTransaction>().Add(new PointTransaction
+        {
+            UserId = dto.UserId,
+            Amount = dto.Amount,
+            Reason = dto.Reason ?? "Admin award",
+            CreatedAt = DateTime.UtcNow
+        });
+
+        await dataContext.SaveChangesAsync();
+        return Ok(new { message = $"Awarded {dto.Amount} points.", newBalance = userPoints.Balance });
     }
 
     [HttpGet("rewards/redemptions")]

@@ -63,4 +63,24 @@ public class ReservationsController(DataContext dataContext) : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }
+
+    [HttpPut("{id}/status")]
+    public ActionResult UpdateStatus(int id, [FromBody] string status)
+    {
+        var reservation = dataContext.Set<Reservation>().FirstOrDefault(x => x.Id == id);
+        if (reservation == null) return NotFound();
+        reservation.Status = status;
+        dataContext.SaveChanges();
+        return Ok();
+    }
+
+    [HttpDelete("{id}")]
+    public ActionResult Delete(int id)
+    {
+        var reservation = dataContext.Set<Reservation>().FirstOrDefault(x => x.Id == id);
+        if (reservation == null) return NotFound();
+        dataContext.Set<Reservation>().Remove(reservation);
+        dataContext.SaveChanges();
+        return NoContent();
+    }
 }
