@@ -51,6 +51,29 @@ public class AuthenticationController : ControllerBase
         return Ok(resultDto);
     }
 
+    [HttpPost("register")]
+    public async Task<ActionResult<UserDto>> Register(LoginDto dto)
+    {
+        var existing = await userManager.FindByNameAsync(dto.UserName);
+        if (existing != null)
+        {
+            return BadRequest("Username already taken.");
+        }
+
+        var newUser = new User { UserName = dto.UserName };
+        var result = await userManager.CreateAsync(newUser, dto.Password);
+        if (!result.Succeeded)
+        {
+            return BadRequest(string.Join(", ", result.Errors.Select(e => e.Description)));
+        }
+
+        await userManager.AddToRoleAsync(newUser, RoleNames.User);
+        await signInManager.SignInAsync(newUser, false);
+
+        var resultDto = await GetUserDto(userManager.Users).SingleAsync(x => x.UserName == newUser.UserName);
+        return Ok(resultDto);
+    }
+
     [HttpPost("logout")]
     [Authorize]
     public async Task<ActionResult> Logout()
