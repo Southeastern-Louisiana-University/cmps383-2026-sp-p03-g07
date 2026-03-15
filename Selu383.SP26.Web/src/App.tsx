@@ -14,6 +14,10 @@ import SignupPage from "./pages/SignupPage";
 import ProfilePage from "./pages/ProfilePage";
 import RewardsPage from "./pages/RewardsPage";
 import FeedbackPage from "./pages/FeedbackPage";
+import OrderStatusPage from "./pages/OrderStatusPage";
+import AdminDashboardPage from "./pages/AdminDashboardPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AdminMenuPage from "./pages/AdminMenuPage";
 
 function App() {
   return (
@@ -33,6 +37,10 @@ function App() {
             <Route path="/profile" element={<ProfilePage />} />
             <Route path="/rewards" element={<RewardsPage />} />
             <Route path="/feedback" element={<FeedbackPage />} />
+            <Route path="/order-status/:id" element={<OrderStatusPage />} />
+            <Route path="/admin" element={<AdminDashboardPage />} />
+            <Route path="/admin/orders" element={<AdminOrdersPage />} />
+            <Route path="/admin/menu" element={<AdminMenuPage />} />
           </Routes>
         </BrowserRouter>
       </CartProvider>

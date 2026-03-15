@@ -6,6 +6,9 @@ export type Reward = {
   description: string;
   pointCost: number;
   isActive: boolean;
+  rewardType: string;
+  discountValue: number;
+  freeMenuItemId?: number;
 };
 
 export type UserPointsDto = {
@@ -19,6 +22,10 @@ export type RewardRedemptionDto = {
   rewardName: string;
   pointCost: number;
   redeemedAt: string;
+  isUsed: boolean;
+  rewardType: string;
+  discountValue: number;
+  freeMenuItemId?: number;
 };
 
 export async function getPoints(): Promise<UserPointsDto> {
@@ -50,5 +57,11 @@ export async function redeemReward(rewardId: number): Promise<RewardRedemptionDt
 export async function getRedemptions(): Promise<RewardRedemptionDto[]> {
   const res = await fetch(`${API_BASE_URL}/api/rewards/redemptions`, { credentials: "include" });
   if (!res.ok) throw new Error("Failed to load redemptions.");
+  return res.json();
+}
+
+export async function getActiveRedemptions(): Promise<RewardRedemptionDto[]> {
+  const res = await fetch(`${API_BASE_URL}/api/rewards/active`, { credentials: "include" });
+  if (!res.ok) throw new Error("Failed to load active redemptions.");
   return res.json();
 }

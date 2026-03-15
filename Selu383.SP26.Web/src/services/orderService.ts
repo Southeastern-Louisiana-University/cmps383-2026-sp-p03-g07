@@ -1,5 +1,12 @@
 import { API_BASE_URL } from "./api";
 
+export type OrderItem = {
+  menuItemId: number;
+  name: string;
+  quantity: number;
+  price: number;
+};
+
 export type Order = {
   id: number;
   userId: number;
@@ -8,6 +15,10 @@ export type Order = {
   status: string;
   tableNumber?: number;
   total: number;
+  discountAmount: number;
+  redemptionId?: number;
+  note?: string;
+  items: OrderItem[];
 };
 
 export async function createOrder(order: Omit<Order, "id">): Promise<Order> {
@@ -25,6 +36,22 @@ export async function getOrders(): Promise<Order[]> {
   const res = await fetch(`${API_BASE_URL}/api/orders`, { credentials: "include" });
   if (!res.ok) throw new Error("Failed to load orders.");
   return res.json();
+}
+
+export async function getAllOrders(): Promise<Order[]> {
+  const res = await fetch(`${API_BASE_URL}/api/orders`, { credentials: "include" });
+  if (!res.ok) throw new Error("Failed to load orders.");
+  return res.json();
+}
+
+export async function updateOrderStatus(orderId: number, status: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(status),
+  });
+  if (!res.ok) throw new Error("Failed to update order status.");
 }
 
 export async function earnPoints(orderTotal: number): Promise<void> {

@@ -27,6 +27,9 @@ export default function Navbar() {
           <>
             <li><NavLink to="/profile">Orders</NavLink></li>
             <li><NavLink to="/rewards">Rewards</NavLink></li>
+            {user.roles.includes("Admin") && (
+              <li><NavLink to="/admin" style={{ color: "var(--amber)", fontWeight: 700 }}>Admin</NavLink></li>
+            )}
             <li>
               <button className="btn-secondary" style={{ padding: "0.3rem 0.8rem", fontSize: "0.9rem" }} onClick={handleLogout}>
                 Log Out
