@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Auth;
-
-
 var builder = WebApplication.CreateBuilder(args);
 var spaDevServerUrl = builder.Configuration["Spa:DevServerUrl"] ?? "http://localhost:5173";
 var isRunningInContainer = string.Equals(
@@ -10,7 +8,6 @@ var isRunningInContainer = string.Equals(
     "true",
     StringComparison.OrdinalIgnoreCase);
 
-// Register services
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext")));
 
@@ -62,7 +59,6 @@ using (var scope = app.Services.CreateScope())
     await SeedHelper.MigrateAndSeed(scope.ServiceProvider);
 }
 
-// Configure middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -75,10 +71,14 @@ if (!isRunningInContainer)
 }
 
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 if (app.Environment.IsDevelopment())
@@ -95,7 +95,4 @@ else
 
 app.Run();
 
-//see: https://docs.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-8.0
-// Hi 383 - this is added so we can test our web project automatically
 public partial class Program { }
-
