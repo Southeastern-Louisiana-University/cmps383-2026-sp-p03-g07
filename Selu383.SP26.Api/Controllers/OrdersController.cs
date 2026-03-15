@@ -1,6 +1,10 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Selu383.SP26.Api.Data;
+using Selu383.SP26.Api.Extensions;
+using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Orders;
+using Microsoft.EntityFrameworkCore;
 
 namespace Selu383.SP26.Api.Controllers;
 
@@ -9,9 +13,15 @@ namespace Selu383.SP26.Api.Controllers;
 public class OrdersController(DataContext dataContext) : ControllerBase
 {
     [HttpGet]
-    public IQueryable<OrderDto> GetAll()
+    [Authorize]
+    public async Task<ActionResult<List<OrderDto>>> GetAll()
     {
-        return dataContext.Set<Order>()
+        var userName = User.GetCurrentUserName();
+        var user = await dataContext.Set<User>().FirstOrDefaultAsync(u => u.UserName == userName);
+        if (user == null) return Unauthorized();
+
+        var orders = await dataContext.Set<Order>()
+            .Where(x => x.UserId == user.Id)
             .Select(x => new OrderDto
             {
                 Id = x.Id,
@@ -21,7 +31,9 @@ public class OrdersController(DataContext dataContext) : ControllerBase
                 Status = x.Status,
                 TableNumber = x.TableNumber,
                 Total = x.Total
-            });
+            }).ToListAsync();
+
+        return Ok(orders);
     }
 
     [HttpGet("{id}")]
