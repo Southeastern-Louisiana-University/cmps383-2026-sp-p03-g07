@@ -1,1 +1,1 @@
-export const API_BASE_URL = "https://selu383-sp26-p03-g07.azurewebsites.net";
+export const API_BASE_URL = "http://192.168.4.98:5000";
