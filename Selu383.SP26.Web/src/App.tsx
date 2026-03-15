@@ -1,68 +1,42 @@
-import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
-import { API_BASE_URL } from "./services/api";
-
-type Location = {
-  id: number;
-  name: string;
-  address: string;
-  isOpen: boolean;
-};
+import { AuthProvider } from "./contexts/AuthContext";
+import { CartProvider } from "./contexts/CartContext";
+import Navbar from "./components/Navbar";
+import HomePage from "./pages/HomePage";
+import MenuPage from "./pages/MenuPage";
+import CartPage from "./pages/CartPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import LocationsPage from "./pages/LocationsPage";
+import ReservationsPage from "./pages/ReservationsPage";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import ProfilePage from "./pages/ProfilePage";
+import RewardsPage from "./pages/RewardsPage";
+import FeedbackPage from "./pages/FeedbackPage";
 
 function App() {
-  const [locations, setLocations] = useState<Location[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
-
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/locations`)
-      .then(async (res) => {
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((data) => {
-        setLocations(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load locations:", err);
-        setError("Could not load locations.");
-        setLoading(false);
-      });
-  }, []);
-
   return (
-    <div style={{ padding: "20px" }}>
-      <h1>Caffeinated Lions</h1>
-      <h2>Locations</h2>
-
-      {loading && <p>Loading locations...</p>}
-      {error && <p>{error}</p>}
-
-      {!loading && !error && locations.length === 0 && (
-        <p>No locations found.</p>
-      )}
-
-      {!loading &&
-        !error &&
-        locations.map((location) => (
-          <div
-            key={location.id}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "8px",
-              padding: "12px",
-              marginBottom: "12px",
-            }}
-          >
-            <h3>{location.name}</h3>
-            <p>{location.address}</p>
-            <p>{location.isOpen ? "Open" : "Closed"}</p>
-          </div>
-        ))}
-    </div>
+    <AuthProvider>
+      <CartProvider>
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/menu" element={<MenuPage />} />
+            <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/locations" element={<LocationsPage />} />
+            <Route path="/reservations" element={<ReservationsPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/rewards" element={<RewardsPage />} />
+            <Route path="/feedback" element={<FeedbackPage />} />
+          </Routes>
+        </BrowserRouter>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 
