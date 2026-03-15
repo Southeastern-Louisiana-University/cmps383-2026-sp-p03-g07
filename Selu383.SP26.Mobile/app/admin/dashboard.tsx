@@ -1,3 +1,3 @@
-export default function AdminDashboard() {
-  return null;
-}
+import { createStorefrontRouteScreen } from '@/components/storefront-route-screen';
+
+export default createStorefrontRouteScreen('/admin');

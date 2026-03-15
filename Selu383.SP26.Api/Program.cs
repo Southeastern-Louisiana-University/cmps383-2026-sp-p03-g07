@@ -11,9 +11,20 @@ var isRunningInContainer = string.Equals(
     Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER"),
     "true",
     StringComparison.OrdinalIgnoreCase);
+var dataContextConnectionString = builder.Configuration.GetConnectionString("DataContext")
+    ?? throw new InvalidOperationException("Connection string 'DataContext' was not configured.");
 
 builder.Services.AddDbContext<DataContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext")));
+    options.UseSqlServer(
+        dataContextConnectionString,
+        sqlOptions =>
+        {
+            sqlOptions.CommandTimeout(60);
+            sqlOptions.EnableRetryOnFailure(
+                maxRetryCount: 10,
+                maxRetryDelay: TimeSpan.FromSeconds(30),
+                errorNumbersToAdd: null);
+        }));
 
 builder.Services.AddCors(options =>
 {

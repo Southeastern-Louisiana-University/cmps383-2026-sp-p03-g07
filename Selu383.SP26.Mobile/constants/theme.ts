@@ -5,25 +5,47 @@
 
 import { Platform } from 'react-native';
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
+const storefrontGold = '#d8bb74';
+const storefrontGoldLight = '#f3e4ad';
+const storefrontText = '#f6efcf';
+const storefrontMuted = '#a8a274';
+const storefrontBackground = '#11170d';
+const storefrontCard = '#303a14';
+
+export const StorefrontPalette = {
+  background: storefrontBackground,
+  backgroundSoft: '#1f2710',
+  panel: storefrontCard,
+  panelStrong: '#414b16',
+  panelGlass: 'rgba(65, 75, 22, 0.84)',
+  panelMuted: '#232b11',
+  border: 'rgba(246, 239, 207, 0.12)',
+  text: storefrontText,
+  textSoft: 'rgba(246, 239, 207, 0.84)',
+  textMuted: 'rgba(246, 239, 207, 0.62)',
+  accent: storefrontGold,
+  accentLight: storefrontGoldLight,
+  accentDeep: '#ac8540',
+  accentOlive: '#768526',
+  danger: '#d67e7e',
+};
 
 export const Colors = {
   light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+    text: storefrontText,
+    background: storefrontBackground,
+    tint: storefrontGold,
+    icon: storefrontMuted,
+    tabIconDefault: storefrontMuted,
+    tabIconSelected: storefrontGoldLight,
   },
   dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+    text: storefrontText,
+    background: storefrontBackground,
+    tint: storefrontGold,
+    icon: storefrontMuted,
+    tabIconDefault: storefrontMuted,
+    tabIconSelected: storefrontGoldLight,
   },
 };
 

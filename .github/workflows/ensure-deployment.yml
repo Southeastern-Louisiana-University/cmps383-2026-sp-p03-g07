@@ -8,9 +8,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Warm up URL
-        run: curl -s ${{ github.event.deployment_status.environment_url }}/api/locations
-      - name: Test locations API
-        run: curl -sSf ${{ github.event.deployment_status.environment_url }}/api/locations
-      - name: Test React
-        run: curl -sSf ${{ github.event.deployment_status.environment_url }}/index.html
+      - name: Wait for locations API
+        env:
+          APP_URL: ${{ github.event.deployment_status.environment_url }}
+        run: |
+          for attempt in {1..18}; do
+            http_code=$(curl -sS -o /tmp/locations-response.txt -w "%{http_code}" "${APP_URL}/api/locations" || true)
+
+            if [ "$http_code" = "200" ]; then
+              echo "Locations API is healthy on attempt ${attempt}."
+              cat /tmp/locations-response.txt
+              exit 0
+            fi
+
+            echo "Attempt ${attempt}: /api/locations returned HTTP ${http_code:-000}. Waiting for app startup..."
+            sleep 10
+          done
+
+          echo "Locations API never became healthy."
+          curl -i "${APP_URL}/api/locations" || true
+          exit 1
+
+      - name: Wait for React shell
+        env:
+          APP_URL: ${{ github.event.deployment_status.environment_url }}
+        run: |
+          for attempt in {1..12}; do
+            http_code=$(curl -sS -o /tmp/index-response.txt -w "%{http_code}" "${APP_URL}/index.html" || true)
+
+            if [ "$http_code" = "200" ]; then
+              echo "React shell is healthy on attempt ${attempt}."
+              exit 0
+            fi
+
+            echo "Attempt ${attempt}: /index.html returned HTTP ${http_code:-000}. Waiting for frontend startup..."
+            sleep 5
+          done
+
+          echo "React shell never became healthy."
+          curl -i "${APP_URL}/index.html" || true
+          exit 1

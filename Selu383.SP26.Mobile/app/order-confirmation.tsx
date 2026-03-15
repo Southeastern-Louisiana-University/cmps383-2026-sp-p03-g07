@@ -1,3 +1,3 @@
-export default function OrderConfirmation() {
-  return null;
-}
+import { createStorefrontRouteScreen } from '@/components/storefront-route-screen';
+
+export default createStorefrontRouteScreen('/orders');
