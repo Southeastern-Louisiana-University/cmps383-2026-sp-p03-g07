@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Locations;
 using Selu383.SP26.Api.Features.Menu;
+using Selu383.SP26.Api.Features.Rewards;
 
 namespace Selu383.SP26.Api.Data;
 
@@ -19,6 +20,7 @@ public static class SeedHelper
         await AddUsers(serviceProvider);
         await AddLocations(dataContext);
         await AddMenuItems(dataContext);
+        await AddRewards(dataContext);
     }
 
     private static async Task AddRoles(IServiceProvider serviceProvider)
@@ -159,6 +161,47 @@ public static class SeedHelper
                 Price = 3.75m,
                 IsAvailable = true,
                 LocationId = 3
+            }
+        );
+
+        await dataContext.SaveChangesAsync();
+    }
+
+    private static async Task AddRewards(DataContext dataContext)
+    {
+        if (await dataContext.Rewards.AnyAsync())
+        {
+            return;
+        }
+
+        dataContext.Set<Reward>().AddRange(
+            new Reward
+            {
+                Name = "Free Coffee",
+                Description = "Get any size coffee for free",
+                PointsCost = 100,
+                IsActive = true
+            },
+            new Reward
+            {
+                Name = "Free Pastry",
+                Description = "Get any pastry item for free",
+                PointsCost = 75,
+                IsActive = true
+            },
+            new Reward
+            {
+                Name = "$5 Off Purchase",
+                Description = "$5 discount on your next order",
+                PointsCost = 150,
+                IsActive = true
+            },
+            new Reward
+            {
+                Name = "Free Drink Upgrade",
+                Description = "Upgrade any drink to large size",
+                PointsCost = 50,
+                IsActive = true
             }
         );
 
