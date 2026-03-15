@@ -14,6 +14,26 @@ public static class WebTestContextExtensions
         return GetUserNameId(context, "sue");
     }
 
+    public static int GetAnyLocationId(this WebTestContext context)
+    {
+        using var scope = context.GetServices().CreateScope();
+
+        var dbContext = DataContextTests.GetDataContext(scope);
+        if (dbContext == null)
+        {
+            Assert.Fail("Expected to be able to get DataContext for this test");
+        }
+
+        var locations = DataContextTests.EnsureSet("Location", dbContext);
+        var location = locations.FirstOrDefault();
+        if (location == null)
+        {
+            Assert.Fail("Expected at least one seeded location");
+        }
+
+        return location.Id;
+    }
+
     private static int GetUserNameId(WebTestContext context, string userName)
     {
         using var scope = context.GetServices().CreateScope();

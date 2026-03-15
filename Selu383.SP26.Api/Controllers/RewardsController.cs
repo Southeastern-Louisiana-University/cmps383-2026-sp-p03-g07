@@ -40,7 +40,7 @@ public class RewardsController : ControllerBase
     // GET /api/rewards/my-points - Get current user's points balance
     [Authorize]
     [HttpGet("my-points")]
-    public async Task<ActionResult<int>> GetMyPoints()
+    public async Task<ActionResult<PointsBalanceDto>> GetMyPoints()
     {
         var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrEmpty(userIdString) || !int.TryParse(userIdString, out var userId))
@@ -54,7 +54,10 @@ public class RewardsController : ControllerBase
             return NotFound();
         }
 
-        return Ok(new { points = user.Points });
+        return Ok(new PointsBalanceDto
+        {
+            Points = user.Points
+        });
     }
 
     // POST /api/rewards/redeem/{rewardId} - Redeem a reward

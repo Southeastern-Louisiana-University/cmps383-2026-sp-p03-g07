@@ -6,7 +6,7 @@ type Location = {
   id: number;
   name: string;
   address: string;
-  isOpen: boolean;
+  tableCount: number;
 };
 
 function App() {
@@ -59,7 +59,7 @@ function App() {
           >
             <h3>{location.name}</h3>
             <p>{location.address}</p>
-            <p>{location.isOpen ? "Open" : "Closed"}</p>
+            <p>{location.tableCount} tables available for seating</p>
           </div>
         ))}
     </div>

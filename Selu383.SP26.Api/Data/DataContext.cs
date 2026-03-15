@@ -26,6 +26,14 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<MenuItem>()
+            .Property(x => x.Price)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<Order>()
+            .Property(x => x.Total)
+            .HasPrecision(18, 2);
+
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DataContext).Assembly);
     }
 }

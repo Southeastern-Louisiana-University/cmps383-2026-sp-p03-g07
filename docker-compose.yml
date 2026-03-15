@@ -29,6 +29,8 @@ services:
     build:
       context: .
       dockerfile: Selu383.SP26.Web/Dockerfile
+    environment:
+      VITE_API_PROXY_TARGET: http://api:8080
     ports:
       - "5173:5173"
 

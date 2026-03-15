@@ -5,7 +5,7 @@ type Location = {
   id: number;
   name: string;
   address: string;
-  isOpen: boolean;
+  tableCount: number;
 };
 
 export default function LocationsPage() {
@@ -54,7 +54,7 @@ export default function LocationsPage() {
           >
             <h3>{location.name}</h3>
             <p>{location.address}</p>
-            <p>{location.isOpen ? "Open" : "Closed"}</p>
+            <p>{location.tableCount} tables available for seating</p>
           </div>
         ))
       )}

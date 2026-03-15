@@ -83,10 +83,17 @@ app.MapControllers();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSpa(x =>
-    {
-        x.UseProxyToSpaDevelopmentServer(spaDevServerUrl);
-    });
+    app.UseWhen(
+        context =>
+            !context.Request.Path.StartsWithSegments("/api")
+            && !context.Request.Path.StartsWithSegments("/swagger"),
+        spaApp =>
+        {
+            spaApp.UseSpa(x =>
+            {
+                x.UseProxyToSpaDevelopmentServer(spaDevServerUrl);
+            });
+        });
 }
 else
 {

@@ -1,5 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Selu383.SP26.Api.Data;
+using Selu383.SP26.Api.Extensions;
+using Selu383.SP26.Api.Features.Auth;
+using Selu383.SP26.Api.Features.Locations;
 using Selu383.SP26.Api.Features.Menu;
 
 namespace Selu383.SP26.Api.Controllers;
@@ -61,8 +65,25 @@ public class MenuController(DataContext dataContext) : ControllerBase
     }
 
     [HttpPost]
+    [Authorize]
     public ActionResult<MenuItemDto> Create(MenuItemDto dto)
     {
+        if (dto.Price < 0)
+        {
+            return BadRequest();
+        }
+
+        var location = dataContext.Set<Location>().FirstOrDefault(x => x.Id == dto.LocationId);
+        if (location == null)
+        {
+            return BadRequest();
+        }
+
+        if (!User.IsInRole(RoleNames.Admin) && User.GetCurrentUserId() != location.ManagerId)
+        {
+            return Forbid();
+        }
+
         var item = new MenuItem
         {
             Name = dto.Name,

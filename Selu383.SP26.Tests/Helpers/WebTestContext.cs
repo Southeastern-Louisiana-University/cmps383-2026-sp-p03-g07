@@ -70,6 +70,7 @@ public sealed class WebTestContext : IDisposable
 
         protected override void ConfigureWebHost(IWebHostBuilder x)
         {
+            x.UseEnvironment("Development");
             x.ConfigureAppConfiguration(y =>
             {
                 y.Add(new MemoryConfigurationSource
@@ -77,6 +78,7 @@ public sealed class WebTestContext : IDisposable
                     InitialData = new List<KeyValuePair<string, string?>>
                     {
                         new("ConnectionStrings:DataContext", connectionString),
+                        new("Spa:DevServerUrl", "http://127.0.0.1:65535"),
                         new("Logging:LogLevel:Microsoft", "Error"),
                         new("Logging:LogLevel:Microsoft.Hosting.Lifetime", "Error"),
                         new("Logging:LogLevel:Default", "Error")
