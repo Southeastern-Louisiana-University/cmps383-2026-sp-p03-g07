@@ -34,6 +34,8 @@ export default function AdminDashboardPage() {
     { label: "Manage Orders", desc: "View and update live order statuses", path: "/admin/orders", icon: "📦" },
     { label: "Manage Menu", desc: "Add, edit, or remove menu items", path: "/admin/menu", icon: "🍵" },
     { label: "Reservations", desc: "View and manage table reservations", path: "/admin/reservations", icon: "📅" },
+    { label: "Customer Feedback", desc: "Read reviews and ratings from customers", path: "/admin/feedback", icon: "⭐" },
+    { label: "Award Points", desc: "Give bonus points for refunds or rewards", path: "/admin/points", icon: "🎁" },
   ];
 
   return (
