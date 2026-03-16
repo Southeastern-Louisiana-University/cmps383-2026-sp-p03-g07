@@ -15,9 +15,18 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
     throw new Error(errorText || `HTTP ${response.status}`);
   }
 
-  if (response.status === 204) {
+  const contentType = response.headers.get("content-type") ?? "";
+  const contentLength = response.headers.get("content-length");
+
+  if (
+    response.status === 204 ||
+    contentLength === "0" ||
+    !contentType.includes("application/json")
+  ) {
     return undefined as T;
   }
 
-  return (await response.json()) as T;
+  const text = await response.text();
+  if (!text) return undefined as T;
+  return JSON.parse(text) as T;
 }

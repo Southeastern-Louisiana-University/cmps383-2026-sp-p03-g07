@@ -224,7 +224,7 @@ public class OrdersController(
                 $"Order #{order.Id} is now {status}.");
         }
 
-        return NoContent();
+        return Ok();
     }
 
     [Authorize]
