@@ -26,16 +26,9 @@ public class OrdersController(
             return Unauthorized();
         }
 
-        var managedLocationIds = dataContext.Set<Location>()
-            .Where(x => x.ManagerId == currentUserId)
-            .Select(x => x.Id);
-
         var orders = await dataContext.Orders
             .Include(x => x.Items)
-            .Where(x =>
-                User.IsInRole(RoleNames.Admin)
-                || x.UserId == currentUserId
-                || managedLocationIds.Contains(x.LocationId))
+            .Where(x => x.UserId == currentUserId)
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 

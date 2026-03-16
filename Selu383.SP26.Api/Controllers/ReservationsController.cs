@@ -22,15 +22,8 @@ public class ReservationsController(DataContext dataContext) : ControllerBase
             return Unauthorized();
         }
 
-        var managedLocationIds = dataContext.Set<Location>()
-            .Where(x => x.ManagerId == currentUserId)
-            .Select(x => x.Id);
-
         var reservations = dataContext.Set<Reservation>()
-            .Where(x =>
-                User.IsInRole(RoleNames.Admin)
-                || x.UserId == currentUserId
-                || managedLocationIds.Contains(x.LocationId))
+            .Where(x => x.UserId == currentUserId)
             .Select(x => new ReservationDto
             {
                 Id = x.Id,
