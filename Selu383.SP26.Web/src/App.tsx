@@ -5,6 +5,7 @@ import MenuPage from "./pages/MenuPage";
 import CartPage from "./pages/CartPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import RewardsPage from "./pages/RewardsPage";
+import ReviewPage from "./pages/ReviewPage";
 import StoreMapPage from "./pages/StoreMapPage";
 import LoginPage from "./pages/LoginPage";
 import OrderHistory from "./pages/OrderHistory";
@@ -31,6 +32,7 @@ const routes: RouteDefinition[] = [
   { path: "/cart", label: "Cart", element: CartPage, showInPrimaryNav: true },
   { path: "/checkout", label: "Checkout", element: CheckoutPage, protected: true },
   { path: "/rewards", label: "Rewards", element: RewardsPage, showInPrimaryNav: true },
+  { path: "/reviews", label: "Reviews", element: ReviewPage, showInPrimaryNav: true },
   { path: "/stores", label: "Stores", element: StoreMapPage, showInPrimaryNav: true },
   { path: "/login", label: "Login", element: LoginPage },
   { path: "/orders", label: "Orders", element: OrderHistory, protected: true, showInPrimaryNav: true },
@@ -119,6 +121,7 @@ function AppLayout() {
     activeRoute.path === "/stores" ||
     activeRoute.path === "/cart" ||
     activeRoute.path === "/rewards" ||
+    activeRoute.path === "/reviews" ||
     activeRoute.path === "/menu" ||
     activeRoute.path === "/checkout" ||
     activeRoute.path === "/profile" ||
@@ -162,7 +165,11 @@ function AppLayout() {
             <button className="secondary-button" onClick={() => navigate("/cart")} type="button">
               Cart ({items.length})
             </button>
-            <button className="secondary-button" onClick={() => navigate(user ? "/profile" : "/login")} type="button">
+            <button
+              className="secondary-button"
+              onClick={() => navigate(user ? "/profile" : "/login")}
+              type="button"
+            >
               {user ? `${user.userName} • ${user.points} stars` : "Login"}
             </button>
           </div>

@@ -89,12 +89,13 @@ const locationProfiles: Record<number, StoreProfile> = {
 };
 
 type StorefrontRailProps = {
-  activeTab?: "locations" | "reserve" | "order" | "rewards" | "account";
+  activeTab?: "locations" | "reserve" | "order" | "reviews" | "rewards" | "account";
   navigate: PageProps["navigate"];
   labels?: Partial<{
     locations: string;
     reserve: string;
     order: string;
+    reviews: string;
     rewards: string;
     account: string;
     locale: string;
@@ -299,6 +300,7 @@ export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides 
     locations: "Locations",
     reserve: "Reservation",
     order: "Order Online",
+    reviews: "Reviews",
     rewards: "Rewards",
     account: "Account",
     locale: "DE",
@@ -322,6 +324,9 @@ export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides 
         </button>
         <button className={getLinkClass(activeTab === "order")} onClick={() => navigate("/menu")} type="button">
           {resolvedLabels.order}
+        </button>
+        <button className={getLinkClass(activeTab === "reviews")} onClick={() => navigate("/reviews")} type="button">
+          {resolvedLabels.reviews}
         </button>
       </nav>
 
