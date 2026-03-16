@@ -39,45 +39,45 @@ const featuredProfiles: StoreProfile[] = [
   {
     district: "Hammond",
     hours: "Open 6 AM - 9 PM",
-    pickup: "Pickup in 12-15 min",
+    pickup: "Reservations available",
     feature: "Fastest stop for commuter coffee and early classes.",
-    blurb: "Built for quick in-and-out orders, weekday studying, and a reliable first pour before campus wakes up.",
+    blurb: "Built for dine-in sessions, weekday studying, and a reliable first pour before campus wakes up.",
     phone: "985 555 0101",
     directoryName: ["Bakery &", "Coffeehouse"],
     weeklyHours: [
       { day: "MO-FR", hours: "06.00 - 21.00" },
-      { day: "SA", hours: "07.00 - 20.00" },
-      { day: "SO", hours: "08.00 - 18.00" },
+      { day: "Saturday", hours: "07.00 - 20.00" },
+      { day: "Sunday", hours: "08.00 - 18.00" },
     ],
     icon: "classic",
   },
   {
     district: "Covington",
     hours: "Open 7 AM - 8 PM",
-    pickup: "Pickup in 15-18 min",
+    pickup: "Reservations available",
     feature: "Patio-friendly mornings with the calmest dine-in pace.",
     blurb: "A softer Northshore room with longer brunch hangs, lighter traffic, and easy pickup shelves near the door.",
     phone: "985 555 0102",
     directoryName: ["Bakery &", "Coffeehouse"],
     weeklyHours: [
       { day: "MO-FR", hours: "07.00 - 20.00" },
-      { day: "SA", hours: "08.00 - 19.00" },
-      { day: "SO", hours: "09.00 - 18.00" },
+      { day: "Saturday", hours: "08.00 - 19.00" },
+      { day: "Sunday", hours: "09.00 - 18.00" },
     ],
     icon: "townhouse",
   },
   {
     district: "Baton Rouge",
     hours: "Open 7 AM - 8 PM",
-    pickup: "Pickup in 10-12 min",
+    pickup: "Reservations available",
     feature: "Best fit for team orders, laptops, and bigger meetups.",
     blurb: "The roomiest of the three, with more seating, bigger pickup bursts, and enough space to turn a stop into a session.",
     phone: "225 555 0103",
     directoryName: ["Bakery"],
     weeklyHours: [
       { day: "MO-FR", hours: "07.00 - 20.00" },
-      { day: "SA", hours: "08.00 - 19.00" },
-      { day: "SO", hours: "09.00 - 18.00" },
+      { day: "Saturday", hours: "08.00 - 19.00" },
+      { day: "Sunday", hours: "09.00 - 18.00" },
     ],
     icon: "arch",
   },
@@ -90,7 +90,7 @@ const locationProfiles: Record<number, StoreProfile> = {
 };
 
 type StorefrontRailProps = {
-  activeTab?: "locations" | "reserve" | "order" | "rewards" | "account";
+  activeTab?: "locations" | "reserve" | "order" | "rewards" | "account" | "feedback";
   navigate: PageProps["navigate"];
   labels?: Partial<{
     locations: string;
@@ -98,7 +98,7 @@ type StorefrontRailProps = {
     order: string;
     rewards: string;
     account: string;
-    locale: string;
+    feedback: string;
   }>;
 };
 
@@ -304,7 +304,7 @@ export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides 
     order: "Order Online",
     rewards: "Rewards",
     account: "Account",
-    locale: "DE",
+    feedback: "Feedback",
   };
   const resolvedLabels = { ...labels, ...labelOverrides };
 
@@ -317,20 +317,23 @@ export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides 
       </button>
 
       <nav className="store-rail-links store-rail-links-primary" aria-label="Storefront navigation">
-        <button className={getLinkClass(activeTab === "locations")} onClick={() => navigate("/stores")} type="button">
-          {resolvedLabels.locations}
+        <button className={getLinkClass(activeTab === "order")} onClick={() => navigate("/menu")} type="button">
+          {resolvedLabels.order}
         </button>
         <button className={getLinkClass(activeTab === "reserve")} onClick={() => navigate("/checkout")} type="button">
           {resolvedLabels.reserve}
         </button>
-        <button className={getLinkClass(activeTab === "order")} onClick={() => navigate("/menu")} type="button">
-          {resolvedLabels.order}
+        <button className={getLinkClass(activeTab === "locations")} onClick={() => navigate("/stores")} type="button">
+          {resolvedLabels.locations}
         </button>
       </nav>
 
       <div className="store-rail-spacer" />
 
       <nav className="store-rail-links store-rail-links-secondary" aria-label="Account links">
+        <button className={getLinkClass(activeTab === "feedback")} onClick={() => navigate("/feedback")} type="button">
+          {resolvedLabels.feedback}
+        </button>
         <button className={getLinkClass(activeTab === "rewards")} onClick={() => navigate("/rewards")} type="button">
           {resolvedLabels.rewards}
         </button>
@@ -345,9 +348,6 @@ export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides 
           {cartCount > 0 && (
             <span className="store-basket-badge">{cartCount}</span>
           )}
-        </button>
-        <button className="store-locale" type="button">
-          {resolvedLabels.locale} <span>v</span>
         </button>
       </div>
     </div>

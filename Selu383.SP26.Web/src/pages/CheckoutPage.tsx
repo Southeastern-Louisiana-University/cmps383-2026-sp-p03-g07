@@ -107,7 +107,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
         <section className="commerce-hero reserve-hero">
           <div className="commerce-hero-copy">
             <p className="commerce-kicker">Reservation</p>
-            <h1>LOCK IN YOUR NEXT PICKUP.</h1>
+            <h1>BOOK YOUR TABLE.</h1>
             <p className="commerce-hero-description">
               Set the store, choose how you want the order handled, and keep payment details ready so the
               checkout feels as smooth as the storefront.
