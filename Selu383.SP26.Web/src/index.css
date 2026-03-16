@@ -1,0 +1,85 @@
+:root {
+  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #f6efcf;
+  background:
+    radial-gradient(circle at top left, rgba(221, 191, 113, 0.22), transparent 24%),
+    radial-gradient(circle at 100% 0%, rgba(118, 133, 38, 0.18), transparent 28%),
+    linear-gradient(180deg, #384210 0%, #1f2710 44%, #11170d 100%);
+  --panel: linear-gradient(180deg, rgba(65, 75, 22, 0.82), rgba(24, 31, 18, 0.96));
+  --border: rgba(246, 239, 207, 0.12);
+  --text-main: #f6efcf;
+  --text-soft: rgba(246, 239, 207, 0.84);
+  --text-muted: rgba(246, 239, 207, 0.62);
+  --shadow: 0 28px 64px rgba(12, 16, 8, 0.32);
+  --accent-gold: #d8bb74;
+  --accent-gold-light: #f3e4ad;
+  --accent-gold-deep: #ac8540;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: inherit;
+  color: var(--text-main);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+a {
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin-top: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  letter-spacing: 0.03em;
+}
+
+::selection {
+  background: rgba(216, 187, 116, 0.3);
+}
+.store-hero-logo {
+  width: 750px;
+  max-width: 90%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}

@@ -1,0 +1,38 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    platform: linux/amd64
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "Password123!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+  api:
+    build:
+      context: ./Selu383.SP26.Api
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+      - web
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DataContext: Server=db,1433;Database=SP26-P03-G07;User Id=sa;Password=Password123!;TrustServerCertificate=True
+      Spa__DevServerUrl: http://web:5173
+    ports:
+      - "8080:8080"
+
+  web:
+    build:
+      context: ./Selu383.SP26.Web
+      dockerfile: Dockerfile
+    environment:
+      VITE_API_PROXY_TARGET: http://api:8080
+    ports:
+      - "5173:5173"
+
+volumes:
+  sqlserver-data:
