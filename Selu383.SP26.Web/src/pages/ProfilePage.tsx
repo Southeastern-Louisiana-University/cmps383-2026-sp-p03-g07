@@ -31,6 +31,11 @@ function formatNotificationDate(createdAt: string) {
 
 export default function ProfilePage({ navigate }: PageProps) {
   const { logout, refresh, user } = useAuth();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/");
+  }
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [loadingNotifications, setLoadingNotifications] = useState(false);
@@ -197,7 +202,7 @@ export default function ProfilePage({ navigate }: PageProps) {
               <button className="commerce-secondary-button" onClick={openEdit} type="button">
                 Edit profile
               </button>
-              <button className="commerce-secondary-button" onClick={() => void logout()} type="button">
+              <button className="commerce-secondary-button" onClick={() => void handleLogout()} type="button">
                 Log out
               </button>
             </div>
