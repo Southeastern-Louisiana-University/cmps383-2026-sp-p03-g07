@@ -26,6 +26,8 @@ builder.Services.AddCors(options =>
                 "http://localhost:8081",
                 "http://localhost:19006",
                 "http://10.0.2.2:8081",
+                "http://192.168.4.98:8081",
+                "http://192.168.4.98:19006",
                 "https://selu383-sp26-p03-g07.azurewebsites.net"
             )
             .AllowAnyHeader()

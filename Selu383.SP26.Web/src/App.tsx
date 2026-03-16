@@ -12,6 +12,10 @@ import OrderStatusPage from "./pages/OrderStatusPage";
 import GiftCardPage from "./pages/GiftCardPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminDashboardPage from "./admin/AdminDashboardPage";
+import AdminOrdersPage from "./admin/AdminOrdersPage";
+import AdminMenuManagementPage from "./admin/AdminMenuManagementPage";
+import AdminReservationsPage from "./admin/AdminReservationsPage";
+import AdminTablesPage from "./admin/AdminTablesPage";
 import { AuthProvider, useAuth } from "./store/authStore";
 import { CartProvider, useCart } from "./store/cartStore";
 import type { PageProps } from "./types/router.types";
@@ -38,6 +42,10 @@ const routes: RouteDefinition[] = [
   { path: "/gift-cards", label: "Gift Cards", element: GiftCardPage, protected: true, showInPrimaryNav: true },
   { path: "/profile", label: "Profile", element: ProfilePage, protected: true },
   { path: "/admin", label: "Admin", element: AdminDashboardPage, protected: true, adminOnly: true, showInPrimaryNav: true },
+  { path: "/admin/orders", label: "Admin Orders", element: AdminOrdersPage, protected: true, adminOnly: true },
+  { path: "/admin/menu", label: "Admin Menu", element: AdminMenuManagementPage, protected: true, adminOnly: true },
+  { path: "/admin/reservations", label: "Admin Reservations", element: AdminReservationsPage, protected: true, adminOnly: true },
+  { path: "/admin/tables", label: "Admin Tables", element: AdminTablesPage, protected: true, adminOnly: true },
 ];
 
 function getCurrentHashRoute() {
