@@ -15,13 +15,15 @@ type CartItem = {
   name: string;
   price: number;
   quantity: number;
+  customizations: string;
 };
 
 type CartContextValue = {
   items: CartItem[];
   subtotal: number;
-  addItem: (item: MenuItem) => void;
+  addItem: (item: MenuItem, customizations?: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
+  removeItem: (id: string) => void;
   clear: () => void;
 };
 
@@ -36,9 +38,11 @@ export function CartProvider({ children }: PropsWithChildren) {
     return {
       items,
       subtotal,
-      addItem(item) {
+      addItem(item, customizations = '') {
         setItems((currentItems) => {
-          const existingItem = currentItems.find((entry) => entry.menuItemId === item.id);
+          const existingItem = currentItems.find(
+            (entry) => entry.menuItemId === item.id && entry.customizations === customizations,
+          );
           if (existingItem) {
             return currentItems.map((entry) =>
               entry.id === existingItem.id
@@ -56,6 +60,7 @@ export function CartProvider({ children }: PropsWithChildren) {
               name: item.name,
               price: item.price,
               quantity: 1,
+              customizations,
             },
           ];
         });
@@ -66,6 +71,9 @@ export function CartProvider({ children }: PropsWithChildren) {
             .map((item) => (item.id === id ? { ...item, quantity } : item))
             .filter((item) => item.quantity > 0),
         );
+      },
+      removeItem(id) {
+        setItems((currentItems) => currentItems.filter((item) => item.id !== id));
       },
       clear() {
         setItems([]);
