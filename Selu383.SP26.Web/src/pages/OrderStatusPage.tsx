@@ -26,6 +26,12 @@ export default function OrderStatusPage({ navigate, query }: PageProps) {
     }
 
     void orderApi.getOrder(orderId).then(setOrder).catch(() => setOrder(null));
+
+    const interval = setInterval(() => {
+      void orderApi.getOrder(orderId).then(setOrder).catch(() => undefined);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [orderId]);
 
   if (!user) {
