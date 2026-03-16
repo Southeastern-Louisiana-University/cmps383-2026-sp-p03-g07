@@ -47,18 +47,15 @@ public class PaymentsController(
         return Ok(payments);
     }
 
+    [AllowAnonymous]
     [HttpPost("checkout")]
     public async Task<ActionResult<IEnumerable<PaymentDto>>> Checkout(CheckoutPaymentDto dto)
     {
         var currentUserId = User.GetCurrentUserId();
-        if (currentUserId == null)
-        {
-            return Unauthorized();
-        }
 
         try
         {
-            var payments = await paymentService.ProcessOrderPaymentAsync(currentUserId.Value, dto);
+            var payments = await paymentService.ProcessOrderPaymentAsync(currentUserId, dto);
             return Ok(payments.Select(x => new PaymentDto
             {
                 Id = x.Id,
