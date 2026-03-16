@@ -11,10 +11,10 @@ public class PaymentService(
     PushNotificationService pushNotificationService,
     StarEarningService starEarningService)
 {
-    public async Task<IReadOnlyList<Payment>> ProcessOrderPaymentAsync(int userId, CheckoutPaymentDto dto)
+    public async Task<IReadOnlyList<Payment>> ProcessOrderPaymentAsync(int? userId, CheckoutPaymentDto dto)
     {
         var order = await dataContext.Orders
-            .SingleOrDefaultAsync(x => x.Id == dto.OrderId && x.UserId == userId);
+            .SingleOrDefaultAsync(x => x.Id == dto.OrderId && (x.UserId == userId || x.UserId == null));
 
         if (order == null)
         {
@@ -89,18 +89,25 @@ public class PaymentService(
         order.PaymentStatus = "Paid";
         order.Status = order.Status == Order.DefaultStatus ? "Preparing" : order.Status;
 
-        var user = await dataContext.Users.SingleAsync(x => x.Id == userId);
-        var stars = starEarningService.CalculateStars(order.Total, user.Points);
-        user.Points += stars;
-        order.StarsEarned = stars;
+        var stars = 0;
+        if (userId != null)
+        {
+            var user = await dataContext.Users.SingleOrDefaultAsync(x => x.Id == userId);
+            if (user != null)
+            {
+                stars = starEarningService.CalculateStars(order.Total, user.Points);
+                user.Points += stars;
+                order.StarsEarned = stars;
+
+                await pushNotificationService.SendAsync(
+                    userId.Value,
+                    "Push",
+                    "Payment received",
+                    $"Order #{order.Id} was paid successfully and earned {stars} stars.");
+            }
+        }
 
         await dataContext.SaveChangesAsync();
-
-        await pushNotificationService.SendAsync(
-            userId,
-            "Push",
-            "Payment received",
-            $"Order #{order.Id} was paid successfully and earned {stars} stars.");
 
         return payments;
     }
