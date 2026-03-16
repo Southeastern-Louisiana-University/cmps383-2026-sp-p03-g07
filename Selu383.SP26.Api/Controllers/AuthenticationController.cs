@@ -85,6 +85,27 @@ public class AuthenticationController : ControllerBase
         return Ok();
     }
 
+    [HttpPut("profile")]
+    [Authorize]
+    public async Task<ActionResult<UserDto>> UpdateProfile([FromBody] UpdateProfileDto dto)
+    {
+        var username = User.GetCurrentUserName();
+        var user = await userManager.FindByNameAsync(username);
+        if (user == null)
+        {
+            return NotFound();
+        }
+
+        user.DisplayName = dto.DisplayName ?? user.DisplayName;
+        user.Birthday = dto.Birthday ?? user.Birthday;
+        user.ProfilePictureUrl = dto.ProfilePictureUrl ?? user.ProfilePictureUrl;
+
+        await userManager.UpdateAsync(user);
+
+        var resultDto = await GetUserDto(userManager.Users).SingleAsync(x => x.Id == user.Id);
+        return Ok(resultDto);
+    }
+
     private static IQueryable<UserDto> GetUserDto(IQueryable<User> users)
     {
         return users.Select(x => new UserDto
@@ -92,7 +113,10 @@ public class AuthenticationController : ControllerBase
             Id = x.Id,
             UserName = x.UserName!,
             Roles = x.UserRoles.Select(y => y.Role!.Name).ToArray()!,
-            Points = x.Points
+            Points = x.Points,
+            DisplayName = x.DisplayName,
+            Birthday = x.Birthday,
+            ProfilePictureUrl = x.ProfilePictureUrl
         });
     }
 }
