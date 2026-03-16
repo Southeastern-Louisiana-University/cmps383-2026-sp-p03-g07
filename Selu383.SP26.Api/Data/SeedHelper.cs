@@ -199,7 +199,7 @@ public static class SeedHelper
                 Price = 4.50m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1511920170033-f8396924c348",
+                ImageUrl = "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=400&q=80",
                 Calories = 190,
                 IsFeatured = true,
                 InventoryCount = 12,
@@ -213,7 +213,7 @@ public static class SeedHelper
                 Price = 4.00m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                ImageUrl = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=80",
                 Calories = 110,
                 IsFeatured = true,
                 InventoryCount = 10,
@@ -227,7 +227,7 @@ public static class SeedHelper
                 Price = 3.25m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1509440159596-0249088772ff",
+                ImageUrl = "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80",
                 Calories = 320,
                 InventoryCount = 7,
                 PreparationTag = "Bakery"
@@ -240,7 +240,7 @@ public static class SeedHelper
                 Price = 4.75m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+                ImageUrl = "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
                 Calories = 260,
                 IsFeatured = true,
                 InventoryCount = 8,
@@ -254,7 +254,7 @@ public static class SeedHelper
                 Price = 3.50m,
                 IsAvailable = true,
                 LocationId = 2,
-                ImageUrl = "https://images.unsplash.com/photo-1555507036-ab1f4038808a",
+                ImageUrl = "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=400&q=80",
                 Calories = 280,
                 InventoryCount = 4,
                 PreparationTag = "Bakery"
@@ -267,7 +267,7 @@ public static class SeedHelper
                 Price = 3.75m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1461023058943-07fcbe16d735",
+                ImageUrl = "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80",
                 Calories = 95,
                 InventoryCount = 6,
                 PreparationTag = "Cold Drinks"
@@ -280,7 +280,7 @@ public static class SeedHelper
                 Price = 5.25m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1497636577773-f1231844b336",
+                ImageUrl = "https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=400&q=80",
                 Calories = 210,
                 IsFeatured = true,
                 InventoryCount = 9,
@@ -294,7 +294,7 @@ public static class SeedHelper
                 Price = 7.95m,
                 IsAvailable = true,
                 LocationId = 3,
-                ImageUrl = "https://images.unsplash.com/photo-1528736235302-52922df5c122",
+                ImageUrl = "https://images.unsplash.com/photo-1528736235302-52922df5c122?auto=format&fit=crop&w=400&q=80",
                 Calories = 540,
                 InventoryCount = 3,
                 PreparationTag = "Lunch"
@@ -307,7 +307,7 @@ public static class SeedHelper
                 Price = 8.25m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d",
+                ImageUrl = "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?auto=format&fit=crop&w=400&q=80",
                 Calories = 360,
                 IsFeatured = true,
                 InventoryCount = 6,
@@ -321,7 +321,7 @@ public static class SeedHelper
                 Price = 7.95m,
                 IsAvailable = true,
                 LocationId = 2,
-                ImageUrl = "https://images.unsplash.com/photo-1528735602780-2552fd46c7af",
+                ImageUrl = "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=400&q=80",
                 Calories = 410,
                 InventoryCount = 7,
                 PreparationTag = "Cafe Favorite"
@@ -334,7 +334,7 @@ public static class SeedHelper
                 Price = 9.25m,
                 IsAvailable = true,
                 LocationId = 3,
-                ImageUrl = "https://images.unsplash.com/photo-1528735602780-2552fd46c7af",
+                ImageUrl = "https://images.unsplash.com/photo-1528736235302-52922df5c122?auto=format&fit=crop&w=400&q=80",
                 Calories = 520,
                 InventoryCount = 5,
                 PreparationTag = "Signature"
@@ -347,7 +347,7 @@ public static class SeedHelper
                 Price = 8.95m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1528735602780-2552fd46c7af",
+                ImageUrl = "https://images.unsplash.com/photo-1606491956391-652cf14b085e?auto=format&fit=crop&w=400&q=80",
                 Calories = 390,
                 InventoryCount = 6,
                 PreparationTag = "Plant-Based"
@@ -360,7 +360,7 @@ public static class SeedHelper
                 Price = 10.50m,
                 IsAvailable = true,
                 LocationId = 2,
-                ImageUrl = "https://images.unsplash.com/photo-1528736235302-52922df5c122",
+                ImageUrl = "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=400&q=80",
                 Calories = 570,
                 InventoryCount = 4,
                 PreparationTag = "Lunch"
@@ -373,7 +373,7 @@ public static class SeedHelper
                 Price = 8.50m,
                 IsAvailable = true,
                 LocationId = 3,
-                ImageUrl = "https://images.unsplash.com/photo-1482049016688-2d3e1b311543",
+                ImageUrl = "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?auto=format&fit=crop&w=400&q=80",
                 Calories = 480,
                 IsFeatured = true,
                 InventoryCount = 5,
@@ -387,7 +387,7 @@ public static class SeedHelper
                 Price = 6.50m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1464306076886-da185f6a9d05",
+                ImageUrl = "https://images.unsplash.com/photo-1464306076886-da185f6a9d05?auto=format&fit=crop&w=400&q=80",
                 Calories = 420,
                 IsFeatured = true,
                 InventoryCount = 5,
@@ -401,7 +401,7 @@ public static class SeedHelper
                 Price = 8.95m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1551248429-40975aa4de74",
+                ImageUrl = "https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&w=400&q=80",
                 Calories = 320,
                 IsFeatured = true,
                 InventoryCount = 6,
@@ -415,7 +415,7 @@ public static class SeedHelper
                 Price = 9.25m,
                 IsAvailable = true,
                 LocationId = 2,
-                ImageUrl = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
+                ImageUrl = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80",
                 Calories = 290,
                 InventoryCount = 5,
                 PreparationTag = "Seasonal"
@@ -428,7 +428,7 @@ public static class SeedHelper
                 Price = 7.50m,
                 IsAvailable = true,
                 LocationId = 3,
-                ImageUrl = "https://images.unsplash.com/photo-1464306076886-da185f6a9d05",
+                ImageUrl = "https://images.unsplash.com/photo-1464306076886-da185f6a9d05?auto=format&fit=crop&w=400&q=80",
                 Calories = 430,
                 InventoryCount = 4,
                 PreparationTag = "Market Special"
@@ -441,7 +441,7 @@ public static class SeedHelper
                 Price = 7.95m,
                 IsAvailable = true,
                 LocationId = 2,
-                ImageUrl = "https://images.unsplash.com/photo-1464306076886-da185f6a9d05",
+                ImageUrl = "https://images.unsplash.com/photo-1551248429-40975aa4de74?auto=format&fit=crop&w=400&q=80",
                 Calories = 470,
                 InventoryCount = 4,
                 PreparationTag = "Classic"
@@ -454,7 +454,7 @@ public static class SeedHelper
                 Price = 7.25m,
                 IsAvailable = true,
                 LocationId = 2,
-                ImageUrl = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd",
+                ImageUrl = "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=400&q=80",
                 Calories = 260,
                 InventoryCount = 6,
                 PreparationTag = "Fresh"
@@ -467,7 +467,7 @@ public static class SeedHelper
                 Price = 55.00m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3",
+                ImageUrl = "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=400&q=80",
                 Calories = 620,
                 IsFeatured = true,
                 InventoryCount = 2,
@@ -481,7 +481,7 @@ public static class SeedHelper
                 Price = 38.00m,
                 IsAvailable = true,
                 LocationId = 2,
-                ImageUrl = "https://images.unsplash.com/photo-1578985545062-69928b1d9587",
+                ImageUrl = "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=400&q=80",
                 Calories = 540,
                 InventoryCount = 3,
                 PreparationTag = "From"
@@ -494,7 +494,7 @@ public static class SeedHelper
                 Price = 45.00m,
                 IsAvailable = true,
                 LocationId = 3,
-                ImageUrl = "https://images.unsplash.com/photo-1533134242443-d4fd215305ad",
+                ImageUrl = "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=400&q=80",
                 Calories = 560,
                 InventoryCount = 3,
                 PreparationTag = "From"
@@ -507,7 +507,7 @@ public static class SeedHelper
                 Price = 38.00m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1571115177098-24ec42ed204d",
+                ImageUrl = "https://images.unsplash.com/photo-1571115177098-24ec42ed204d?auto=format&fit=crop&w=400&q=80",
                 Calories = 590,
                 InventoryCount = 4,
                 PreparationTag = "From"
@@ -520,7 +520,7 @@ public static class SeedHelper
                 Price = 32.00m,
                 IsAvailable = true,
                 LocationId = 2,
-                ImageUrl = "https://images.unsplash.com/photo-1486427944299-d1955d23e34d",
+                ImageUrl = "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=400&q=80",
                 Calories = 470,
                 InventoryCount = 4,
                 PreparationTag = "From"
@@ -533,7 +533,7 @@ public static class SeedHelper
                 Price = 14.50m,
                 IsAvailable = true,
                 LocationId = 3,
-                ImageUrl = "https://images.unsplash.com/photo-1605286978633-2dec93ff88a2",
+                ImageUrl = "https://images.unsplash.com/photo-1605286978633-2dec93ff88a2?auto=format&fit=crop&w=400&q=80",
                 Calories = 380,
                 InventoryCount = 6,
                 PreparationTag = "From"
@@ -546,7 +546,7 @@ public static class SeedHelper
                 Price = 16.50m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1621303837174-89787a7d4729",
+                ImageUrl = "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&w=400&q=80",
                 Calories = 360,
                 InventoryCount = 5,
                 PreparationTag = "From"
@@ -559,7 +559,7 @@ public static class SeedHelper
                 Price = 6.50m,
                 IsAvailable = true,
                 LocationId = 2,
-                ImageUrl = "https://images.unsplash.com/photo-1464306076886-da185f6a9d05",
+                ImageUrl = "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=400&q=80",
                 Calories = 310,
                 InventoryCount = 7,
                 PreparationTag = "Slice"
@@ -572,7 +572,7 @@ public static class SeedHelper
                 Price = 7.75m,
                 IsAvailable = true,
                 LocationId = 3,
-                ImageUrl = "https://images.unsplash.com/photo-1626700051175-6818013e1d4f",
+                ImageUrl = "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=400&q=80",
                 Calories = 340,
                 IsFeatured = true,
                 InventoryCount = 5,
@@ -586,7 +586,7 @@ public static class SeedHelper
                 Price = 16.00m,
                 IsAvailable = true,
                 LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a",
+                ImageUrl = "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=400&q=80",
                 Calories = 0,
                 InventoryCount = 8,
                 PreparationTag = "Merch"
@@ -602,7 +602,7 @@ public static class SeedHelper
                     "A concentrated shot with caramel sweetness and a velvety finish.",
                     3.25m,
                     1,
-                    "https://images.unsplash.com/photo-1511920170033-f8396924c348",
+                    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=400&q=80",
                     15,
                     "Espresso Based"),
                 CreateMenuItem(
@@ -611,7 +611,7 @@ public static class SeedHelper
                     "Two bold espresso shots pulled for extra body and depth.",
                     4.25m,
                     1,
-                    "https://images.unsplash.com/photo-1511920170033-f8396924c348",
+                    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=400&q=80",
                     25,
                     "Espresso Based"),
                 CreateMenuItem(
@@ -620,7 +620,7 @@ public static class SeedHelper
                     "Espresso lengthened with hot water for a clean, balanced cup.",
                     4.00m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=80",
                     20,
                     "Espresso Based"),
                 CreateMenuItem(
@@ -629,7 +629,7 @@ public static class SeedHelper
                     "Equal parts espresso, steamed milk, and airy foam.",
                     4.75m,
                     1,
-                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
                     140,
                     "Espresso Based"),
                 CreateMenuItem(
@@ -638,7 +638,7 @@ public static class SeedHelper
                     "Silky microfoam folded into espresso for a smooth, strong cup.",
                     5.00m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
                     160,
                     "Espresso Based"),
                 CreateMenuItem(
@@ -647,7 +647,7 @@ public static class SeedHelper
                     "Espresso marked with a spoonful of foam for a bold finish.",
                     4.25m,
                     1,
-                    "https://images.unsplash.com/photo-1511920170033-f8396924c348",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=80",
                     60,
                     "Espresso Based"),
                 CreateMenuItem(
@@ -656,7 +656,7 @@ public static class SeedHelper
                     "Espresso softened with warm milk in equal measure.",
                     4.75m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=80",
                     110,
                     "Espresso Based"),
                 CreateMenuItem(
@@ -665,7 +665,7 @@ public static class SeedHelper
                     "A shorter pull with intense sweetness, body, and crema.",
                     3.50m,
                     1,
-                    "https://images.unsplash.com/photo-1511920170033-f8396924c348",
+                    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=400&q=80",
                     10,
                     "Espresso Based"),
                 CreateMenuItem(
@@ -674,7 +674,7 @@ public static class SeedHelper
                     "Hot water topped with espresso for a rich crema-led cup.",
                     4.25m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=80",
                     18,
                     "Espresso Based"),
                 CreateMenuItem(
@@ -683,7 +683,7 @@ public static class SeedHelper
                     "House vanilla syrup melted into espresso and steamed milk.",
                     5.75m,
                     1,
-                    "https://images.unsplash.com/photo-1511920170033-f8396924c348",
+                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
                     240,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -692,7 +692,7 @@ public static class SeedHelper
                     "Steamed milk latte layered with buttery caramel notes.",
                     5.95m,
                     1,
-                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+                    "https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=400&q=80",
                     250,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -701,7 +701,7 @@ public static class SeedHelper
                     "Smooth espresso latte finished with roasted hazelnut syrup.",
                     5.95m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
                     245,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -710,7 +710,7 @@ public static class SeedHelper
                     "Espresso, brown sugar, and creamy oatmilk shaken smooth.",
                     6.25m,
                     1,
-                    "https://images.unsplash.com/photo-1497636577773-f1231844b336",
+                    "https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=400&q=80",
                     220,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -719,7 +719,7 @@ public static class SeedHelper
                     "Warm cinnamon syrup and velvety milk with espresso.",
                     6.25m,
                     1,
-                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+                    "https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=400&q=80",
                     255,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -728,7 +728,7 @@ public static class SeedHelper
                     "Espresso brightened with floral lavender and silky milk.",
                     6.50m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=400&q=80",
                     230,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -737,7 +737,7 @@ public static class SeedHelper
                     "Oatmilk latte sweetened with golden honey and espresso.",
                     6.25m,
                     1,
-                    "https://images.unsplash.com/photo-1511920170033-f8396924c348",
+                    "https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=400&q=80",
                     225,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -746,7 +746,7 @@ public static class SeedHelper
                     "Fall spice blend with espresso, milk, and pumpkin sweetness.",
                     6.75m,
                     1,
-                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+                    "https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=400&q=80",
                     290,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -755,7 +755,7 @@ public static class SeedHelper
                     "Toffee sweetness and toasted nut notes over espresso.",
                     6.50m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=80",
                     260,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -764,7 +764,7 @@ public static class SeedHelper
                     "White chocolate sauce blended with espresso and steamed milk.",
                     6.75m,
                     1,
-                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
                     310,
                     "Flavored Lattes"),
                 CreateMenuItem(
@@ -773,7 +773,7 @@ public static class SeedHelper
                     "Espresso over chilled water and ice for a crisp finish.",
                     4.25m,
                     1,
-                    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735",
+                    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80",
                     20,
                     "Cold Drinks"),
                 CreateMenuItem(
@@ -782,7 +782,7 @@ public static class SeedHelper
                     "Cold espresso and milk poured over ice for easy sipping.",
                     5.25m,
                     1,
-                    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735",
+                    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80",
                     170,
                     "Cold Drinks"),
                 CreateMenuItem(
@@ -791,7 +791,7 @@ public static class SeedHelper
                     "Nitrogen-infused cold brew with a creamy cascading head.",
                     5.75m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80",
                     15,
                     "Cold Drinks"),
                 CreateMenuItem(
@@ -800,7 +800,7 @@ public static class SeedHelper
                     "Layered espresso, milk, and ice with a bold top note.",
                     5.50m,
                     1,
-                    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735",
+                    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80",
                     160,
                     "Cold Drinks"),
                 CreateMenuItem(
@@ -809,7 +809,7 @@ public static class SeedHelper
                     "Iced milk and espresso finished with caramel drizzle.",
                     6.25m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=400&q=80",
                     240,
                     "Cold Drinks"),
                 CreateMenuItem(
@@ -818,7 +818,7 @@ public static class SeedHelper
                     "Espresso shaken over ice for a frothy, lively texture.",
                     5.75m,
                     1,
-                    "https://images.unsplash.com/photo-1497636577773-f1231844b336",
+                    "https://images.unsplash.com/photo-1497636577773-f1231844b336?auto=format&fit=crop&w=400&q=80",
                     120,
                     "Cold Drinks"),
                 CreateMenuItem(
@@ -827,7 +827,7 @@ public static class SeedHelper
                     "Blended iced coffee drink with creamy sweetness and whip.",
                     6.50m,
                     1,
-                    "https://images.unsplash.com/photo-1517701604599-bb29b565090c",
+                    "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80",
                     360,
                     "Cold Drinks"),
                 CreateMenuItem(
@@ -836,7 +836,7 @@ public static class SeedHelper
                     "Chocolate espresso chilled over ice with milk and cocoa.",
                     6.00m,
                     1,
-                    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735",
+                    "https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80",
                     260,
                     "Cold Drinks"),
                 CreateMenuItem(
@@ -845,7 +845,7 @@ public static class SeedHelper
                     "Iced latte topped with a fluffy cloud of vanilla cold foam.",
                     6.00m,
                     1,
-                    "https://images.unsplash.com/photo-1517701604599-bb29b565090c",
+                    "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80",
                     210,
                     "Cold Drinks"),
                 CreateMenuItem(
@@ -854,7 +854,7 @@ public static class SeedHelper
                     "A hot espresso shot poured over cool vanilla gelato.",
                     6.50m,
                     1,
-                    "https://images.unsplash.com/photo-1511920170033-f8396924c348",
+                    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=400&q=80",
                     210,
                     "Specialty"),
                 CreateMenuItem(
@@ -863,7 +863,7 @@ public static class SeedHelper
                     "Dark coffee topped with lightly sweetened whipped cream.",
                     5.50m,
                     1,
-                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=80",
                     190,
                     "Specialty"),
                 CreateMenuItem(
@@ -872,7 +872,7 @@ public static class SeedHelper
                     "Cafe-style Irish coffee with whipped cream and warming notes.",
                     8.50m,
                     1,
-                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+                    "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=400&q=80",
                     220,
                     "Specialty"),
                 CreateMenuItem(
@@ -881,7 +881,7 @@ public static class SeedHelper
                     "Whipped coffee cloud served over chilled milk and ice.",
                     5.75m,
                     1,
-                    "https://images.unsplash.com/photo-1517701604599-bb29b565090c",
+                    "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80",
                     180,
                     "Specialty"),
                 CreateMenuItem(
@@ -890,7 +890,7 @@ public static class SeedHelper
                     "Spiced chai latte lifted with a shot of espresso.",
                     6.50m,
                     1,
-                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80",
                     230,
                     "Specialty"),
                 CreateMenuItem(
@@ -899,7 +899,7 @@ public static class SeedHelper
                     "Ceremonial-style matcha whisked into creamy steamed milk.",
                     6.25m,
                     1,
-                    "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002",
+                    "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=400&q=80",
                     170,
                     "Specialty"),
                 CreateMenuItem(
@@ -908,7 +908,7 @@ public static class SeedHelper
                     "Golden milk latte with turmeric, ginger, and black pepper.",
                     6.00m,
                     1,
-                    "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002",
+                    "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=400&q=80",
                     160,
                     "Specialty"),
                 CreateMenuItem(
@@ -917,7 +917,7 @@ public static class SeedHelper
                     "Silky black latte with toasted vanilla and espresso notes.",
                     6.25m,
                     1,
-                    "https://images.unsplash.com/photo-1511920170033-f8396924c348",
+                    "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=400&q=80",
                     180,
                     "Specialty"),
                 CreateMenuItem(
@@ -926,7 +926,7 @@ public static class SeedHelper
                     "Floral rose syrup balanced with espresso and steamed milk.",
                     6.50m,
                     1,
-                    "https://images.unsplash.com/photo-1509042239860-f550ce710b93",
+                    "https://images.unsplash.com/photo-1515823662972-da6a2e4d3002?auto=format&fit=crop&w=400&q=80",
                     220,
                     "Specialty")
             })
