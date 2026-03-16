@@ -20,4 +20,13 @@ export const orderService = {
       body: JSON.stringify(input),
     });
   },
+  reorder(id: number) {
+    return apiRequest<Order>(`/api/orders/${id}/reorder`, { method: 'POST' });
+  },
+  updateStatus(id: number, status: string) {
+    return apiRequest<void>(`/api/orders/${id}/status`, {
+      method: 'PUT',
+      body: JSON.stringify(status),
+    });
+  },
 };

@@ -17,4 +17,13 @@ export const authService = {
       body: JSON.stringify({ userName, password }),
     });
   },
+  logout() {
+    return apiRequest<void>('/api/authentication/logout', { method: 'POST' });
+  },
+  updateProfile(data: { displayName?: string; birthday?: string | null; profilePictureUrl?: string }) {
+    return apiRequest<UserSession>('/api/authentication/profile', {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  },
 };
