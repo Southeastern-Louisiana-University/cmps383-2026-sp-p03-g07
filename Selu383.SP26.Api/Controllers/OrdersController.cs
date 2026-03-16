@@ -215,13 +215,16 @@ public class OrdersController(
         order.Status = status;
         await dataContext.SaveChangesAsync();
 
-        await pushNotificationService.SendAsync(
-            order.UserId,
-            "Push",
-            "Order update",
-            $"Order #{order.Id} is now {status}.");
+        if (order.UserId != null)
+        {
+            await pushNotificationService.SendAsync(
+                order.UserId.Value,
+                "Push",
+                "Order update",
+                $"Order #{order.Id} is now {status}.");
+        }
 
-        return Ok();
+        return NoContent();
     }
 
     [Authorize]
