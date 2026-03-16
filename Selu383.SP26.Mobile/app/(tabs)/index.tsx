@@ -16,7 +16,7 @@ const QUICK_ACTIONS = [
     image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=200&h=200&fit=crop',
   },
   {
-    label: 'Reserve Table',
+    label: 'Reservation',
     route: '/checkout' as const,
     image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop',
   },
@@ -62,45 +62,51 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
 
-      {/* Hero */}
+      {/* Hero - olive green like the website */}
       <View style={styles.hero}>
-        <Image
-          source={{ uri: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800&h=600&fit=crop' }}
-          style={styles.heroImage}
-          resizeMode="cover"
-        />
-        <View style={styles.heroOverlay} />
-        <View style={styles.heroContent}>
-          <View style={styles.heroTopRow}>
-            <View style={styles.heroLogo}>
-              <Text style={styles.heroLogoText}>CL</Text>
-            </View>
-            <Pressable style={styles.heroCartBtn} onPress={() => router.push('/cart')}>
-              <Image
-                source={{ uri: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=80&h=80&fit=crop' }}
-                style={styles.heroCartImg}
-                resizeMode="cover"
-              />
-              {cartCount > 0 && (
-                <View style={styles.heroCartBadge}>
-                  <Text style={styles.heroCartBadgeText}>{cartCount}</Text>
-                </View>
-              )}
+        {/* Nav rail */}
+        <View style={styles.heroNav}>
+          <Pressable style={styles.navBagBtn} onPress={() => router.push('/(tabs)/menu')}>
+            <Text style={styles.navBagIcon}>◻</Text>
+          </Pressable>
+          <View style={styles.navLinks}>
+            <Pressable onPress={() => router.push('/(tabs)/menu')}>
+              <Text style={styles.navLink}>Order Online</Text>
+            </Pressable>
+            <Pressable onPress={() => router.push('/checkout')}>
+              <Text style={styles.navLink}>Reservation</Text>
             </Pressable>
           </View>
+          <Pressable style={styles.navCartBtn} onPress={() => router.push('/cart')}>
+            <Text style={styles.navCartIcon}>◻</Text>
+            {cartCount > 0 && (
+              <View style={styles.navCartBadge}>
+                <Text style={styles.navCartBadgeText}>{cartCount}</Text>
+              </View>
+            )}
+          </Pressable>
+        </View>
 
-          <View style={styles.heroCopy}>
-            <Text style={styles.heroTitle}>Great coffee.{'\n'}Every visit.</Text>
-            <Text style={styles.heroSub}>Three Louisiana locations. Fresh brews daily.</Text>
-            <Pressable style={styles.heroBtn} onPress={() => router.push('/(tabs)/menu')}>
-              <Text style={styles.heroBtnText}>Order Now</Text>
-            </Pressable>
+        {/* Order Now circle button */}
+        <Pressable style={styles.orderOrbit} onPress={() => router.push('/(tabs)/menu')}>
+          <View style={styles.orderOrbitRing}>
+            <Text style={styles.orderOrbitRingText}>ORDER NOW • ORDER NOW • </Text>
           </View>
+          <View style={styles.orderOrbitCore}>
+            <Text style={styles.orderOrbitIcon}>▤</Text>
+          </View>
+        </Pressable>
+
+        {/* CAFFEINATED LIONS */}
+        <View style={styles.heroCopy}>
+          <Text style={styles.heroTop}>CAFFEINATED</Text>
+          <Text style={styles.heroBottom}>LIONS</Text>
         </View>
       </View>
 
       {/* Quick Actions */}
       <View style={styles.section}>
+        <Text style={styles.sectionKicker}>Navigate</Text>
         <Text style={styles.sectionTitle}>Quick Actions</Text>
         <View style={styles.actionsGrid}>
           {QUICK_ACTIONS.map((action) => (
@@ -115,8 +121,9 @@ export default function HomeScreen() {
                   style={styles.actionImg}
                   resizeMode="cover"
                 />
+                <View style={styles.actionImgOverlay} />
+                <Text style={styles.actionLabel}>{action.label}</Text>
               </View>
-              <Text style={styles.actionLabel}>{action.label}</Text>
             </Pressable>
           ))}
         </View>
@@ -126,7 +133,10 @@ export default function HomeScreen() {
       {featuredItems.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Featured drinks</Text>
+            <View>
+              <Text style={styles.sectionKicker}>Our menu</Text>
+              <Text style={styles.sectionTitle}>Featured drinks</Text>
+            </View>
             <Pressable onPress={() => router.push('/(tabs)/menu')}>
               <Text style={styles.sectionLink}>View all</Text>
             </Pressable>
@@ -148,14 +158,14 @@ export default function HomeScreen() {
               </Pressable>
             ))}
             <Pressable style={[styles.drinkCard, styles.drinkCardSeeAll]} onPress={() => router.push('/(tabs)/menu')}>
-              <Text style={styles.seeAllArrow}>+</Text>
+              <Text style={styles.seeAllArrow}>›</Text>
               <Text style={styles.seeAllText}>See all</Text>
             </Pressable>
           </ScrollView>
         </View>
       )}
 
-      {/* Earn Points Banner */}
+      {/* Earn Points Banner - olive themed */}
       <View style={styles.earnBanner}>
         <Image
           source={{ uri: 'https://images.unsplash.com/photo-1497636577773-f1231844b336?w=800&h=300&fit=crop' }}
@@ -164,11 +174,11 @@ export default function HomeScreen() {
         />
         <View style={styles.earnBannerOverlay} />
         <View style={styles.earnBannerContent}>
-          <View style={styles.earnBannerBadge}>
-            <Text style={styles.earnBannerBadgeText}>{balance?.points ?? 0} pts</Text>
-          </View>
-          <Text style={styles.earnBannerTitle}>Earn Lions Points</Text>
-          <Text style={styles.earnBannerSub}>Every order brings you closer to a free drink.</Text>
+          <Text style={styles.earnBannerKicker}>Lions Rewards</Text>
+          <Text style={styles.earnBannerTitle}>Earn Points{'\n'}Every Visit.</Text>
+          <Text style={styles.earnBannerSub}>
+            {balance?.points ?? 0} pts - {(balance?.currentTier ?? 'member').toUpperCase()}
+          </Text>
           <Pressable style={styles.earnBannerBtn} onPress={() => router.push('/(tabs)/rewards')}>
             <Text style={styles.earnBannerBtnText}>View Rewards</Text>
           </Pressable>
@@ -179,9 +189,12 @@ export default function HomeScreen() {
       {locations.length > 0 && (
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>Our locations</Text>
+            <View>
+              <Text style={styles.sectionKicker}>Three Louisiana locations</Text>
+              <Text style={styles.sectionTitle}>Find your Lions</Text>
+            </View>
             <Pressable onPress={() => router.push('/locations')}>
-              <Text style={styles.sectionLink}>Map view</Text>
+              <Text style={styles.sectionLink}>Map</Text>
             </Pressable>
           </View>
           {locations.map((location) => (
@@ -211,18 +224,18 @@ export default function HomeScreen() {
   );
 }
 
-const BROWN = '#2c1208';
-const BROWN_DARK = '#1a0b04';
-const AMBER = '#e07b2a';
-const AMBER_LIGHT = '#fdf0e0';
-const BRAND = '#1e6b3a';
-const BRAND_LIGHT = '#e8f5ed';
-const GOLD = '#c87941';
-const BG = '#ffffff';
-const CARD_BG = '#f7f3f0';
-const TEXT = '#1a1a1a';
-const TEXT_MID = '#555';
-const TEXT_SOFT = '#888';
+// Website color palette
+const OLIVE = '#65711d';
+const OLIVE_DEEP = '#5d6717';
+const OLIVE_LIGHT = '#69761f';
+const INK = '#d7d9a1';       // light yellow-green text (website --store-ink)
+const GOLD = '#d7b26d';      // gold text (website --store-gold)
+const GOLD_DEEP = '#b48a48';
+const BG = '#f6efcf';        // warm cream background
+const CARD_BG = '#f0e8c0';
+const TEXT = '#3a3a1a';
+const TEXT_MID = '#5a5a2a';
+const TEXT_SOFT = '#8a8a5a';
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: BG },
@@ -230,156 +243,207 @@ const styles = StyleSheet.create({
 
   // Hero
   hero: {
-    height: 420,
+    backgroundColor: OLIVE_LIGHT,
+    minHeight: 420,
+    paddingBottom: 48,
     position: 'relative',
-  },
-  heroImage: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-  },
-  heroOverlay: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(28,10,3,0.68)',
-  },
-  heroContent: {
-    flex: 1,
-    padding: 24,
-    paddingTop: 56,
-    justifyContent: 'space-between',
-  },
-  heroTopRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  heroLogo: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: AMBER,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  heroLogoText: {
-    color: '#fff',
-    fontWeight: '900',
-    fontSize: 16,
-    letterSpacing: 0.5,
-  },
-  heroCartBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
     overflow: 'hidden',
+  },
+
+  // Nav
+  heroNav: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 52,
+    paddingBottom: 12,
+    gap: 12,
+  },
+  navBagBtn: {
+    padding: 4,
+  },
+  navBagIcon: {
+    color: INK,
+    fontSize: 28,
+    lineHeight: 32,
+  },
+  navLinks: {
+    flex: 1,
+    flexDirection: 'row',
+    gap: 20,
+    paddingLeft: 8,
+  },
+  navLink: {
+    color: INK,
+    fontSize: 13,
+    fontWeight: '600',
+    letterSpacing: 0.3,
+  },
+  navCartBtn: {
     position: 'relative',
+    padding: 4,
   },
-  heroCartImg: {
-    width: '100%',
-    height: '100%',
+  navCartIcon: {
+    color: INK,
+    fontSize: 28,
+    lineHeight: 32,
   },
-  heroCartBadge: {
+  navCartBadge: {
     position: 'absolute',
     top: 0,
     right: 0,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: AMBER,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: GOLD,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  heroCartBadgeText: {
-    color: '#fff',
-    fontSize: 10,
-    fontWeight: '800',
-  },
-  heroCopy: {
-    gap: 10,
-  },
-  heroTitle: {
-    fontSize: 40,
+  navCartBadgeText: {
+    color: OLIVE_DEEP,
+    fontSize: 9,
     fontWeight: '900',
-    color: '#fff',
-    lineHeight: 48,
-    letterSpacing: -0.5,
   },
-  heroSub: {
-    fontSize: 15,
-    color: 'rgba(255,255,255,0.75)',
-    fontWeight: '400',
-    lineHeight: 21,
+
+  // Order orbit button
+  orderOrbit: {
+    position: 'absolute',
+    right: 20,
+    top: 120,
+    width: 100,
+    height: 100,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  heroBtn: {
-    alignSelf: 'flex-start',
-    backgroundColor: AMBER,
-    borderRadius: 999,
-    paddingHorizontal: 28,
-    paddingVertical: 14,
-    marginTop: 4,
+  orderOrbitRing: {
+    position: 'absolute',
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 1,
+    borderColor: INK,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  heroBtnText: {
-    color: '#fff',
-    fontWeight: '800',
-    fontSize: 16,
-    letterSpacing: 0.3,
+  orderOrbitRingText: {
+    position: 'absolute',
+    fontSize: 8,
+    color: INK,
+    letterSpacing: 2,
+    top: 4,
+  },
+  orderOrbitCore: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: INK,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  orderOrbitIcon: {
+    fontSize: 28,
+    color: OLIVE_DEEP,
+    lineHeight: 34,
+  },
+
+  // CAFFEINATED LIONS text
+  heroCopy: {
+    paddingHorizontal: 20,
+    paddingTop: 60,
+    gap: 0,
+  },
+  heroTop: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 4,
+    textTransform: 'uppercase',
+    opacity: 0.9,
+  },
+  heroBottom: {
+    fontSize: 80,
+    fontWeight: '900',
+    color: GOLD,
+    letterSpacing: -2,
+    lineHeight: 84,
+    textTransform: 'uppercase',
   },
 
   // Sections
   section: {
-    marginTop: 28,
+    marginTop: 32,
+    paddingHorizontal: 0,
     gap: 14,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     paddingHorizontal: 20,
+  },
+  sectionKicker: {
+    paddingHorizontal: 20,
+    fontSize: 11,
+    fontWeight: '700',
+    color: OLIVE,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   sectionTitle: {
     paddingHorizontal: 20,
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '900',
     color: TEXT,
     letterSpacing: -0.3,
   },
   sectionLink: {
     fontSize: 13,
-    color: AMBER,
-    fontWeight: '600',
+    color: OLIVE,
+    fontWeight: '700',
+    letterSpacing: 0.5,
+    textTransform: 'uppercase',
   },
 
   // Quick Actions Grid
   actionsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 16,
+    paddingHorizontal: 20,
     gap: 10,
   },
   actionCard: {
     width: '30%',
     flexGrow: 1,
-    alignItems: 'center',
-    gap: 8,
+    borderRadius: 16,
+    overflow: 'hidden',
+    height: 90,
   },
   actionImgWrap: {
-    width: 72,
-    height: 72,
-    borderRadius: 20,
-    overflow: 'hidden',
-    backgroundColor: CARD_BG,
+    flex: 1,
+    position: 'relative',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
   },
   actionImg: {
+    position: 'absolute',
     width: '100%',
     height: '100%',
   },
+  actionImgOverlay: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(93,103,23,0.55)',
+  },
   actionLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: TEXT,
+    color: INK,
+    fontSize: 11,
+    fontWeight: '800',
+    letterSpacing: 0.3,
     textAlign: 'center',
+    paddingBottom: 10,
+    paddingHorizontal: 4,
+    zIndex: 1,
   },
 
   // Drink Cards
@@ -395,7 +459,7 @@ const styles = StyleSheet.create({
   drinkCardSeeAll: {
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: AMBER_LIGHT,
+    backgroundColor: OLIVE,
     padding: 14,
     height: 150,
   },
@@ -414,28 +478,28 @@ const styles = StyleSheet.create({
   drinkPrice: {
     fontSize: 13,
     fontWeight: '800',
-    color: GOLD,
+    color: GOLD_DEEP,
     paddingHorizontal: 12,
     paddingBottom: 10,
   },
   seeAllArrow: {
-    fontSize: 36,
-    color: AMBER,
+    fontSize: 40,
+    color: INK,
     fontWeight: '300',
   },
   seeAllText: {
     fontSize: 13,
     fontWeight: '700',
-    color: AMBER,
+    color: INK,
   },
 
-  // Earn Points Banner
+  // Earn Banner
   earnBanner: {
     marginHorizontal: 20,
-    marginTop: 28,
+    marginTop: 32,
     borderRadius: 24,
     overflow: 'hidden',
-    height: 200,
+    height: 220,
     position: 'relative',
   },
   earnBannerImage: {
@@ -447,7 +511,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(28,10,3,0.72)',
+    backgroundColor: 'rgba(93,103,23,0.78)',
   },
   earnBannerContent: {
     flex: 1,
@@ -455,43 +519,39 @@ const styles = StyleSheet.create({
     gap: 6,
     justifyContent: 'flex-end',
   },
-  earnBannerBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: AMBER,
-    borderRadius: 999,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    marginBottom: 4,
-  },
-  earnBannerBadgeText: {
-    color: '#fff',
-    fontWeight: '800',
-    fontSize: 12,
+  earnBannerKicker: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: GOLD,
+    letterSpacing: 2,
+    textTransform: 'uppercase',
   },
   earnBannerTitle: {
-    fontSize: 22,
+    fontSize: 28,
     fontWeight: '900',
-    color: '#fff',
-    letterSpacing: -0.3,
+    color: INK,
+    letterSpacing: -0.5,
+    lineHeight: 34,
   },
   earnBannerSub: {
     fontSize: 13,
-    color: 'rgba(255,255,255,0.75)',
-    lineHeight: 18,
+    color: 'rgba(215,217,161,0.75)',
+    fontWeight: '600',
+    letterSpacing: 0.5,
   },
   earnBannerBtn: {
     alignSelf: 'flex-start',
     marginTop: 8,
     borderRadius: 999,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.6)',
+    backgroundColor: GOLD,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
   earnBannerBtnText: {
-    color: '#fff',
-    fontWeight: '700',
+    color: OLIVE_DEEP,
+    fontWeight: '800',
     fontSize: 13,
+    letterSpacing: 0.3,
   },
 
   // Locations
@@ -502,7 +562,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0ece8',
+    borderBottomColor: '#e8e0b0',
   },
   locationIcon: {
     width: 44,
@@ -526,7 +586,7 @@ const styles = StyleSheet.create({
   },
   locationArrow: {
     fontSize: 22,
-    color: TEXT_SOFT,
+    color: OLIVE,
     fontWeight: '300',
   },
 });

@@ -17,6 +17,7 @@ import AdminMenuManagementPage from "./admin/AdminMenuManagementPage";
 import AdminReservationsPage from "./admin/AdminReservationsPage";
 import AdminTablesPage from "./admin/AdminTablesPage";
 import ReservationsPage from "./pages/ReservationsPage";
+import FeedbackPage from "./pages/FeedbackPage";
 import { AuthProvider, useAuth } from "./store/authStore";
 import { CartProvider, useCart } from "./store/cartStore";
 import type { PageProps } from "./types/router.types";
@@ -43,6 +44,7 @@ const routes: RouteDefinition[] = [
   { path: "/gift-cards", label: "Gift Cards", element: GiftCardPage, protected: true, showInPrimaryNav: true },
   { path: "/profile", label: "Profile", element: ProfilePage, protected: true },
   { path: "/reservations", label: "Reservations", element: ReservationsPage, protected: true, showInPrimaryNav: true },
+  { path: "/feedback", label: "Feedback", element: FeedbackPage, showInPrimaryNav: false },
   { path: "/admin", label: "Admin", element: AdminDashboardPage, protected: true, adminOnly: true, showInPrimaryNav: true },
   { path: "/admin/orders", label: "Admin Orders", element: AdminOrdersPage, protected: true, adminOnly: true },
   { path: "/admin/menu", label: "Admin Menu", element: AdminMenuManagementPage, protected: true, adminOnly: true },
@@ -175,7 +177,8 @@ function AppLayout() {
     activeRoute.path === "/orders" ||
     activeRoute.path === "/order-status" ||
     activeRoute.path === "/gift-cards" ||
-    activeRoute.path === "/reservations";
+    activeRoute.path === "/reservations" ||
+    activeRoute.path === "/feedback";
   const Page = activeRoute.element;
 
   return (

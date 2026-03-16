@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { feedbackApi } from "../api/feedbackApi";
 import { useAuth } from "../store/authStore";
 import type { PageProps } from "../types/router.types";
 import { StorefrontTopRail } from "./storefrontShared";
@@ -36,13 +37,20 @@ export default function FeedbackPage({ navigate }: PageProps) {
   const [name, setName] = useState(user?.userName ?? "");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   async function handleSubmit() {
     if (rating === 0) return;
     setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 600));
-    setSubmitting(false);
-    setSubmitted(true);
+    setError("");
+    try {
+      await feedbackApi.submit({ category, rating, name, comment });
+      setSubmitted(true);
+    } catch {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (submitted) {
@@ -80,11 +88,6 @@ export default function FeedbackPage({ navigate }: PageProps) {
       </header>
 
       <section className="commerce-canvas">
-        <div className="feedback-notice">
-          <span className="feedback-notice-icon">i</span>
-          <span>Feedback submissions are not yet saved - backend integration coming soon. Your response won't be stored at this time.</span>
-        </div>
-
         <section className="commerce-hero feedback-hero">
           <div className="commerce-hero-copy">
             <p className="commerce-kicker">Your voice matters</p>
@@ -153,6 +156,9 @@ export default function FeedbackPage({ navigate }: PageProps) {
 
               {rating === 0 && (
                 <p className="commerce-inline-status commerce-inline-status-error">Please select a star rating to continue.</p>
+              )}
+              {error && (
+                <p className="commerce-inline-status commerce-inline-status-error">{error}</p>
               )}
 
               <button
