@@ -83,6 +83,7 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
             .HasForeignKey(x => x.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
 
+
         modelBuilder.Entity<GiftCard>()
             .HasIndex(x => x.Code)
             .IsUnique();

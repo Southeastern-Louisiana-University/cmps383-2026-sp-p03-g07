@@ -3,4 +3,7 @@ export type UserSession = {
   userName: string;
   roles: string[];
   points: number;
+  displayName: string;
+  birthday?: string | null;
+  profilePictureUrl: string;
 };

@@ -18,6 +18,7 @@ type AuthContextValue = {
   register: (userName: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
+  updateProfile: (data: { displayName?: string; birthday?: string | null; profilePictureUrl?: string }) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -76,11 +77,19 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setError("");
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
       },
-      async logout() {
-        await authApi.logout();
+      logout() {
+        // Clear local state immediately - never block on the server
         setUser(null);
         setError("");
         window.localStorage.removeItem(STORAGE_KEY);
+        // Best-effort server session invalidation in background
+        void authApi.logout().catch(() => undefined);
+        return Promise.resolve();
+      },
+      async updateProfile(data) {
+        const nextUser = await authApi.updateProfile(data);
+        setUser(nextUser);
+        window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
       },
       refresh,
     }),

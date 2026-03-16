@@ -49,7 +49,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
     };
   }, []);
 
-  const isReady = useMemo(() => items.length > 0 && !!user, [items.length, user]);
+  const isReady = useMemo(() => items.length > 0, [items.length]);
   const selectedLocation = locations.find((location) => location.id === locationId);
   const selectedOrderType = orderTypes.find((option) => option.value === orderType)?.label ?? "Pickup";
   const starsEarned = Math.max(Math.floor(subtotal), 1);
@@ -95,59 +95,6 @@ export default function CheckoutPage({ navigate }: PageProps) {
     } finally {
       setSubmitting(false);
     }
-  }
-
-  if (!user) {
-    return (
-      <div className="commerce-page reserve-page">
-        <header className="commerce-topbar">
-          <StorefrontTopRail activeTab="reserve" navigate={navigate} />
-        </header>
-
-        <section className="commerce-canvas">
-          <section className="commerce-hero reserve-guest-hero">
-            <div className="commerce-hero-copy">
-              <p className="commerce-kicker">Reservations</p>
-              <h1>RESERVE YOUR NEXT STOP.</h1>
-              <p className="commerce-hero-description">
-                Sign in to save your pickup details, choose a store, and turn the cart into a fast,
-                members-only checkout experience.
-              </p>
-
-              <div className="commerce-hero-pills">
-                <span className="commerce-hero-pill">{items.length} items in cart</span>
-                <span className="commerce-hero-pill">${subtotal.toFixed(2)} subtotal</span>
-                <span className="commerce-hero-pill">Earn stars every visit</span>
-              </div>
-
-              <div className="commerce-hero-actions">
-                <button className="commerce-primary-button" onClick={() => navigate("/login")} type="button">
-                  Sign in
-                </button>
-                <button className="commerce-secondary-button" onClick={() => navigate("/login?mode=register")} type="button">
-                  Register
-                </button>
-              </div>
-            </div>
-
-            <div className="reserve-guest-panel">
-              <article className="reserve-highlight-card">
-                <strong>Choose your store</strong>
-                <p>Pick the Hammond, Covington, or Baton Rouge stop that fits the plan.</p>
-              </article>
-              <article className="reserve-highlight-card">
-                <strong>Set your order style</strong>
-                <p>Save pickup, drive-thru, or dine-in preferences before you pay.</p>
-              </article>
-              <article className="reserve-highlight-card">
-                <strong>Track stars and offers</strong>
-                <p>Signed-in orders keep rewards, redemptions, and receipts synced to your account.</p>
-              </article>
-            </div>
-          </section>
-        </section>
-      </div>
-    );
   }
 
   return (
@@ -222,6 +169,12 @@ export default function CheckoutPage({ navigate }: PageProps) {
                 </button>
               ))}
             </div>
+
+            {!user && (
+              <div style={{ padding: "12px 16px", borderRadius: 10, backgroundColor: "#fff3cd", marginBottom: 8 }}>
+                <strong>Checking out as guest.</strong> <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">Sign in</button> to earn stars and save order history.
+              </div>
+            )}
 
             <div className="reserve-form-grid">
               <label className="commerce-field">

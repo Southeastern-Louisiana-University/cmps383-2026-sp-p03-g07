@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { authApi } from "../api/authApi";
 import { notificationsApi } from "../api/notificationsApi";
 import { useAuth } from "../store/authStore";
 import type { AppNotification } from "../types/notification.types";
@@ -29,10 +30,21 @@ function formatNotificationDate(createdAt: string) {
 }
 
 export default function ProfilePage({ navigate }: PageProps) {
-  const { logout, user } = useAuth();
+  const { logout, refresh, user } = useAuth();
+
+  async function handleLogout() {
+    await logout();
+    navigate("/");
+  }
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [displayName, setDisplayName] = useState("");
+  const [birthday, setBirthday] = useState("");
+  const [profilePictureUrl, setProfilePictureUrl] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileMessage, setProfileMessage] = useState("");
 
   useEffect(() => {
     if (!user) {
@@ -71,6 +83,33 @@ export default function ProfilePage({ navigate }: PageProps) {
       isMounted = false;
     };
   }, [user]);
+
+  function openEdit() {
+    setDisplayName(user?.displayName ?? "");
+    setBirthday(user?.birthday ? user.birthday.slice(0, 10) : "");
+    setProfilePictureUrl(user?.profilePictureUrl ?? "");
+    setProfileMessage("");
+    setEditOpen(true);
+  }
+
+  async function saveProfile() {
+    setSavingProfile(true);
+    setProfileMessage("");
+    try {
+      await authApi.updateProfile({
+        displayName,
+        birthday: birthday || null,
+        profilePictureUrl,
+      });
+      await refresh();
+      setEditOpen(false);
+      setProfileMessage("Profile updated.");
+    } catch (e) {
+      setProfileMessage(e instanceof Error ? e.message : "Save failed.");
+    } finally {
+      setSavingProfile(false);
+    }
+  }
 
   const unreadCount = useMemo(
     () => notifications.filter((notification) => !notification.isRead).length,
@@ -137,8 +176,11 @@ export default function ProfilePage({ navigate }: PageProps) {
       <section className="commerce-canvas">
         <section className="commerce-hero account-hero">
           <div className="commerce-hero-copy">
+            {user.profilePictureUrl && (
+              <img alt="Profile" src={user.profilePictureUrl} style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", marginBottom: "0.5rem" }} />
+            )}
             <p className="commerce-kicker">Account</p>
-            <h1>WELCOME BACK, {user.userName.toUpperCase()}.</h1>
+            <h1>WELCOME BACK, {(user.displayName || user.userName).toUpperCase()}.</h1>
             <p className="commerce-hero-description">
               Keep your rewards, notifications, and recent storefront activity tied together in one
               place while moving between orders, reservations, and redemptions.
@@ -157,12 +199,39 @@ export default function ProfilePage({ navigate }: PageProps) {
               <button className="commerce-secondary-button" onClick={() => navigate("/orders")} type="button">
                 Order history
               </button>
-              <button className="commerce-secondary-button" onClick={() => void logout()} type="button">
+              <button className="commerce-secondary-button" onClick={openEdit} type="button">
+                Edit profile
+              </button>
+              <button className="commerce-secondary-button" onClick={() => void handleLogout()} type="button">
                 Log out
               </button>
             </div>
 
+            {profileMessage ? <p className="commerce-inline-status">{profileMessage}</p> : null}
             {statusMessage ? <p className="commerce-inline-status commerce-inline-status-error">{statusMessage}</p> : null}
+
+            {editOpen && (
+              <div style={{ marginTop: "1.5rem", display: "grid", gap: "0.75rem", maxWidth: 420 }}>
+                <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.9rem" }}>
+                  <span>Display name</span>
+                  <input className="commerce-input" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.9rem" }}>
+                  <span>Birthday (get a free item on your birthday!)</span>
+                  <input className="commerce-input" type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.9rem" }}>
+                  <span>Profile picture URL</span>
+                  <input className="commerce-input" placeholder="https://..." value={profilePictureUrl} onChange={(e) => setProfilePictureUrl(e.target.value)} />
+                </label>
+                <div style={{ display: "flex", gap: "0.75rem" }}>
+                  <button className="commerce-primary-button" disabled={savingProfile} onClick={() => void saveProfile()} type="button">
+                    {savingProfile ? "Saving..." : "Save"}
+                  </button>
+                  <button className="commerce-secondary-button" onClick={() => setEditOpen(false)} type="button">Cancel</button>
+                </div>
+              </div>
+            )}
           </div>
 
           <aside className="commerce-summary-card account-summary-card">

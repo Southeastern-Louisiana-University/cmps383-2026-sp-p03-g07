@@ -49,15 +49,10 @@ public class OrdersController(
         return GetAll();
     }
 
-    [Authorize]
     [HttpGet("{id}")]
     public async Task<ActionResult<OrderDto>> GetById(int id)
     {
         var currentUserId = User.GetCurrentUserId();
-        if (currentUserId == null)
-        {
-            return Unauthorized();
-        }
 
         var order = await dataContext.Orders
             .Include(x => x.Items)
@@ -68,10 +63,18 @@ public class OrdersController(
             return NotFound();
         }
 
-        var managesLocation = dataContext.Set<Location>()
-            .Any(x => x.Id == order.LocationId && x.ManagerId == currentUserId);
+        // Allow: admin, the order owner, location manager, or guest order (no userId)
+        if (order.UserId != null && currentUserId != null)
+        {
+            var managesLocation = dataContext.Set<Location>()
+                .Any(x => x.Id == order.LocationId && x.ManagerId == currentUserId);
 
-        if (!User.IsInRole(RoleNames.Admin) && order.UserId != currentUserId && !managesLocation)
+            if (!User.IsInRole(RoleNames.Admin) && order.UserId != currentUserId && !managesLocation)
+            {
+                return Forbid();
+            }
+        }
+        else if (order.UserId != null && currentUserId == null)
         {
             return Forbid();
         }
@@ -79,22 +82,16 @@ public class OrdersController(
         return Ok(MapDto(order));
     }
 
-    [Authorize]
     [HttpGet("{id}/track")]
     public Task<ActionResult<OrderDto>> Track(int id)
     {
         return GetById(id);
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<ActionResult<OrderDto>> Create(OrderDto dto)
     {
         var currentUserId = User.GetCurrentUserId();
-        if (currentUserId == null)
-        {
-            return Unauthorized();
-        }
 
         if (dto.Total < 0)
         {
@@ -156,7 +153,8 @@ public class OrdersController(
 
         var order = new Order
         {
-            UserId = currentUserId.Value,
+            UserId = currentUserId,
+            GuestName = currentUserId == null ? (dto.GuestName ?? dto.PickupName) : string.Empty,
             LocationId = dto.LocationId,
             OrderType = dto.OrderType,
             Status = Order.DefaultStatus,
@@ -172,11 +170,14 @@ public class OrdersController(
         dataContext.Orders.Add(order);
         await dataContext.SaveChangesAsync();
 
-        await pushNotificationService.SendAsync(
-            currentUserId.Value,
-            "InApp",
-            "Order received",
-            $"Order #{order.Id} is in the queue for {order.OrderType}.");
+        if (currentUserId != null)
+        {
+            await pushNotificationService.SendAsync(
+                currentUserId.Value,
+                "InApp",
+                "Order received",
+                $"Order #{order.Id} is in the queue for {order.OrderType}.");
+        }
 
         return CreatedAtAction(nameof(GetById), new { id = order.Id }, MapDto(order));
     }
@@ -214,11 +215,14 @@ public class OrdersController(
         order.Status = status;
         await dataContext.SaveChangesAsync();
 
-        await pushNotificationService.SendAsync(
-            order.UserId,
-            "Push",
-            "Order update",
-            $"Order #{order.Id} is now {status}.");
+        if (order.UserId != null)
+        {
+            await pushNotificationService.SendAsync(
+                order.UserId.Value,
+                "Push",
+                "Order update",
+                $"Order #{order.Id} is now {status}.");
+        }
 
         return Ok();
     }
@@ -276,6 +280,7 @@ public class OrdersController(
         {
             Id = order.Id,
             UserId = order.UserId,
+            GuestName = order.GuestName,
             LocationId = order.LocationId,
             OrderType = order.OrderType,
             Status = order.Status,

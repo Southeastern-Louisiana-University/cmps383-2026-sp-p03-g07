@@ -19,4 +19,10 @@ export const orderApi = {
       method: "POST",
     });
   },
+  updateStatus(id: number, status: string) {
+    return apiRequest<void>(`/api/orders/${id}/status`, {
+      method: "PUT",
+      body: JSON.stringify(status),
+    });
+  },
 };

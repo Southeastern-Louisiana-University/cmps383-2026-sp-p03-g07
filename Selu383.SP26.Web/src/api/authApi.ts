@@ -22,4 +22,10 @@ export const authApi = {
       body: JSON.stringify({ userName, password }),
     });
   },
+  updateProfile(data: { displayName?: string; birthday?: string | null; profilePictureUrl?: string }) {
+    return apiRequest<UserSession>("/api/authentication/profile", {
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+  },
 };

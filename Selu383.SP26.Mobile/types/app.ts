@@ -3,6 +3,18 @@ export type UserSession = {
   userName: string;
   roles: string[];
   points: number;
+  displayName: string;
+  birthday?: string | null;
+  profilePictureUrl: string;
+};
+
+export type Reservation = {
+  id: number;
+  userId: number;
+  locationId: number;
+  reservationTime: string;
+  partySize: number;
+  status: string;
 };
 
 export type MenuItem = {

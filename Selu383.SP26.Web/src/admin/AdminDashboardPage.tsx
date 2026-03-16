@@ -1,8 +1,16 @@
 import { useEffect, useState } from "react";
 import { adminApi } from "../api/adminApi";
 import type { AdminDashboard } from "../types/admin.types";
+import type { PageProps } from "../types/router.types";
 
-export default function AdminDashboardPage() {
+const adminLinks = [
+  { path: "/admin/orders", label: "Manage Orders" },
+  { path: "/admin/menu", label: "Manage Menu" },
+  { path: "/admin/reservations", label: "Reservations" },
+  { path: "/admin/tables", label: "Tables" },
+];
+
+export default function AdminDashboardPage({ navigate }: PageProps) {
   const [dashboard, setDashboard] = useState<AdminDashboard | null>(null);
   const [error, setError] = useState("");
 
@@ -33,6 +41,13 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="page-grid">
+      <nav style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+        {adminLinks.map((link) => (
+          <button className="secondary-button" key={link.path} onClick={() => navigate(link.path)} type="button">
+            {link.label}
+          </button>
+        ))}
+      </nav>
       <section className="stats-grid">
         <article className="stat-card">
           <span>Total orders</span>

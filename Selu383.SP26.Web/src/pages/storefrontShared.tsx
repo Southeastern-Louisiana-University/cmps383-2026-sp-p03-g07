@@ -1,3 +1,4 @@
+import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
 
@@ -295,6 +296,8 @@ export function StoreLocationIcon({ variant }: { variant: StoreProfile["icon"] }
 }
 
 export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides }: StorefrontRailProps) {
+  const { items } = useCart();
+  const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const labels = {
     locations: "Locations",
     reserve: "Reservation",
@@ -337,8 +340,11 @@ export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides 
       </nav>
 
       <div className="store-rail-tools">
-        <button aria-label="Open cart" className="store-basket" onClick={() => navigate("/cart")} type="button">
+        <button aria-label={`Open cart${cartCount > 0 ? `, ${cartCount} items` : ""}`} className="store-basket" onClick={() => navigate("/cart")} type="button" style={{ position: "relative" }}>
           <StoreBasketIcon />
+          {cartCount > 0 && (
+            <span className="store-basket-badge">{cartCount}</span>
+          )}
         </button>
         <button className="store-locale" type="button">
           {resolvedLabels.locale} <span>v</span>
