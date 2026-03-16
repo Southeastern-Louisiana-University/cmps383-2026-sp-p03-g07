@@ -28,7 +28,7 @@ public class OrdersController(
 
         var orders = await dataContext.Orders
             .Include(x => x.Items)
-            .Where(x => x.UserId == currentUserId)
+            .Where(x => x.UserId == currentUserId && x.Status == "Received")
             .OrderByDescending(x => x.CreatedAt)
             .ToListAsync();
 

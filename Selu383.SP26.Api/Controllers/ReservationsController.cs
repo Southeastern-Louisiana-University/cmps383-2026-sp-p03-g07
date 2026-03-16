@@ -23,7 +23,7 @@ public class ReservationsController(DataContext dataContext) : ControllerBase
         }
 
         var reservations = dataContext.Set<Reservation>()
-            .Where(x => x.UserId == currentUserId)
+            .Where(x => x.UserId == currentUserId && x.Status == "Confirmed")
             .Select(x => new ReservationDto
             {
                 Id = x.Id,
