@@ -6,4 +6,7 @@ public class UserDto
     public string UserName { get; set; } = string.Empty;
     public string[] Roles { get; set; } = Array.Empty<string>();
     public int Points { get; set; }
+    public string DisplayName { get; set; } = string.Empty;
+    public DateTime? Birthday { get; set; }
+    public string ProfilePictureUrl { get; set; } = string.Empty;
 }
