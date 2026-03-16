@@ -32,21 +32,6 @@ export default function CheckoutScreen() {
     }).catch(() => {});
   }, []);
 
-  if (!user) {
-    return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Checkout</Text>
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Sign in to place an order</Text>
-          <Text style={styles.cardCopy}>You need to be logged in to complete your purchase.</Text>
-          <Pressable style={styles.primaryButton} onPress={() => router.push('/Auth/login')}>
-            <Text style={styles.primaryButtonText}>Login</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-    );
-  }
-
   if (items.length === 0) {
     return (
       <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -106,6 +91,15 @@ export default function CheckoutScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.title}>Checkout</Text>
+
+      {!user && (
+        <View style={styles.guestBanner}>
+          <Text style={styles.guestBannerText}>Checking out as guest - no points earned.</Text>
+          <Pressable onPress={() => router.push('/Auth/login')}>
+            <Text style={styles.guestBannerLink}>Sign in to earn stars</Text>
+          </Pressable>
+        </View>
+      )}
 
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Location</Text>
@@ -252,4 +246,12 @@ const styles = StyleSheet.create({
   primaryButtonDisabled: { opacity: 0.6 },
   primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
   errorText: { color: '#b33030' },
+  guestBanner: {
+    borderRadius: 14,
+    backgroundColor: '#fff3cd',
+    padding: 12,
+    gap: 6,
+  },
+  guestBannerText: { color: '#856404' },
+  guestBannerLink: { color: '#1d2d3c', fontWeight: '700', textDecorationLine: 'underline' },
 });
