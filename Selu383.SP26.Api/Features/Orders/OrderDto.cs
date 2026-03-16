@@ -6,7 +6,9 @@ public class OrderDto
 {
     public int Id { get; set; }
 
-    public int UserId { get; set; }
+    public int? UserId { get; set; }
+
+    public string GuestName { get; set; } = string.Empty;
 
     public int LocationId { get; set; }
 
