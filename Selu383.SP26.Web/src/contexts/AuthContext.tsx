@@ -5,6 +5,10 @@ type User = {
   id: number;
   userName: string;
   roles: string[];
+  displayName?: string;
+  profilePictureUrl?: string;
+  birthday?: string;
+  isBirthday?: boolean;
 };
 
 type AuthContextType = {
