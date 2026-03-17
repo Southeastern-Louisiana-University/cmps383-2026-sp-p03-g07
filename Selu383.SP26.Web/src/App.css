@@ -765,8 +765,8 @@
 .store-order-orbit {
   position: absolute;
   right: clamp(2rem, 5vw, 4.75rem);
-  top: clamp(5.6rem, 9vh, 7.3rem);
-  width: clamp(14rem, 17vw, 17rem);
+  bottom: clamp(3rem, 8vh, 6rem);
+  width: clamp(12rem, 14vw, 15rem);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
@@ -2563,7 +2563,8 @@
 
   .store-order-orbit {
     right: 1.75rem;
-    top: 6.9rem;
+    top: unset;
+    bottom: clamp(3rem, 8vh, 5rem);
   }
 
   .store-display {
@@ -2651,7 +2652,8 @@
   }
 
   .store-order-orbit {
-    top: 24%;
+    top: unset;
+    bottom: clamp(2rem, 5vh, 4rem);
     right: 1rem;
     width: 10.8rem;
   }
