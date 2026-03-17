@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Selu383.SP26.Api.Features.Auth;
+using Selu383.SP26.Api.Features.Feedback;
 using Selu383.SP26.Api.Features.Notifications;
 using Selu383.SP26.Api.Features.Locations;
 using Selu383.SP26.Api.Features.Menu;
@@ -18,6 +19,7 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
     {
     }
 
+    public DbSet<Feedback> Feedbacks { get; set; }
     public DbSet<Location> Locations { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<MenuCustomization> MenuCustomizations { get; set; }

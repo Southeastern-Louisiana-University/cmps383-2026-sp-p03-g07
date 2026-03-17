@@ -48,7 +48,7 @@ export default function LoginPage({ navigate, query }: PageProps) {
             <div className="commerce-hero-pills">
               <span className="commerce-hero-pill">Rewards synced</span>
               <span className="commerce-hero-pill">Orders saved</span>
-              <span className="commerce-hero-pill">Cookie auth enabled</span>
+              <span className="commerce-hero-pill">Stay signed in across visits</span>
             </div>
           </div>
 

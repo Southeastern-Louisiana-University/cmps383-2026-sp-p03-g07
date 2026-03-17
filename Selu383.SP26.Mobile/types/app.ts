@@ -17,6 +17,15 @@ export type Reservation = {
   status: string;
 };
 
+export type MenuCustomization = {
+  id: number;
+  groupName: string;
+  optionName: string;
+  additionalPrice: number;
+  isDefault: boolean;
+  sortOrder: number;
+};
+
 export type MenuItem = {
   id: number;
   name: string;
@@ -30,12 +39,7 @@ export type MenuItem = {
   isFeatured: boolean;
   inventoryCount: number;
   preparationTag: string;
-  customizations: Array<{
-    id: number;
-    optionName: string;
-    additionalPrice: number;
-    isDefault: boolean;
-  }>;
+  customizations: MenuCustomization[];
 };
 
 export type Location = {
@@ -45,19 +49,32 @@ export type Location = {
   tableCount: number;
 };
 
+export type OrderItem = {
+  id: number;
+  menuItemId: number;
+  itemName: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+  customizations: string;
+  specialInstructions: string;
+};
+
 export type Order = {
   id: number;
-  status: string;
+  userId: number | null;
+  guestName: string;
+  locationId: number;
   orderType: string;
+  status: string;
+  tableNumber?: number | null;
   total: number;
-  paymentStatus: string;
   createdAt: string;
+  pickupName: string;
+  specialInstructions: string;
+  paymentStatus: string;
   starsEarned: number;
-  items: Array<{
-    id: number;
-    itemName: string;
-    quantity: number;
-  }>;
+  items: OrderItem[];
 };
 
 export type Reward = {
@@ -65,8 +82,18 @@ export type Reward = {
   name: string;
   description: string;
   pointsCost: number;
+  isActive: boolean;
   tierName: string;
   offerType: string;
+  discountAmount?: number | null;
+  bonusStars: number;
+};
+
+export type RewardTier = {
+  id: number;
+  name: string;
+  minPoints: number;
+  color: string;
 };
 
 export type PointsBalance = {
@@ -74,4 +101,11 @@ export type PointsBalance = {
   currentTier: string;
   nextTier: string;
   pointsToNextTier: number;
+};
+
+export type RewardHistoryItem = {
+  id: number;
+  rewardName: string;
+  pointsSpent: number;
+  redeemedAt: string;
 };

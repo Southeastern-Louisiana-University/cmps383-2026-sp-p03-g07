@@ -4,7 +4,7 @@ import { router } from 'expo-router';
 import { useCart } from '@/store/cartStore';
 
 export default function CartScreen() {
-  const { items, subtotal, updateQuantity } = useCart();
+  const { items, subtotal, updateQuantity, removeItem } = useCart();
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -20,12 +20,17 @@ export default function CartScreen() {
         <>
           {items.map((item) => (
             <View key={item.id} style={styles.card}>
-              <Text style={styles.cardTitle}>{item.name}</Text>
-              <Text style={styles.cardCopy}>Quantity: {item.quantity}</Text>
+              <View style={styles.cardHeader}>
+                <Text style={styles.cardTitle}>{item.name}</Text>
+                <Pressable onPress={() => removeItem(item.id)}>
+                  <Text style={styles.removeBtn}>Remove</Text>
+                </Pressable>
+              </View>
               <View style={styles.row}>
                 <Pressable style={styles.secondaryButton} onPress={() => updateQuantity(item.id, item.quantity - 1)}>
                   <Text style={styles.secondaryButtonText}>-</Text>
                 </Pressable>
+                <Text style={styles.quantityText}>{item.quantity}</Text>
                 <Pressable style={styles.secondaryButton} onPress={() => updateQuantity(item.id, item.quantity + 1)}>
                   <Text style={styles.secondaryButtonText}>+</Text>
                 </Pressable>
@@ -51,7 +56,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '700', color: '#1f1a17' },
   card: { gap: 10, borderRadius: 22, backgroundColor: '#fffaf4', padding: 16 },
   cardTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a17' },
-  cardCopy: { color: '#6c5b4d' },
+  cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  removeBtn: { color: '#c0392b', fontSize: 13, fontWeight: '600' },
+  quantityText: { fontSize: 15, fontWeight: '700', color: '#1f1a17', minWidth: 24, textAlign: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   primaryButton: {
     alignSelf: 'flex-start',
