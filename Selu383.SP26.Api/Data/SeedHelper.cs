@@ -128,21 +128,22 @@ public static class SeedHelper
             }
         };
 
-        var existingLocations = await dataContext.Locations
+        var allLocations = await dataContext.Locations
             .OrderBy(x => x.Id)
-            .Take(seededLocations.Length)
             .ToListAsync();
 
-        if (existingLocations.Count == 0)
+        if (allLocations.Count == 0)
         {
             dataContext.Set<Location>().AddRange(seededLocations);
             await dataContext.SaveChangesAsync();
             return;
         }
 
-        for (var index = 0; index < existingLocations.Count && index < seededLocations.Length; index++)
+        // Update the first 3 rows to the canonical seeded data
+        var keepLocations = allLocations.Take(seededLocations.Length).ToList();
+        for (var index = 0; index < keepLocations.Count && index < seededLocations.Length; index++)
         {
-            var existingLocation = existingLocations[index];
+            var existingLocation = keepLocations[index];
             var seededLocation = seededLocations[index];
 
             existingLocation.Name = seededLocation.Name;
@@ -151,12 +152,29 @@ public static class SeedHelper
             existingLocation.ManagerId = seededLocation.ManagerId;
         }
 
-        if (existingLocations.Count < seededLocations.Length)
+        if (keepLocations.Count < seededLocations.Length)
         {
-            dataContext.Set<Location>().AddRange(seededLocations.Skip(existingLocations.Count));
+            dataContext.Set<Location>().AddRange(seededLocations.Skip(keepLocations.Count));
         }
 
         await dataContext.SaveChangesAsync();
+
+        // Remove duplicate locations beyond the 3 canonical ones (from old seed runs)
+        var keepIds = keepLocations.Select(x => x.Id).ToHashSet();
+        var extraLocations = allLocations.Where(x => !keepIds.Contains(x.Id)).ToList();
+        if (extraLocations.Count > 0)
+        {
+            try
+            {
+                dataContext.Set<Location>().RemoveRange(extraLocations);
+                await dataContext.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                // FK constraints from existing orders/reservations - skip cleanup
+                dataContext.ChangeTracker.Clear();
+            }
+        }
     }
 
     private static async Task AddMenuItems(DataContext dataContext)
