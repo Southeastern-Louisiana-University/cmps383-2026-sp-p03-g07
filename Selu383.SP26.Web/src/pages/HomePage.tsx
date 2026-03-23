@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { locationsApi } from "../api/locationsApi";
+import { menuApi } from "../api/menuApi";
+import type { MenuItem } from "../types/menu.types";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
 import {
@@ -10,7 +12,8 @@ import {
 } from "./storefrontShared";
 
 export default function HomePage({ navigate }: PageProps) {
-  const [locations, setLocations] = useState<Location[]>(fallbackLocations);
+    const [locations, setLocations] = useState<Location[]>(fallbackLocations);
+    const [featuredItems, setFeaturedItems] = useState<MenuItem[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -22,6 +25,21 @@ export default function HomePage({ navigate }: PageProps) {
       .catch(() => undefined);
     return () => { isMounted = false; };
   }, []);
+
+    useEffect(() => {
+        let isMounted = true;
+        void menuApi
+            .getMenu()
+            .then((items) => {
+                if (isMounted) {
+                    // Get featured items, or fallback to first 3 items
+                    const featured = items.filter(item => item.isFeatured).slice(0, 3);
+                    setFeaturedItems(featured.length > 0 ? featured : items.slice(0, 3));
+                }
+            })
+            .catch(() => undefined);
+        return () => { isMounted = false; };
+    }, []);
 
   const featuredLocation = locations[0] ?? fallbackLocations[0];
 
@@ -64,7 +82,43 @@ export default function HomePage({ navigate }: PageProps) {
             </h1>
           </div>
         </div>
-      </section>
+          </section>
+
+          {/* Featured Products */}
+          <section className="home-featured-products-section">
+              <div className="home-section-header">
+                  <p className="commerce-kicker">Signature Favorites</p>
+                  <h2>Our most-loved drinks & treats</h2>
+              </div>
+              <div className="home-featured-products-grid">
+                  {featuredItems.map((item) => (
+                      <button
+                          key={item.id}
+                          className="home-featured-product-card"
+                          onClick={() => navigate("/menu")}
+                          type="button"
+                      >
+                          <div className="home-featured-product-image-wrapper">
+                              <img
+                                  src={item.imageUrl || "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=600&h=600&fit=crop"}
+                                  alt={item.name}
+                                  className="home-featured-product-image"
+                              />
+                          </div>
+                          <div className="home-featured-product-info">
+                              <h3 className="home-featured-product-name">{item.name}</h3>
+                              <p className="home-featured-product-description">{item.description}</p>
+                              <p className="home-featured-product-price">${item.price.toFixed(2)}</p>
+                          </div>
+                      </button>
+                  ))}
+              </div>
+              <div className="home-featured-products-cta">
+                  <button className="commerce-primary-button" onClick={() => navigate("/menu")} type="button">
+                      View full menu
+                  </button>
+              </div>
+          </section>
 
       {/* Quote */}
       <section className="home-quote-section">
