@@ -9,7 +9,7 @@ import { StorefrontTopRail } from "./storefrontShared";
 const guestHighlights = [
   {
     title: "Track rewards",
-    description: "See your points balance, current tier, and redeemable perks in one place.",
+    description: "See your Lions balance, current tier, and redeemable perks in one place.",
   },
   {
     title: "Save order history",
@@ -129,7 +129,7 @@ export default function ProfilePage({ navigate }: PageProps) {
               <p className="commerce-kicker">Account</p>
               <h1>YOUR LIONS ACCOUNT, ALL IN ONE PLACE.</h1>
               <p className="commerce-hero-description">
-                Sign in to see points, rewards, notifications, and your order history in the same
+                Sign in to see Lions, rewards, notifications, and your order history in the same
                 storefront experience as the rest of the site.
               </p>
 
@@ -187,7 +187,7 @@ export default function ProfilePage({ navigate }: PageProps) {
             </p>
 
             <div className="commerce-hero-pills">
-              <span className="commerce-hero-pill">{user.points} stars</span>
+              <span className="commerce-hero-pill">{user.points} Lions</span>
               <span className="commerce-hero-pill">{user.roles.join(", ")}</span>
               <span className="commerce-hero-pill">{unreadCount} unread alerts</span>
             </div>
@@ -272,7 +272,7 @@ export default function ProfilePage({ navigate }: PageProps) {
 
             <div className="account-stat-grid">
               <article className="account-stat-card">
-                <span>Stars balance</span>
+                <span>Lions balance</span>
                 <strong>{user.points}</strong>
                 <p>Use your account tab as the quickest route back into rewards and redemptions.</p>
               </article>

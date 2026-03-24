@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { menuApi } from "../api/menuApi";
 import { rewardsApi } from "../api/rewardsApi";
 import { useAuth } from "../store/authStore";
@@ -19,14 +19,14 @@ const fallbackTiers: RewardTier[] = [
     id: 2,
     name: "Silver",
     minPoints: 150,
-    benefits: "1.5x stars, early seasonal access",
+    benefits: "1.5x Lions, early seasonal access",
     accentColor: "#7c8a99",
   },
   {
     id: 3,
     name: "Gold",
     minPoints: 300,
-    benefits: "2x stars, premium offers, surprise drops",
+    benefits: "2x Lions, premium offers, surprise drops",
     accentColor: "#d7a526",
   },
 ];
@@ -43,7 +43,7 @@ const tierRows = [
     minTierIndex: 0,
   },
   {
-    title: "Faster star earning",
+    title: "Faster Lions earning",
     description: "Boost your earn rate on every qualifying in-store or online order.",
     minTierIndex: 1,
   },
@@ -123,7 +123,7 @@ function getRewardMenuItem(reward: Reward, menuItems: MenuItem[], index: number)
       keywords: ["croissant", "pastry", "bagel", "toast", "sandwich", "bread", "muffin"],
     },
     {
-      test: /discount|stars/.test(rewardText),
+      test: /discount|stars|lions/.test(rewardText),
       keywords: ["featured", "seasonal", "special", "house"],
     },
   ];
@@ -165,7 +165,7 @@ export default function RewardsPage({ navigate }: PageProps) {
   const [errorMessage, setErrorMessage] = useState("");
   const [heroIndex, setHeroIndex] = useState(0);
 
-  async function loadRewards() {
+  const loadRewards = useCallback(async () => {
     const [nextRewards, nextTiers, nextMenuItems] = await Promise.all([
       rewardsApi.getRewards(),
       rewardsApi.getTiers(),
@@ -189,7 +189,7 @@ export default function RewardsPage({ navigate }: PageProps) {
 
     setBalance(null);
     setHistory([]);
-  }
+  }, [user]);
 
   useEffect(() => {
     let isMounted = true;
@@ -214,7 +214,7 @@ export default function RewardsPage({ navigate }: PageProps) {
     return () => {
       isMounted = false;
     };
-  }, [user]);
+  }, [loadRewards]);
 
   async function redeemReward(rewardId: number) {
     try {
@@ -235,12 +235,6 @@ export default function RewardsPage({ navigate }: PageProps) {
       .slice(0, 5);
   }, [menuItems]);
 
-  useEffect(() => {
-    if (heroIndex > 0 && heroIndex >= featuredMenuItems.length) {
-      setHeroIndex(0);
-    }
-  }, [heroIndex, featuredMenuItems.length]);
-
   const rewardCards = useMemo(() => {
     return rewards.map((reward, index) => ({
       reward,
@@ -248,7 +242,8 @@ export default function RewardsPage({ navigate }: PageProps) {
     }));
   }, [menuItems, rewards]);
 
-  const activeHeroItem = featuredMenuItems[heroIndex] ?? rewardCards[0]?.menuItem;
+  const safeHeroIndex = heroIndex >= featuredMenuItems.length ? 0 : heroIndex;
+  const activeHeroItem = featuredMenuItems[safeHeroIndex] ?? rewardCards[0]?.menuItem;
   const resolvedTiers = tiers.length > 0 ? tiers : fallbackTiers;
   const availablePoints = balance?.points ?? user?.points ?? 0;
   const recentReward = history[0];
@@ -280,7 +275,7 @@ export default function RewardsPage({ navigate }: PageProps) {
             <p className="rewards-kicker">Loyalty club</p>
             <h1>MORE LIONS. MORE FOR YOU.</h1>
             <p className="rewards-hero-description">
-              Collect points with every coffee, pastry, and pickup order. The more you earn, the faster
+              Collect Lions with every coffee, pastry, and pickup order. The more you earn, the faster
               you unlock better perks, earlier drops, and redeemable house favorites.
             </p>
 
@@ -320,7 +315,7 @@ export default function RewardsPage({ navigate }: PageProps) {
 
             <div className="rewards-stat-strip">
               <article className="rewards-stat-card">
-                <span>Points</span>
+                <span>Lions</span>
                 <strong>{availablePoints}</strong>
                 <p>{user ? "Ready to spend on your next treat." : "Sign in to start earning."}</p>
               </article>
@@ -330,7 +325,7 @@ export default function RewardsPage({ navigate }: PageProps) {
                 <p>
                   {balance
                     ? balance.pointsToNextTier > 0
-                      ? `${balance.pointsToNextTier} points to ${balance.nextTier}.`
+                      ? `${balance.pointsToNextTier} Lions to ${balance.nextTier}.`
                       : "Top tier unlocked."
                     : "Each order moves you up the ladder."}
                 </p>
@@ -341,7 +336,7 @@ export default function RewardsPage({ navigate }: PageProps) {
                 <p>
                   {recentReward
                     ? `Redeemed ${formatHistoryDate(recentReward.redeemedAt)}.`
-                    : "Redeem points for drinks, pastries, and premium extras."}
+                    : "Redeem Lions for drinks, pastries, and premium extras."}
                 </p>
               </article>
             </div>
@@ -412,7 +407,7 @@ export default function RewardsPage({ navigate }: PageProps) {
                 {resolvedTiers.map((tier) => (
                   <div className="rewards-tier-cell rewards-tier-cell-header" key={tier.id}>
                     <strong>{tier.name}</strong>
-                    <span>from {tier.minPoints} points</span>
+                    <span>from {tier.minPoints} Lions</span>
                   </div>
                 ))}
               </div>
@@ -467,7 +462,7 @@ export default function RewardsPage({ navigate }: PageProps) {
                   </div>
 
                   <div className="rewards-offer-copy">
-                    <span className="rewards-points-chip">{reward.pointsCost} points</span>
+                    <span className="rewards-points-chip">{reward.pointsCost} Lions</span>
                     <h3>{reward.name}</h3>
                     <p>{reward.description}</p>
 
@@ -492,7 +487,7 @@ export default function RewardsPage({ navigate }: PageProps) {
                       {!user
                         ? "Sign in to redeem"
                         : isLocked
-                          ? `${reward.pointsCost - availablePoints} more points`
+                          ? `${reward.pointsCost - availablePoints} more Lions`
                           : "Redeem"}
                     </button>
                   </div>

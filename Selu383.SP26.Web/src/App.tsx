@@ -14,6 +14,7 @@ import ProfilePage from "./pages/ProfilePage";
 import AdminDashboardPage from "./admin/AdminDashboardPage";
 import AdminOrdersPage from "./admin/AdminOrdersPage";
 import AdminMenuManagementPage from "./admin/AdminMenuManagementPage";
+import AdminLocationsPage from "./admin/AdminLocationsPage";
 import AdminReservationsPage from "./admin/AdminReservationsPage";
 import AdminTablesPage from "./admin/AdminTablesPage";
 import ReservationsPage from "./pages/ReservationsPage";
@@ -48,6 +49,7 @@ const routes: RouteDefinition[] = [
   { path: "/admin", label: "Admin", element: AdminDashboardPage, protected: true, adminOnly: true, showInPrimaryNav: true },
   { path: "/admin/orders", label: "Admin Orders", element: AdminOrdersPage, protected: true, adminOnly: true },
   { path: "/admin/menu", label: "Admin Menu", element: AdminMenuManagementPage, protected: true, adminOnly: true },
+  { path: "/admin/locations", label: "Admin Locations", element: AdminLocationsPage, protected: true, adminOnly: true },
   { path: "/admin/reservations", label: "Admin Reservations", element: AdminReservationsPage, protected: true, adminOnly: true },
   { path: "/admin/tables", label: "Admin Tables", element: AdminTablesPage, protected: true, adminOnly: true },
 ];
@@ -224,7 +226,7 @@ function AppLayout() {
               Cart{cartCount > 0 ? <span className="header-cart-badge">{cartCount}</span> : null}
             </button>
             <button className="secondary-button" onClick={() => navigate(user ? "/profile" : "/login")} type="button">
-              {user ? `${user.userName} • ${user.points} pts` : "Login"}
+              {user ? `${user.userName} • ${user.points} Lions` : "Login"}
             </button>
           </div>
         </header>

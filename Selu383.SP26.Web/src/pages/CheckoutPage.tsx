@@ -133,7 +133,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
               <strong>${subtotal.toFixed(2)}</strong>
             </div>
             <div className="commerce-summary-row">
-              <span>Stars after payment</span>
+              <span>Lions after payment</span>
               <strong>{starsEarned}</strong>
             </div>
 
@@ -172,7 +172,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
 
             {!user && (
               <div style={{ padding: "12px 16px", borderRadius: 10, backgroundColor: "#fff3cd", marginBottom: 8 }}>
-                <strong>Checking out as guest.</strong> <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">Sign in</button> to earn stars and save order history.
+                <strong>Checking out as guest.</strong> <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">Sign in</button> to earn Lions and save order history.
               </div>
             )}
 

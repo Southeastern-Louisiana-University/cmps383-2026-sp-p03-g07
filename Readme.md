@@ -56,7 +56,29 @@ From the repo root:
 ```bash
 cd Selu383.SP26.Mobile
 npm install
-npm run start
+npm start
+or npm run android
+
+```
+
+## 3. Admin
+
+
+```bash
+Open:
+http://localhost:5173/#/login
+Sign in with the seeded admin account:
+
+Username: galkadi
+Password: Password123!
+After that, go to:
+
+http://localhost:5173/#/admin
+
+
+
+
+
 ```
 
 Then choose one of the Expo targets shown in the terminal.

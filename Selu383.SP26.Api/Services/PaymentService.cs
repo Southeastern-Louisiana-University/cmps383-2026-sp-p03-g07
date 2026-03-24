@@ -103,7 +103,7 @@ public class PaymentService(
                     userId.Value,
                     "Push",
                     "Payment received",
-                    $"Order #{order.Id} was paid successfully and earned {stars} stars.");
+                    $"Order #{order.Id} was paid successfully and earned {stars} Lions.");
             }
         }
 

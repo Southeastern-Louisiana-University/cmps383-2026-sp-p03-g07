@@ -1045,12 +1045,12 @@ public static class SeedHelper
             },
             new Reward
             {
-                Name = "Double Stars Weekend",
-                Description = "Bank bonus stars on your next mobile order",
+                Name = "Double Lions Weekend",
+                Description = "Bank bonus Lions on your next mobile order",
                 PointsCost = 180,
                 IsActive = true,
                 TierName = "Gold",
-                OfferType = "Stars",
+                OfferType = "Lions",
                 BonusStars = 50
             }
         );
@@ -1077,14 +1077,14 @@ public static class SeedHelper
             {
                 Name = "Silver",
                 MinPoints = 150,
-                Benefits = "1.5x stars, early seasonal access",
+                Benefits = "1.5x Lions, early seasonal access",
                 AccentColor = "#7c8a99"
             },
             new RewardTier
             {
                 Name = "Gold",
                 MinPoints = 300,
-                Benefits = "2x stars, premium offers, surprise drops",
+                Benefits = "2x Lions, premium offers, surprise drops",
                 AccentColor = "#d7a526"
             }
         );
@@ -1257,7 +1257,7 @@ public static class SeedHelper
                 UserId = null,
                 Channel = "InApp",
                 Title = "Spring menu drop",
-                Message = "Try the Brown Sugar Shaker and earn bonus stars this week."
+                Message = "Try the Brown Sugar Shaker and earn bonus Lions this week."
             },
             new Notification
             {

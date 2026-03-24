@@ -12,8 +12,6 @@ export default function OrderHistory({ navigate, query }: PageProps) {
 
   useEffect(() => {
     if (!user) {
-      setOrders([]);
-      setStatusMessage("");
       return;
     }
 
@@ -116,7 +114,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
             <div className="commerce-hero-pills">
               <span className="commerce-hero-pill">{orders.length} orders</span>
               <span className="commerce-hero-pill">{selectedOrderId ? `Selected #${selectedOrderId}` : "History view"}</span>
-              <span className="commerce-hero-pill">{user.points} stars on account</span>
+              <span className="commerce-hero-pill">{user.points} Lions on account</span>
             </div>
 
             {statusMessage ? <p className="commerce-inline-status commerce-inline-status-error">{statusMessage}</p> : null}

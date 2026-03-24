@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { locationsApi } from "../api/locationsApi";
+import { menuApi } from "../api/menuApi";
 import type { Location } from "../types/location.types";
+import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
 import {
   StoreOrderIcon,
@@ -11,15 +13,30 @@ import {
 
 export default function HomePage({ navigate }: PageProps) {
   const [locations, setLocations] = useState<Location[]>(fallbackLocations);
+  const [featuredItems, setFeaturedItems] = useState<MenuItem[]>([]);
 
   useEffect(() => {
     let isMounted = true;
-    void locationsApi
-      .getLocations()
-      .then((nextLocations) => {
-        if (isMounted && nextLocations.length > 0) setLocations(nextLocations);
+
+    void Promise.all([locationsApi.getLocations(), menuApi.getMenu()])
+      .then(([nextLocations, nextMenu]) => {
+        if (!isMounted) {
+          return;
+        }
+
+        if (nextLocations.length > 0) {
+          setLocations(nextLocations);
+        }
+
+        const nextFeaturedItems = nextMenu
+          .filter((item) => item.isAvailable && item.imageUrl)
+          .sort((left, right) => Number(right.isFeatured) - Number(left.isFeatured))
+          .slice(0, 3);
+
+        setFeaturedItems(nextFeaturedItems);
       })
       .catch(() => undefined);
+
     return () => { isMounted = false; };
   }, []);
 
@@ -63,6 +80,25 @@ export default function HomePage({ navigate }: PageProps) {
               <span className="store-display-bottom">LIONS</span>
             </h1>
           </div>
+
+          {featuredItems.length > 0 ? (
+            <div className="store-hero-product-strip">
+              {featuredItems.map((item) => (
+                <button
+                  className="store-hero-product-card"
+                  key={item.id}
+                  onClick={() => navigate("/menu")}
+                  type="button"
+                >
+                  <img alt={item.name} className="store-hero-product-image" src={item.imageUrl} />
+                  <div className="store-hero-product-copy">
+                    <span>{item.category}</span>
+                    <strong>{item.name}</strong>
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -107,7 +143,7 @@ export default function HomePage({ navigate }: PageProps) {
               className="home-feature-img"
             />
             <h3>Lions Rewards</h3>
-            <p>Earn points on every order. Redeem for free drinks, pastries, and exclusive member perks.</p>
+            <p>Earn Lions on every order. Redeem them for free drinks, pastries, and exclusive member perks.</p>
           </div>
           <div className="home-feature-card">
             <img

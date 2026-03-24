@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
+import { feedbackService } from '@/services/feedbackService';
 import { useAuth } from '@/store/authStore';
 
 const RATINGS = [1, 2, 3, 4, 5];
@@ -59,17 +60,15 @@ export default function FeedbackScreen() {
     setSubmitting(true);
     setErrorMessage('');
     try {
-      // Feedback endpoint - fire and forget, gracefully handle if not implemented yet
-      await fetch('/api/feedback', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ rating, comment }),
+      await feedbackService.submit({
+        category: 'Overall',
+        rating,
+        name: user.displayName || user.userName,
+        comment: comment.trim(),
       });
       setSubmitted(true);
-    } catch {
-      // If endpoint not available, still show success to not block UX
-      setSubmitted(true);
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : 'Unable to submit feedback.');
     } finally {
       setSubmitting(false);
     }

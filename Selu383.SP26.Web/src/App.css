@@ -762,6 +762,57 @@
   min-height: calc(100svh - 6.5rem);
 }
 
+.store-hero-product-strip {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(1.5rem, 3vh, 2.75rem);
+  width: min(70rem, calc(100% - 9rem));
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.store-hero-product-card {
+  padding: 0;
+  border: 1px solid rgba(246, 239, 207, 0.12);
+  border-radius: 28px;
+  overflow: hidden;
+  background: rgba(246, 239, 207, 0.08);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 18px 36px rgba(22, 26, 8, 0.22);
+  text-align: left;
+}
+
+.store-hero-product-image {
+  display: block;
+  width: 100%;
+  height: clamp(15rem, 22vw, 20rem);
+  object-fit: cover;
+}
+
+.store-hero-product-copy {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.15rem 1.2rem;
+  background: linear-gradient(180deg, rgba(40, 48, 13, 0.2), rgba(40, 48, 13, 0.45));
+}
+
+.store-hero-product-copy span {
+  color: rgba(246, 239, 207, 0.72);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.store-hero-product-copy strong {
+  color: #fff3cc;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
 .store-order-orbit {
   position: absolute;
   right: clamp(2rem, 5vw, 4.75rem);
@@ -2583,6 +2634,14 @@
     right: 0.15rem;
   }
 
+  .store-hero-product-strip {
+    width: min(58rem, calc(100% - 3rem));
+  }
+
+  .store-hero-product-image {
+    height: 12.5rem;
+  }
+
   .store-directory-grid {
     gap: 2.4rem 2.2rem;
   }
@@ -2666,6 +2725,18 @@
   .store-copy {
     top: 56%;
     max-width: calc(100vw - 2rem);
+  }
+
+  .store-hero-product-strip {
+    position: static;
+    width: 100%;
+    transform: none;
+    margin-top: 22rem;
+    grid-template-columns: 1fr;
+  }
+
+  .store-hero-product-image {
+    height: 12rem;
   }
 
   .store-display {
@@ -3470,7 +3541,7 @@ html {
 
 .home-feature-img {
   width: 100%;
-  height: 160px;
+  height: 220px;
   object-fit: cover;
   border-radius: 0;
   margin-bottom: 0;

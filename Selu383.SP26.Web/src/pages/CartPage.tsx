@@ -129,7 +129,7 @@ export default function CartPage({ navigate }: PageProps) {
                 <strong>${subtotal.toFixed(2)}</strong>
               </div>
               <div className="cart-summary-row">
-                <span>Stars earned</span>
+                <span>Lions earned</span>
                 <strong>{Math.max(Math.floor(subtotal), 1)}</strong>
               </div>
               <button className="cart-primary-pill" onClick={() => navigate("/checkout")} type="button">
