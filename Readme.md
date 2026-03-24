@@ -81,7 +81,5 @@ http://localhost:5173/#/admin
 
 ```
 
-
-
 Then choose one of the Expo targets shown in the terminal.
 
