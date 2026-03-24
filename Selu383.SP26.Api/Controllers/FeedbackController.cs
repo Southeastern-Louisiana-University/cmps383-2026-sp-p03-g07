@@ -14,11 +14,16 @@ public class FeedbackController(DataContext dataContext) : ControllerBase
     [HttpPost]
     public ActionResult<FeedbackDto> Create([FromBody] CreateFeedbackDto input)
     {
+        if (input.Rating < 1 || input.Rating > 5)
+        {
+            return BadRequest("Rating must be between 1 and 5.");
+        }
+
         var feedback = new Feedback
         {
             UserId = User.GetCurrentUserId(),
-            Name = input.Name.Trim(),
-            Category = input.Category,
+            Name = string.IsNullOrWhiteSpace(input.Name) ? "Anonymous" : input.Name.Trim(),
+            Category = string.IsNullOrWhiteSpace(input.Category) ? "Overall" : input.Category.Trim(),
             Rating = input.Rating,
             Comment = input.Comment.Trim(),
             CreatedAt = DateTime.UtcNow,

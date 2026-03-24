@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";

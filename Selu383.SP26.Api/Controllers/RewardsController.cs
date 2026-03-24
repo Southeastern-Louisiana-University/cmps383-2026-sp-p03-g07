@@ -112,7 +112,7 @@ public class RewardsController : ControllerBase
 
         if (user.Points < reward.PointsCost)
         {
-            return BadRequest("Insufficient points");
+            return BadRequest("Insufficient Lions");
         }
 
         // Deduct points
@@ -135,7 +135,7 @@ public class RewardsController : ControllerBase
             userId,
             "SMS",
             "Reward redeemed",
-            $"{reward.Name} redeemed for {reward.PointsCost} stars.");
+            $"{reward.Name} redeemed for {reward.PointsCost} Lions.");
 
         return Ok(new { message = "Reward redeemed successfully", remainingPoints = user.Points });
     }

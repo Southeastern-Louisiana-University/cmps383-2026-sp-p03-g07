@@ -51,20 +51,20 @@ public class LocationsController(DataContext dataContext) : ControllerBase
     [Authorize(Roles = RoleNames.Admin)]
     public ActionResult<LocationDto> Create(LocationDto dto)
     {
-        if (dto.TableCount < 1)
+        if (dto.TableCount < 1 || string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.Address))
         {
-            return BadRequest();
+            return BadRequest("Name, address, and table count are required.");
         }
 
         if (dto.ManagerId != null && !dataContext.Set<User>().Any(x => x.Id == dto.ManagerId))
         {
-            return BadRequest();
+            return BadRequest("Manager user was not found.");
         }
 
         var location = new Location
         {
-            Name = dto.Name,
-            Address = dto.Address,
+            Name = dto.Name.Trim(),
+            Address = dto.Address.Trim(),
             TableCount = dto.TableCount,
             ManagerId = dto.ManagerId
         };
@@ -81,9 +81,9 @@ public class LocationsController(DataContext dataContext) : ControllerBase
     [Authorize]
     public ActionResult<LocationDto> Update(int id, LocationDto dto)
     {
-        if (dto.TableCount < 1)
+        if (dto.TableCount < 1 || string.IsNullOrWhiteSpace(dto.Name) || string.IsNullOrWhiteSpace(dto.Address))
         {
-            return BadRequest();
+            return BadRequest("Name, address, and table count are required.");
         }
 
         var location = dataContext.Set<Location>()
@@ -103,14 +103,14 @@ public class LocationsController(DataContext dataContext) : ControllerBase
         {
             if (dto.ManagerId != null && !dataContext.Set<User>().Any(x => x.Id == dto.ManagerId))
             {
-                return BadRequest();
+                return BadRequest("Manager user was not found.");
             }
 
             location.ManagerId = dto.ManagerId;
         }
 
-        location.Name = dto.Name;
-        location.Address = dto.Address;
+        location.Name = dto.Name.Trim();
+        location.Address = dto.Address.Trim();
         location.TableCount = dto.TableCount;
 
         dataContext.SaveChanges();
@@ -139,7 +139,15 @@ public class LocationsController(DataContext dataContext) : ControllerBase
         }
 
         dataContext.Set<Location>().Remove(location);
-        dataContext.SaveChanges();
+
+        try
+        {
+            dataContext.SaveChanges();
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict("This location is still referenced by orders or reservations.");
+        }
 
         return Ok();
     }

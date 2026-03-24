@@ -18,7 +18,7 @@ export default function RewardsScreen() {
       return;
     }
     if ((balance?.points ?? 0) < pointsCost) {
-      setMessage('Not enough stars to redeem this reward.');
+      setMessage('Not enough Lions to redeem this reward.');
       return;
     }
     setRedeeming(rewardId);
@@ -37,16 +37,16 @@ export default function RewardsScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.heroCard}>
-        <Text style={styles.eyebrow}>Stars and offers</Text>
+        <Text style={styles.eyebrow}>Lions and offers</Text>
         <Text style={styles.balanceValue}>{balance?.points ?? 0}</Text>
         <Text style={styles.balanceLabel}>
           {balance
-            ? `${balance.currentTier} tier • ${balance.pointsToNextTier} to ${balance.nextTier}`
-            : 'Login to unlock tiers and earn stars'}
+            ? `${balance.currentTier} tier • ${balance.pointsToNextTier} Lions to ${balance.nextTier}`
+            : 'Login to unlock tiers and earn Lions'}
         </Text>
         {!user && (
           <Pressable style={styles.loginButton} onPress={() => router.push('/Auth/login')}>
-            <Text style={styles.loginButtonText}>Login to earn stars</Text>
+            <Text style={styles.loginButtonText}>Login to earn Lions</Text>
           </Pressable>
         )}
       </View>
@@ -65,7 +65,7 @@ export default function RewardsScreen() {
               <Text style={styles.rewardTitle}>{reward.name}</Text>
               <Text style={styles.rewardCopy}>{reward.description}</Text>
               <Text style={styles.rewardMeta}>
-                {reward.pointsCost} stars • {reward.tierName} • {reward.offerType}
+                {reward.pointsCost} Lions • {reward.tierName} • {reward.offerType}
               </Text>
             </View>
             <Pressable

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 
@@ -49,7 +49,7 @@ export default function OrderStatusScreen() {
   const [error, setError] = useState('');
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  async function loadOrder() {
+  const loadOrder = useCallback(async () => {
     if (!id) return;
     try {
       const data = await orderService.getOrder(Number(id));
@@ -60,7 +60,7 @@ export default function OrderStatusScreen() {
     } catch {
       setError('Could not load order status.');
     }
-  }
+  }, [id]);
 
   useEffect(() => {
     void loadOrder();
@@ -68,7 +68,7 @@ export default function OrderStatusScreen() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [id]);
+  }, [id, loadOrder]);
 
   if (error) {
     return (
