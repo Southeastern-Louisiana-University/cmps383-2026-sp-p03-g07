@@ -14,26 +14,27 @@ namespace Selu383.SP26.Api.Controllers;
 public class MenuController(DataContext dataContext) : ControllerBase
 {
     [HttpGet("categories")]
-    public async Task<ActionResult<IEnumerable<string>>> GetCategories()
+    public ActionResult<IEnumerable<string>> GetCategories()
     {
-        var categories = await dataContext.MenuItems
-            .Select(x => x.Category)
-            .Distinct()
-            .OrderBy(x => x)
-            .ToListAsync();
-
-        return Ok(categories);
+        return Ok(MenuCatalog.SupportedCategories);
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MenuItemDto>>> GetAll(
         [FromQuery] int? locationId,
         [FromQuery] string? category,
-        [FromQuery] string? search)
+        [FromQuery] string? search,
+        [FromQuery] bool includeUnsupported = false)
     {
         var query = dataContext.MenuItems
             .Include(x => x.Customizations)
             .AsQueryable();
+
+        var includeUnsupportedItems = includeUnsupported && (User.IsInRole(RoleNames.Admin) || User.IsInRole(RoleNames.Manager));
+        if (!includeUnsupportedItems)
+        {
+            query = query.Where(x => MenuCatalog.SupportedCategories.Contains(x.Category));
+        }
 
         if (locationId != null)
         {
@@ -42,7 +43,12 @@ public class MenuController(DataContext dataContext) : ControllerBase
 
         if (!string.IsNullOrWhiteSpace(category))
         {
-            query = query.Where(x => x.Category == category);
+            if (!MenuCatalog.TryNormalizeCategory(category, out var normalizedCategory))
+            {
+                return Ok(Array.Empty<MenuItemDto>());
+            }
+
+            query = query.Where(x => x.Category == normalizedCategory);
         }
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -63,13 +69,19 @@ public class MenuController(DataContext dataContext) : ControllerBase
     }
 
     [HttpGet("{id:int}")]
-    public async Task<ActionResult<MenuItemDto>> GetById(int id)
+    public async Task<ActionResult<MenuItemDto>> GetById(int id, [FromQuery] bool includeUnsupported = false)
     {
         var item = await dataContext.MenuItems
             .Include(x => x.Customizations)
             .FirstOrDefaultAsync(x => x.Id == id);
 
         if (item == null)
+        {
+            return NotFound();
+        }
+
+        var includeUnsupportedItem = includeUnsupported && (User.IsInRole(RoleNames.Admin) || User.IsInRole(RoleNames.Manager));
+        if (!includeUnsupportedItem && !MenuCatalog.IsSupportedCategory(item.Category))
         {
             return NotFound();
         }
@@ -92,6 +104,11 @@ public class MenuController(DataContext dataContext) : ControllerBase
             return BadRequest();
         }
 
+        if (!MenuCatalog.TryNormalizeCategory(dto.Category, out var normalizedCategory))
+        {
+            return BadRequest();
+        }
+
         var location = await dataContext.Locations.FirstOrDefaultAsync(x => x.Id == dto.LocationId);
         if (location == null)
         {
@@ -103,6 +120,7 @@ public class MenuController(DataContext dataContext) : ControllerBase
             return Forbid();
         }
 
+        dto.Category = normalizedCategory;
         var item = MapEntity(dto);
 
         dataContext.MenuItems.Add(item);
@@ -116,6 +134,11 @@ public class MenuController(DataContext dataContext) : ControllerBase
     public async Task<ActionResult<MenuItemDto>> Update(int id, MenuItemDto dto)
     {
         if (dto.Price < 0 || dto.InventoryCount < 0)
+        {
+            return BadRequest();
+        }
+
+        if (!MenuCatalog.TryNormalizeCategory(dto.Category, out var normalizedCategory))
         {
             return BadRequest();
         }
@@ -136,7 +159,7 @@ public class MenuController(DataContext dataContext) : ControllerBase
         }
 
         item.Name = dto.Name;
-        item.Category = dto.Category;
+        item.Category = normalizedCategory;
         item.Description = dto.Description;
         item.Price = dto.Price;
         item.IsAvailable = dto.IsAvailable;

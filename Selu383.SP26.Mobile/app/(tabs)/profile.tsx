@@ -75,7 +75,7 @@ export default function ProfileScreen() {
         )}
         <Text style={styles.title}>{user.displayName || user.userName}</Text>
         <Text style={styles.heroCopy}>
-          {user.points} stars • {user.roles.join(', ')}
+          {user.points} Lions • {user.roles.join(', ')}
         </Text>
         {user.birthday && (
           <Text style={styles.birthdayNote}>

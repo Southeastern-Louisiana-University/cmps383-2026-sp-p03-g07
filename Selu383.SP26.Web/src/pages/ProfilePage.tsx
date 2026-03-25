@@ -4,12 +4,12 @@ import { notificationsApi } from "../api/notificationsApi";
 import { useAuth } from "../store/authStore";
 import type { AppNotification } from "../types/notification.types";
 import type { PageProps } from "../types/router.types";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 const guestHighlights = [
   {
     title: "Track rewards",
-    description: "See your points balance, current tier, and redeemable perks in one place.",
+    description: "See your Lions balance, current tier, and redeemable perks in one place.",
   },
   {
     title: "Save order history",
@@ -17,7 +17,7 @@ const guestHighlights = [
   },
   {
     title: "Stay in the loop",
-    description: "Get storefront notifications for offers, order progress, and member drops.",
+    description: "Get account notifications for offers, order progress, and member drops.",
   },
 ];
 
@@ -45,6 +45,7 @@ export default function ProfilePage({ navigate }: PageProps) {
   const [profilePictureUrl, setProfilePictureUrl] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileMessage, setProfileMessage] = useState("");
+  const [clearingNotifications, setClearingNotifications] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -111,16 +112,30 @@ export default function ProfilePage({ navigate }: PageProps) {
     }
   }
 
+  async function clearNotifications() {
+    setClearingNotifications(true);
+    try {
+      await notificationsApi.clearAll();
+      setNotifications([]);
+      setStatusMessage("");
+    } catch (error) {
+      setStatusMessage(error instanceof Error ? error.message : "Unable to clear notifications.");
+    } finally {
+      setClearingNotifications(false);
+    }
+  }
+
   const unreadCount = useMemo(
     () => notifications.filter((notification) => !notification.isRead).length,
     [notifications],
   );
+  const isPrivilegedUser = !!user?.roles.some((role) => role === "Admin" || role === "Manager");
 
   if (!user) {
     return (
       <div className="commerce-page account-page">
         <header className="commerce-topbar">
-          <StorefrontTopRail activeTab="account" navigate={navigate} />
+          <CommerceTopRail activeTab="account" navigate={navigate} />
         </header>
 
         <section className="commerce-canvas">
@@ -129,8 +144,8 @@ export default function ProfilePage({ navigate }: PageProps) {
               <p className="commerce-kicker">Account</p>
               <h1>YOUR LIONS ACCOUNT, ALL IN ONE PLACE.</h1>
               <p className="commerce-hero-description">
-                Sign in to see points, rewards, notifications, and your order history in the same
-                storefront experience as the rest of the site.
+                Sign in to see Lions, rewards, notifications, and your order history in the same
+                Lions experience as the rest of the site.
               </p>
 
               <div className="commerce-hero-pills">
@@ -170,7 +185,7 @@ export default function ProfilePage({ navigate }: PageProps) {
   return (
     <div className="commerce-page account-page">
       <header className="commerce-topbar">
-        <StorefrontTopRail activeTab="account" navigate={navigate} />
+        <CommerceTopRail activeTab="account" navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">
@@ -182,13 +197,13 @@ export default function ProfilePage({ navigate }: PageProps) {
             <p className="commerce-kicker">Account</p>
             <h1>WELCOME BACK, {(user.displayName || user.userName).toUpperCase()}.</h1>
             <p className="commerce-hero-description">
-              Keep your rewards, notifications, and recent storefront activity tied together in one
+              Keep your rewards, notifications, and recent account activity tied together in one
               place while moving between orders, reservations, and redemptions.
             </p>
 
             <div className="commerce-hero-pills">
-              <span className="commerce-hero-pill">{user.points} stars</span>
-              <span className="commerce-hero-pill">{user.roles.join(", ")}</span>
+              <span className="commerce-hero-pill">{user.points} Lions</span>
+              <span className="commerce-hero-pill">{isPrivilegedUser ? user.roles.join(", ") : "Lions member"}</span>
               <span className="commerce-hero-pill">{unreadCount} unread alerts</span>
             </div>
 
@@ -243,8 +258,8 @@ export default function ProfilePage({ navigate }: PageProps) {
               <strong>#{user.id}</strong>
             </div>
             <div className="commerce-summary-row">
-              <span>Roles</span>
-              <strong>{user.roles.join(", ")}</strong>
+              <span>{isPrivilegedUser ? "Roles" : "Account type"}</span>
+              <strong>{isPrivilegedUser ? user.roles.join(", ") : "Member"}</strong>
             </div>
             <div className="commerce-summary-row">
               <span>Unread alerts</span>
@@ -272,19 +287,23 @@ export default function ProfilePage({ navigate }: PageProps) {
 
             <div className="account-stat-grid">
               <article className="account-stat-card">
-                <span>Stars balance</span>
+                <span>Lions balance</span>
                 <strong>{user.points}</strong>
                 <p>Use your account tab as the quickest route back into rewards and redemptions.</p>
               </article>
               <article className="account-stat-card">
-                <span>Roles</span>
-                <strong>{user.roles.join(", ")}</strong>
-                <p>Permissions follow this list across admin, storefront, and checkout experiences.</p>
+                <span>{isPrivilegedUser ? "Roles" : "Account access"}</span>
+                <strong>{isPrivilegedUser ? user.roles.join(", ") : "Member"}</strong>
+                <p>
+                  {isPrivilegedUser
+                    ? "Permissions follow this list across admin, account, and checkout experiences."
+                    : "Your account is ready for rewards, reservations, order history, and member updates."}
+                </p>
               </article>
               <article className="account-stat-card">
                 <span>Notifications</span>
                 <strong>{loadingNotifications ? "Refreshing" : notifications.length}</strong>
-                <p>{loadingNotifications ? "Pulling your latest account alerts now." : "Messages from orders, rewards, and storefront drops."}</p>
+                <p>{loadingNotifications ? "Pulling your latest account alerts now." : "Messages from orders, rewards, and member drops."}</p>
               </article>
             </div>
           </section>
@@ -295,7 +314,19 @@ export default function ProfilePage({ navigate }: PageProps) {
                 <p className="commerce-panel-kicker">Inbox</p>
                 <h2>Notifications</h2>
               </div>
-              <span>{notifications.length} total</span>
+              <div style={{ display: "flex", gap: "0.75rem", alignItems: "center", flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <span>{notifications.length} total</span>
+                {notifications.length > 0 ? (
+                  <button
+                    className="commerce-secondary-button"
+                    disabled={clearingNotifications}
+                    onClick={() => void clearNotifications()}
+                    type="button"
+                  >
+                    {clearingNotifications ? "Clearing..." : "Clear all"}
+                  </button>
+                ) : null}
+              </div>
             </div>
 
             {notifications.length === 0 ? (

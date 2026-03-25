@@ -7,6 +7,10 @@ import {
   type PropsWithChildren,
 } from "react";
 import type { MenuItem } from "../types/menu.types";
+import {
+  filterRewardsExclusiveNamedItems,
+  isRewardsExclusiveItemName,
+} from "../utils/rewardsExclusiveItems";
 
 export type CartItem = {
   id: string;
@@ -37,7 +41,14 @@ function readStoredCart(): CartItem[] {
   }
 
   try {
-    return JSON.parse(savedValue) as CartItem[];
+    const parsedItems = JSON.parse(savedValue) as CartItem[];
+    const filteredItems = filterRewardsExclusiveNamedItems(parsedItems);
+
+    if (filteredItems.length !== parsedItems.length) {
+      writeStoredCart(filteredItems);
+    }
+
+    return filteredItems;
   } catch {
     return [];
   }
@@ -57,6 +68,10 @@ export function CartProvider({ children }: PropsWithChildren) {
       items,
       subtotal,
       addItem(menuItem) {
+        if (isRewardsExclusiveItemName(menuItem.name)) {
+          return;
+        }
+
         const defaultCustomizations = menuItem.customizations
           .filter((customization) => customization.isDefault)
           .map((customization) => customization.optionName)

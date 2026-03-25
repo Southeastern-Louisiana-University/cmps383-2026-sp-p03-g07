@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
@@ -89,7 +90,7 @@ const locationProfiles: Record<number, StoreProfile> = {
   3: featuredProfiles[2],
 };
 
-type StorefrontRailProps = {
+type CommerceRailProps = {
   activeTab?: "locations" | "reserve" | "order" | "rewards" | "account" | "feedback";
   navigate: PageProps["navigate"];
   labels?: Partial<{
@@ -295,7 +296,7 @@ export function StoreLocationIcon({ variant }: { variant: StoreProfile["icon"] }
   );
 }
 
-export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides }: StorefrontRailProps) {
+export function CommerceTopRail({ activeTab, navigate, labels: labelOverrides }: CommerceRailProps) {
   const { items } = useCart();
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const labels = {
@@ -316,7 +317,7 @@ export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides 
         </span>
       </button>
 
-      <nav className="store-rail-links store-rail-links-primary" aria-label="Storefront navigation">
+      <nav className="store-rail-links store-rail-links-primary" aria-label="Primary navigation">
         <button className={getLinkClass(activeTab === "order")} onClick={() => navigate("/menu")} type="button">
           {resolvedLabels.order}
         </button>

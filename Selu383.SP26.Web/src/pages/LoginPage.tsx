@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../store/authStore";
 import type { PageProps } from "../types/router.types";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 export default function LoginPage({ navigate, query }: PageProps) {
   const { login, register } = useAuth();
@@ -32,14 +32,14 @@ export default function LoginPage({ navigate, query }: PageProps) {
   return (
     <div className="commerce-page auth-page">
       <header className="commerce-topbar">
-        <StorefrontTopRail activeTab="account" navigate={navigate} />
+        <CommerceTopRail activeTab="account" navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">
         <section className="commerce-hero auth-hero">
           <div className="commerce-hero-copy">
             <p className="commerce-kicker">Account access</p>
-            <h1>{mode === "login" ? "SIGN IN TO THE STOREFRONT." : "CREATE YOUR STOREFRONT ACCOUNT."}</h1>
+            <h1>{mode === "login" ? "SIGN IN TO YOUR ACCOUNT." : "CREATE YOUR ACCOUNT."}</h1>
             <p className="commerce-hero-description">
               Use the same account to connect rewards, orders, reservations, gift cards, and account
               notifications across the whole Lions experience.

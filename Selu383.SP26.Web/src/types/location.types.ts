@@ -6,6 +6,8 @@ export type Location = {
   managerId?: number | null;
 };
 
+export type LocationInput = Omit<Location, "id">;
+
 export type Reservation = {
   id: number;
   userId: number;

@@ -6,6 +6,7 @@ import type { PageProps } from "../types/router.types";
 const adminLinks = [
   { path: "/admin/orders", label: "Manage Orders" },
   { path: "/admin/menu", label: "Manage Menu" },
+  { path: "/admin/locations", label: "Manage Locations" },
   { path: "/admin/reservations", label: "Reservations" },
   { path: "/admin/tables", label: "Tables" },
 ];

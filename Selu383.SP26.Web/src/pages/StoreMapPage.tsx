@@ -4,11 +4,11 @@ import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
 import {
   StoreLocationIcon,
-  StorefrontTopRail,
+  CommerceTopRail,
   fallbackLocations,
   getDirectionsUrl,
   getProfile,
-} from "./storefrontShared";
+} from "./commerceShared";
 
 export default function StoreMapPage({ navigate }: PageProps) {
   const [locations, setLocations] = useState<Location[]>(fallbackLocations);
@@ -33,7 +33,7 @@ export default function StoreMapPage({ navigate }: PageProps) {
   return (
     <div className="store-directory-page">
       <section className="store-directory-hero">
-        <StorefrontTopRail activeTab="locations" navigate={navigate} />
+        <CommerceTopRail activeTab="locations" navigate={navigate} />
 
         <div className="store-directory-grid">
           {locations.map((location, index) => {

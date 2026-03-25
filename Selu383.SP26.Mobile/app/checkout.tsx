@@ -26,9 +26,7 @@ export default function CheckoutScreen() {
   useEffect(() => {
     void locationService.getLocations().then((locs) => {
       setLocations(locs);
-      if (!locationId && locs.length > 0) {
-        setLocationId(locs[0].id);
-      }
+      setLocationId((currentLocationId) => currentLocationId ?? locs[0]?.id ?? null);
     }).catch(() => {});
   }, []);
 
@@ -94,9 +92,9 @@ export default function CheckoutScreen() {
 
       {!user && (
         <View style={styles.guestBanner}>
-          <Text style={styles.guestBannerText}>Checking out as guest - no points earned.</Text>
+          <Text style={styles.guestBannerText}>Checking out as guest - no Lions earned.</Text>
           <Pressable onPress={() => router.push('/Auth/login')}>
-            <Text style={styles.guestBannerLink}>Sign in to earn stars</Text>
+            <Text style={styles.guestBannerLink}>Sign in to earn Lions</Text>
           </Pressable>
         </View>
       )}
@@ -178,7 +176,7 @@ export default function CheckoutScreen() {
         ))}
         <Text style={[styles.cardCopy, styles.total]}>Total: ${subtotal.toFixed(2)}</Text>
         <Text style={styles.cardCopy}>
-          Estimated stars: {Math.max(Math.floor(subtotal), 1)}
+          Estimated Lions: {Math.max(Math.floor(subtotal), 1)}
         </Text>
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
         <Pressable

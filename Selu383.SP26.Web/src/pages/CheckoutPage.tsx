@@ -6,7 +6,8 @@ import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
-import { StorefrontTopRail } from "./storefrontShared";
+import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems";
+import { CommerceTopRail } from "./commerceShared";
 
 const orderTypes = [
   { value: "pickup", label: "Pickup" },
@@ -16,7 +17,7 @@ const orderTypes = [
 
 export default function CheckoutPage({ navigate }: PageProps) {
   const { user } = useAuth();
-  const { clear, items, subtotal } = useCart();
+  const { clear, items } = useCart();
   const [locations, setLocations] = useState<Location[]>([]);
   const [locationId, setLocationId] = useState(1);
   const [orderType, setOrderType] = useState("pickup");
@@ -26,6 +27,11 @@ export default function CheckoutPage({ navigate }: PageProps) {
   const [cardLastFour, setCardLastFour] = useState("4242");
   const [statusMessage, setStatusMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const visibleItems = useMemo(() => filterRewardsExclusiveNamedItems(items), [items]);
+  const visibleSubtotal = useMemo(
+    () => visibleItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [visibleItems],
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -49,10 +55,10 @@ export default function CheckoutPage({ navigate }: PageProps) {
     };
   }, []);
 
-  const isReady = useMemo(() => items.length > 0, [items.length]);
+  const isReady = useMemo(() => visibleItems.length > 0, [visibleItems.length]);
   const selectedLocation = locations.find((location) => location.id === locationId);
   const selectedOrderType = orderTypes.find((option) => option.value === orderType)?.label ?? "Pickup";
-  const starsEarned = Math.max(Math.floor(subtotal), 1);
+  const starsEarned = Math.max(Math.floor(visibleSubtotal), 1);
 
   async function submitCheckout() {
     if (!isReady) {
@@ -68,8 +74,8 @@ export default function CheckoutPage({ navigate }: PageProps) {
         orderType,
         pickupName,
         specialInstructions,
-        total: subtotal,
-        items: items.map((item) => ({
+        total: visibleSubtotal,
+        items: visibleItems.map((item) => ({
           menuItemId: item.menuItemId,
           itemName: item.name,
           quantity: item.quantity,
@@ -83,7 +89,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
       await paymentsApi.checkout({
         orderId: order.id,
         paymentMethod: "Card",
-        amount: subtotal,
+        amount: visibleSubtotal,
         giftCardCode,
         cardLastFour,
       });
@@ -100,7 +106,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
   return (
     <div className="commerce-page reserve-page">
       <header className="commerce-topbar">
-        <StorefrontTopRail activeTab="reserve" navigate={navigate} />
+        <CommerceTopRail activeTab="reserve" navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">
@@ -110,13 +116,13 @@ export default function CheckoutPage({ navigate }: PageProps) {
             <h1>BOOK YOUR TABLE.</h1>
             <p className="commerce-hero-description">
               Set the store, choose how you want the order handled, and keep payment details ready so the
-              checkout feels as smooth as the storefront.
+              checkout feels as smooth as the rest of the experience.
             </p>
 
             <div className="commerce-hero-pills">
               <span className="commerce-hero-pill">{selectedLocation?.name ?? "Choose a store"}</span>
               <span className="commerce-hero-pill">{selectedOrderType}</span>
-              <span className="commerce-hero-pill">{items.length} items reserved</span>
+              <span className="commerce-hero-pill">{visibleItems.length} items reserved</span>
             </div>
           </div>
 
@@ -126,14 +132,14 @@ export default function CheckoutPage({ navigate }: PageProps) {
 
             <div className="commerce-summary-row">
               <span>Items</span>
-              <strong>{items.length}</strong>
+              <strong>{visibleItems.length}</strong>
             </div>
             <div className="commerce-summary-row">
               <span>Total</span>
-              <strong>${subtotal.toFixed(2)}</strong>
+              <strong>${visibleSubtotal.toFixed(2)}</strong>
             </div>
             <div className="commerce-summary-row">
-              <span>Stars after payment</span>
+              <span>Lions after payment</span>
               <strong>{starsEarned}</strong>
             </div>
 
@@ -172,7 +178,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
 
             {!user && (
               <div style={{ padding: "12px 16px", borderRadius: 10, backgroundColor: "#fff3cd", marginBottom: 8 }}>
-                <strong>Checking out as guest.</strong> <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">Sign in</button> to earn stars and save order history.
+                <strong>Checking out as guest.</strong> <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">Sign in</button> to earn Lions and save order history.
               </div>
             )}
 
@@ -246,7 +252,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
               </button>
             </div>
 
-            {items.length === 0 ? (
+            {visibleItems.length === 0 ? (
               <div className="commerce-empty-state">
                 <h3>Your cart is still empty.</h3>
                 <p>Add menu items first, then come back here to finalize the reservation.</p>
@@ -256,7 +262,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
               </div>
             ) : (
               <div className="reserve-lineup">
-                {items.map((item) => (
+                {visibleItems.map((item) => (
                   <article className="reserve-line-card" key={item.id}>
                     <div className="reserve-line-copy">
                       <span>{item.quantity}x</span>

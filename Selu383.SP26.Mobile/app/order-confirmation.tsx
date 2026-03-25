@@ -40,7 +40,7 @@ export default function OrderConfirmationScreen() {
             </Text>
           ))}
           <Text style={styles.totalText}>Total: ${order.total.toFixed(2)}</Text>
-          <Text style={styles.starsText}>+{order.starsEarned} stars earned</Text>
+          <Text style={styles.starsText}>+{order.starsEarned} Lions earned</Text>
         </View>
       ) : (
         <View style={styles.card}>
