@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { locationsApi } from "../api/locationsApi";
 import { menuApi } from "../api/menuApi";
 import { resolveApiAssetUrl } from "../services/api";
@@ -12,7 +12,6 @@ const menuDisplayCategories = [
   "Coffee",
   "Matcha",
   "Pastries",
-  "Bread",
   "Breakfast",
   "Sandwiches & Bagels",
   "Salads & Quiches",
@@ -22,6 +21,7 @@ const menuDisplayCategories = [
 
 type MenuDisplayCategory = (typeof menuDisplayCategories)[number];
 type MenuSort = "selected" | "price-low" | "price-high" | "name";
+type MenuStatusTone = "error" | "success";
 type MenuDisplayMeta = {
   locationLabel: string;
 };
@@ -54,7 +54,7 @@ function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
   }
 
   if (/\bbread\b|\bloaf\b/.test(itemName)) {
-    return "Bread";
+    return "Pastries";
   }
 
   if (item.preparationTag.toLowerCase() === "bakery" || /croissant|muffin|pastry|brioche|roll/.test(text)) {
@@ -118,6 +118,30 @@ export default function MenuPage({ navigate }: PageProps) {
   const [selectedSort, setSelectedSort] = useState<MenuSort>("selected");
   const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState("");
+  const [statusTone, setStatusTone] = useState<MenuStatusTone>("success");
+  const statusTimeoutRef = useRef<number | null>(null);
+
+  function clearStatusTimeout() {
+    if (statusTimeoutRef.current !== null) {
+      window.clearTimeout(statusTimeoutRef.current);
+      statusTimeoutRef.current = null;
+    }
+  }
+
+  function showAddToCartMessage() {
+    clearStatusTimeout();
+    setStatusTone("success");
+    setStatusMessage("1 item has been added to your cart.");
+    statusTimeoutRef.current = window.setTimeout(() => {
+      setStatusMessage("");
+      statusTimeoutRef.current = null;
+    }, 2500);
+  }
+
+  function handleAddItem(menuItem: MenuItem) {
+    addItem(menuItem);
+    showAddToCartMessage();
+  }
 
   useEffect(() => {
     let isMounted = true;
@@ -134,6 +158,7 @@ export default function MenuPage({ navigate }: PageProps) {
         setItems(nextItems);
         setLocations(nextLocations);
         setSelectedLocationId((currentLocationId) => currentLocationId || cartLocationId);
+        clearStatusTimeout();
         setStatusMessage("");
       })
       .catch((error) => {
@@ -141,6 +166,8 @@ export default function MenuPage({ navigate }: PageProps) {
           return;
         }
 
+        clearStatusTimeout();
+        setStatusTone("error");
         setStatusMessage(error instanceof Error ? error.message : "Unable to load the online ordering menu.");
       })
       .finally(() => {
@@ -151,6 +178,7 @@ export default function MenuPage({ navigate }: PageProps) {
 
     return () => {
       isMounted = false;
+      clearStatusTimeout();
     };
   }, [cartLocationId]);
 
@@ -290,7 +318,11 @@ export default function MenuPage({ navigate }: PageProps) {
           </div>
         </div>
 
-        {statusMessage ? <p className="commerce-inline-status commerce-inline-status-error">{statusMessage}</p> : null}
+        {statusMessage ? (
+          <p className={`commerce-inline-status ${statusTone === "error" ? "commerce-inline-status-error" : "commerce-inline-status-success"}`}>
+            {statusMessage}
+          </p>
+        ) : null}
 
         {isLoading ? (
           <div className="order-bakery-empty-state">
@@ -335,7 +367,7 @@ export default function MenuPage({ navigate }: PageProps) {
                       <button
                         className="order-bakery-add-button"
                         disabled={!canAddItem}
-                        onClick={() => addItem(item)}
+                        onClick={() => handleAddItem(item)}
                         type="button"
                       >
                         {canAddItem ? "Add" : "Store locked"}

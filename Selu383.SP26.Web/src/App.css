@@ -1865,6 +1865,10 @@
   color: #8b4129;
 }
 
+.commerce-inline-status-success {
+  color: #5f6a1a;
+}
+
 .commerce-panel,
 .commerce-summary-card,
 .order-results-panel {
