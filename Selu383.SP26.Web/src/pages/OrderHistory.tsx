@@ -3,7 +3,7 @@ import { orderApi } from "../api/orderApi";
 import { useAuth } from "../store/authStore";
 import type { Order } from "../types/order.types";
 import type { PageProps } from "../types/router.types";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 export default function OrderHistory({ navigate, query }: PageProps) {
   const { user } = useAuth();
@@ -40,7 +40,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
     return (
       <div className="commerce-page orders-page">
         <header className="commerce-topbar">
-          <StorefrontTopRail activeTab="order" navigate={navigate} />
+          <CommerceTopRail activeTab="order" navigate={navigate} />
         </header>
 
         <section className="commerce-canvas">
@@ -50,7 +50,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
               <h1>SEE EVERY ORDER, REORDER, AND TRACK IT LIVE.</h1>
               <p className="commerce-hero-description">
                 Sign in to view your order timeline, reopen favorites, and jump straight into live order
-                tracking from the same storefront flow.
+                tracking from the same account flow.
               </p>
 
               <div className="commerce-hero-pills">
@@ -76,7 +76,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
             <div className="orders-feature-grid">
               <article className="orders-feature-card">
                 <strong>Track status</strong>
-                <p>Move from received to preparing to pickup without leaving the storefront layout.</p>
+                <p>Move from received to preparing to pickup without leaving the order flow.</p>
               </article>
               <article className="orders-feature-card">
                 <strong>Reorder favorites</strong>
@@ -98,14 +98,14 @@ export default function OrderHistory({ navigate, query }: PageProps) {
   return (
     <div className="commerce-page orders-page">
       <header className="commerce-topbar">
-        <StorefrontTopRail activeTab="order" navigate={navigate} />
+        <CommerceTopRail activeTab="order" navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">
         <section className="commerce-hero orders-hero">
           <div className="commerce-hero-copy">
             <p className="commerce-kicker">Orders</p>
-            <h1>YOUR STOREFRONT HISTORY, ALL IN ONE TIMELINE.</h1>
+            <h1>YOUR ORDER HISTORY, ALL IN ONE TIMELINE.</h1>
             <p className="commerce-hero-description">
               Review previous visits, track the current order, and reopen a favorite run without leaving
               the Lions visual system.

@@ -1,11 +1,15 @@
 using System;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Selu383.SP26.Api.Data;
 
 #nullable disable
 
 namespace Selu383.SP26.Api.Migrations
 {
     /// <inheritdoc />
+    [DbContext(typeof(DataContext))]
+    [Migration("20260316200000_AddFeedback")]
     public partial class AddFeedback : Migration
     {
         /// <inheritdoc />

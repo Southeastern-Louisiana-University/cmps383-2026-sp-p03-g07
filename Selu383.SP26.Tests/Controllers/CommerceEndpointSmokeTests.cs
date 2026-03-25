@@ -79,6 +79,22 @@ public class CommerceEndpointSmokeTests
     }
 
     [TestMethod]
+    public async Task FeedbackSubmission_WorksForAnonymousUsers()
+    {
+        using var webClient = context.GetStandardWebClient();
+
+        var response = await webClient.PostAsJsonAsync("/api/feedback", new
+        {
+            category = "Overall",
+            rating = 5,
+            name = "",
+            comment = "Loved it."
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [TestMethod]
     public async Task MemberCommerceFlow_WorksAcrossAuthOrdersPaymentsReservationsAndNotifications()
     {
         using var webClient = context.GetStandardWebClient();
@@ -188,6 +204,14 @@ public class CommerceEndpointSmokeTests
 
         var markReadResponse = await webClient.PutAsync($"/api/notifications/{notifications![0].Id}/read", null);
         markReadResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var clearNotificationsResponse = await webClient.DeleteAsync("/api/notifications");
+        clearNotificationsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var clearedNotificationsResponse = await webClient.GetAsync("/api/notifications");
+        clearedNotificationsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var clearedNotifications = await clearedNotificationsResponse.Content.ReadAsJsonAsync<List<NotificationDto>>();
+        clearedNotifications.Should().BeEmpty();
 
         var logoutResponse = await webClient.PostAsync("/api/authentication/logout", null);
         logoutResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -299,7 +323,7 @@ public class CommerceEndpointSmokeTests
         var managerMenuCreateResponse = await webClient.PostAsJsonAsync("/api/menu", new
         {
             name = "Manager Espresso",
-            category = "Drinks",
+            category = "Coffee",
             description = "Manager-created menu item",
             price = 4.95m,
             isAvailable = true,
@@ -328,7 +352,7 @@ public class CommerceEndpointSmokeTests
         {
             id = managedMenuItem.Id,
             name = "Manager Espresso Updated",
-            category = "Drinks",
+            category = "Coffee",
             description = "Updated by admin",
             price = 5.25m,
             isAvailable = true,
@@ -348,6 +372,38 @@ public class CommerceEndpointSmokeTests
 
         var deleteLocationResponse = await webClient.DeleteAsync($"/api/locations/{managedLocation.Id}");
         deleteLocationResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [TestMethod]
+    public async Task ClearingNotifications_HidesThemForCurrentUserOnly()
+    {
+        using var bobClient = context.GetStandardWebClient();
+
+        await bobClient.AssertLoggedInAsBob();
+
+        var bobNotificationsResponse = await bobClient.GetAsync("/api/notifications");
+        bobNotificationsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var bobNotifications = await bobNotificationsResponse.Content.ReadAsJsonAsync<List<NotificationDto>>();
+        bobNotifications.Should().NotBeNullOrEmpty();
+        bobNotifications.Should().Contain(notification => notification.Title == "Spring menu drop");
+
+        var clearResponse = await bobClient.DeleteAsync("/api/notifications");
+        clearResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var clearedForBobResponse = await bobClient.GetAsync("/api/notifications");
+        clearedForBobResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var clearedForBob = await clearedForBobResponse.Content.ReadAsJsonAsync<List<NotificationDto>>();
+        clearedForBob.Should().BeEmpty();
+
+        using var sueClient = context.GetStandardWebClient();
+
+        await sueClient.AssertLoggedInAsSue();
+
+        var sueNotificationsResponse = await sueClient.GetAsync("/api/notifications");
+        sueNotificationsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var sueNotifications = await sueNotificationsResponse.Content.ReadAsJsonAsync<List<NotificationDto>>();
+        sueNotifications.Should().NotBeNullOrEmpty();
+        sueNotifications.Should().Contain(notification => notification.Title == "Spring menu drop");
     }
 
     private sealed class LocationDto

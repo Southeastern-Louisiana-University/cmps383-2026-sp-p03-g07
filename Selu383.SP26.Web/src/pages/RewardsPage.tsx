@@ -6,7 +6,7 @@ import { useAuth } from "../store/authStore";
 import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
 import type { PointsBalance, Reward, RewardHistoryItem, RewardTier } from "../types/reward.types";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 const fallbackTiers: RewardTier[] = [
   {
@@ -104,6 +104,10 @@ function formatHistoryDate(redeemedAt: string) {
     day: "numeric",
     year: "numeric",
   }).format(new Date(redeemedAt));
+}
+
+function isRewardsHeroItem(item?: MenuItem | null): item is MenuItem {
+  return !!item?.isAvailable && !!item.imageUrl;
 }
 
 function getRewardMenuItem(reward: Reward, menuItems: MenuItem[], index: number) {
@@ -231,7 +235,7 @@ export default function RewardsPage({ navigate }: PageProps) {
 
   const featuredMenuItems = useMemo(() => {
     return menuItems
-      .filter((item) => item.isAvailable && item.imageUrl)
+      .filter(isRewardsHeroItem)
       .sort((left, right) => Number(right.isFeatured) - Number(left.isFeatured))
       .slice(0, 5);
   }, [menuItems]);
@@ -244,7 +248,10 @@ export default function RewardsPage({ navigate }: PageProps) {
   }, [menuItems, rewards]);
 
   const safeHeroIndex = heroIndex >= featuredMenuItems.length ? 0 : heroIndex;
-  const activeHeroItem = featuredMenuItems[safeHeroIndex] ?? rewardCards[0]?.menuItem;
+  const fallbackHeroItem = rewardCards
+    .map(({ menuItem }) => menuItem)
+    .find(isRewardsHeroItem);
+  const activeHeroItem = featuredMenuItems[safeHeroIndex] ?? fallbackHeroItem;
   const resolvedTiers = tiers.length > 0 ? tiers : fallbackTiers;
   const availablePoints = balance?.points ?? user?.points ?? 0;
   const recentReward = history[0];
@@ -267,7 +274,7 @@ export default function RewardsPage({ navigate }: PageProps) {
   return (
     <div className="rewards-showcase">
       <header className="rewards-topbar">
-        <StorefrontTopRail activeTab="rewards" navigate={navigate} />
+        <CommerceTopRail activeTab="rewards" navigate={navigate} />
       </header>
 
       <section className="rewards-canvas">
