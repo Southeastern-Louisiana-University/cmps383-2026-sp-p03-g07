@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
+import { API_BASE_URL } from '@/constants/api';
 import { menuService } from '@/services/menuService';
 import { useAuth } from '@/store/authStore';
 import type { MenuItem } from '@/types/app';
@@ -47,7 +48,7 @@ export default function AdminMenuManagement() {
   async function saveEdit(item: MenuItem) {
     setSaving(true);
     try {
-      await fetch(`/api/menu/${item.id}`, {
+      await fetch(`${API_BASE_URL}/api/menu/${item.id}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
@@ -75,7 +76,7 @@ export default function AdminMenuManagement() {
 
   async function toggleAvailability(item: MenuItem) {
     try {
-      await fetch(`/api/menu/${item.id}`, {
+      await fetch(`${API_BASE_URL}/api/menu/${item.id}`, {
         method: 'PUT',
         credentials: 'include',
         headers: { 'Content-Type': 'application/json' },

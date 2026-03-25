@@ -120,4 +120,42 @@ public class ReservationsController(DataContext dataContext) : ControllerBase
 
         return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }
+
+    [Authorize]
+    [HttpPut("{id}/cancel")]
+    public ActionResult<ReservationDto> Cancel(int id)
+    {
+        var currentUserId = User.GetCurrentUserId();
+        if (currentUserId == null)
+        {
+            return Unauthorized();
+        }
+
+        var reservation = dataContext.Set<Reservation>().FirstOrDefault(x => x.Id == id);
+        if (reservation == null)
+        {
+            return NotFound();
+        }
+
+        var managesLocation = dataContext.Set<Location>()
+            .Any(x => x.Id == reservation.LocationId && x.ManagerId == currentUserId);
+
+        if (!User.IsInRole(RoleNames.Admin) && reservation.UserId != currentUserId && !managesLocation)
+        {
+            return Forbid();
+        }
+
+        reservation.Status = "Cancelled";
+        dataContext.SaveChanges();
+
+        return Ok(new ReservationDto
+        {
+            Id = reservation.Id,
+            UserId = reservation.UserId,
+            LocationId = reservation.LocationId,
+            ReservationTime = reservation.ReservationTime,
+            PartySize = reservation.PartySize,
+            Status = reservation.Status
+        });
+    }
 }
