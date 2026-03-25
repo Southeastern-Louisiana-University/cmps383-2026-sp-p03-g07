@@ -13,6 +13,10 @@ export default defineConfig({
         target: apiProxyTarget,
         changeOrigin: true,
       },
+      "/menu": {
+        target: apiProxyTarget,
+        changeOrigin: true,
+      },
       "/swagger": {
         target: apiProxyTarget,
         changeOrigin: true,

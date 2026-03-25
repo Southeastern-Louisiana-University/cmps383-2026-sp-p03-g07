@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { menuApi } from "../api/menuApi";
+import { resolveApiAssetUrl } from "../services/api";
 import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 import type { MenuItem } from "../types/menu.types";
@@ -97,7 +98,7 @@ export default function CartPage({ navigate }: PageProps) {
                       <div
                         aria-hidden="true"
                         className="cart-line-image"
-                        style={menuItem?.imageUrl ? { backgroundImage: `url(${menuItem.imageUrl})` } : undefined}
+                        style={menuItem?.imageUrl ? { backgroundImage: `url(${resolveApiAssetUrl(menuItem.imageUrl)})` } : undefined}
                       />
                       <div className="cart-line-copy">
                         <h3>{item.name}</h3>
@@ -158,7 +159,7 @@ export default function CartPage({ navigate }: PageProps) {
                   <div
                     aria-hidden="true"
                     className="cart-product-image"
-                    style={{ backgroundImage: `url(${item.imageUrl})` }}
+                    style={{ backgroundImage: `url(${resolveApiAssetUrl(item.imageUrl)})` }}
                   />
                 </div>
                 <div className="cart-product-copy">

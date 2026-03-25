@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { locationsApi } from "../api/locationsApi";
 import { menuApi } from "../api/menuApi";
+import { resolveApiAssetUrl } from "../services/api";
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { MenuItem } from "../types/menu.types";
@@ -21,6 +22,9 @@ const menuDisplayCategories = [
 
 type MenuDisplayCategory = (typeof menuDisplayCategories)[number];
 type MenuSort = "selected" | "price-low" | "price-high" | "name";
+type MenuDisplayMeta = {
+  locationLabel: string;
+};
 
 const sortOptions: Array<{ value: MenuSort; label: string }> = [
   { value: "selected", label: "Selected" },
@@ -33,9 +37,13 @@ function getItemSearchText(item: MenuItem) {
   return `${item.name} ${item.category} ${item.description} ${item.preparationTag}`.toLowerCase();
 }
 
-function getDisplayCategory(item: MenuItem): MenuDisplayCategory {
+function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
   const text = getItemSearchText(item);
   const itemName = item.name.toLowerCase();
+
+  if (item.category === "Gifts") {
+    return null;
+  }
 
   if (text.includes("matcha")) {
     return "Matcha";
@@ -91,6 +99,15 @@ function sortMenuItems(items: MenuItem[], sort: MenuSort) {
   }
 }
 
+function getMenuItemGroupingKey(item: MenuItem) {
+  return [
+    item.name.trim().toLowerCase(),
+    item.category.trim().toLowerCase(),
+    item.preparationTag.trim().toLowerCase(),
+    item.price.toFixed(2),
+  ].join("::");
+}
+
 export default function MenuPage({ navigate }: PageProps) {
   const { addItem, items: cartItems } = useCart();
   const cartLocationId = cartItems[0]?.locationId ?? 0;
@@ -142,19 +159,58 @@ export default function MenuPage({ navigate }: PageProps) {
     [locations],
   );
   const lockedLocationId = cartLocationId;
-  const locationFilteredItems = useMemo(
-    () => items.filter((item) => item.isAvailable && (!selectedLocationId || item.locationId === selectedLocationId)),
-    [items, selectedLocationId],
-  );
-  const categoryCounts = useMemo(
-    () =>
-      new Map(
-        menuDisplayCategories.map((category) => [
-          category,
-          locationFilteredItems.filter((item) => getDisplayCategory(item) === category).length,
-        ]),
-      ),
-    [locationFilteredItems],
+  const { locationFilteredItems, itemDisplayMeta } = useMemo(
+    () => {
+      const availableItems = items.filter((item) => item.isAvailable && (!selectedLocationId || item.locationId === selectedLocationId));
+
+      if (selectedLocationId) {
+        return {
+          locationFilteredItems: availableItems,
+          itemDisplayMeta: new Map<number, MenuDisplayMeta>(),
+        };
+      }
+
+      const groupedItems = new Map<string, MenuItem[]>();
+
+      availableItems.forEach((item) => {
+        const key = getMenuItemGroupingKey(item);
+        const currentGroup = groupedItems.get(key);
+
+        if (currentGroup) {
+          currentGroup.push(item);
+          return;
+        }
+
+        groupedItems.set(key, [item]);
+      });
+
+      const dedupedItems: MenuItem[] = [];
+      const nextItemDisplayMeta = new Map<number, MenuDisplayMeta>();
+
+      groupedItems.forEach((group) => {
+        const representativeItem = [...group].sort((left, right) => {
+          const leftMatchesLockedStore = Number(left.locationId === lockedLocationId);
+          const rightMatchesLockedStore = Number(right.locationId === lockedLocationId);
+
+          return rightMatchesLockedStore - leftMatchesLockedStore || left.locationId - right.locationId;
+        })[0];
+        const availableLocationIds = new Set(group.map((item) => item.locationId));
+        const locationLabel = availableLocationIds.size >= locations.length && locations.length > 0
+          ? "All stores"
+          : availableLocationIds.size > 1
+            ? `${availableLocationIds.size} stores`
+            : locationLookup.get(representativeItem.locationId)?.name ?? "House counter";
+
+        dedupedItems.push(representativeItem);
+        nextItemDisplayMeta.set(representativeItem.id, { locationLabel });
+      });
+
+      return {
+        locationFilteredItems: dedupedItems,
+        itemDisplayMeta: nextItemDisplayMeta,
+      };
+    },
+    [items, selectedLocationId, lockedLocationId, locations.length, locationLookup],
   );
   const activeItems = useMemo(
     () => locationFilteredItems.filter((item) => getDisplayCategory(item) === selectedCategory),
@@ -179,21 +235,16 @@ export default function MenuPage({ navigate }: PageProps) {
 
       <section className="order-bakery-shell">
         <nav aria-label="Menu categories" className="order-bakery-category-rail">
-          {menuDisplayCategories.map((category) => {
-            const count = categoryCounts.get(category) ?? 0;
-
-            return (
-              <button
-                className={category === selectedCategory ? "order-bakery-category active" : "order-bakery-category"}
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                type="button"
-              >
-                <span>{category}</span>
-                <small>{count}</small>
-              </button>
-            );
-          })}
+          {menuDisplayCategories.map((category) => (
+            <button
+              className={category === selectedCategory ? "order-bakery-category active" : "order-bakery-category"}
+              key={category}
+              onClick={() => setSelectedCategory(category)}
+              type="button"
+            >
+              <span>{category}</span>
+            </button>
+          ))}
         </nav>
 
         <div className="order-bakery-toolbar">
@@ -255,16 +306,17 @@ export default function MenuPage({ navigate }: PageProps) {
           <div className="order-bakery-grid">
             {sortedItems.map((item) => {
               const canAddItem = !lockedLocationId || lockedLocationId === item.locationId;
+              const displayCategory = getDisplayCategory(item) ?? selectedCategory;
 
               return (
                 <article className="order-bakery-card" key={item.id}>
                   <div className="order-bakery-media">
                     <div className="order-bakery-media-labels">
-                      <span>{getDisplayCategory(item)}</span>
-                      <span>{locationLookup.get(item.locationId)?.name ?? "House counter"}</span>
+                      <span>{displayCategory}</span>
+                      <span>{itemDisplayMeta.get(item.id)?.locationLabel ?? locationLookup.get(item.locationId)?.name ?? "House counter"}</span>
                     </div>
                     {item.imageUrl ? (
-                      <img alt={item.name} src={item.imageUrl} />
+                      <img alt={item.name} src={resolveApiAssetUrl(item.imageUrl)} />
                     ) : (
                       <div className="order-bakery-placeholder">{item.name.slice(0, 1)}</div>
                     )}

@@ -112,7 +112,7 @@
 
 .brand-button {
   padding: 0;
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(1.7rem, 2.8vw, 2.35rem);
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -540,7 +540,7 @@
 .summary-card strong,
 .card-footer strong,
 .line-item strong {
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: var(--font-display);
   color: var(--accent-gold-light);
 }
 
@@ -766,6 +766,7 @@
   position: absolute;
   right: clamp(2rem, 5vw, 4.75rem);
   bottom: clamp(3rem, 8vh, 6rem);
+  z-index: 2;
   width: clamp(12rem, 14vw, 15rem);
   aspect-ratio: 1;
   display: grid;
@@ -797,7 +798,7 @@
 
 .store-order-orbit-ring text {
   fill: rgba(187, 191, 107, 0.98);
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: var(--font-display);
   font-size: 14px;
   font-weight: 700;
   letter-spacing: 5px;
@@ -831,6 +832,7 @@
   display: grid;
   justify-items: center;
   text-align: center;
+  pointer-events: none;
 }
 
 .store-wordmark-splash {
@@ -873,7 +875,7 @@
 }
 
 .store-display-top {
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(4.3rem, 10.6vw, 8.2rem);
   font-weight: 700;
   line-height: 0.88;
@@ -881,7 +883,7 @@
 }
 
 .store-display-bottom {
-  font-family: "Cooper Black", "Arial Black", "Avenir Next Condensed", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(7.2rem, 22vw, 18rem);
   line-height: 0.78;
   letter-spacing: 0.03em;
@@ -1304,7 +1306,7 @@
 .rewards-hero-copy h1 {
   margin: 0;
   max-width: 11ch;
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(3.1rem, 6vw, 5.4rem);
   line-height: 0.96;
   letter-spacing: 0.02em;
@@ -1530,7 +1532,7 @@
 
 .rewards-section-heading h2 {
   margin: 0;
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2rem, 3.5vw, 2.7rem);
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -1768,7 +1770,7 @@
 .commerce-hero-copy h1 {
   margin: 0;
   max-width: 12ch;
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(3rem, 5.6vw, 5rem);
   line-height: 0.96;
   letter-spacing: 0.02em;
@@ -2102,6 +2104,27 @@
   background:
     linear-gradient(180deg, #f5f1e6 0%, #f4efe6 32%, #f3eee4 100%);
   color: #15110d;
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
+.order-bakery-page button,
+.order-bakery-page input,
+.order-bakery-page select,
+.order-bakery-page textarea,
+.order-bakery-page strong,
+.order-bakery-page b,
+.order-bakery-page .store-rail-link,
+.order-bakery-page .store-basket-badge {
+  font-family: inherit;
+  font-weight: 400;
+}
+
+.order-bakery-page h1,
+.order-bakery-page h2,
+.order-bakery-page h3 {
+  font-family: var(--font-display);
+  font-weight: 400;
 }
 
 .order-bakery-topbar {
@@ -2129,15 +2152,16 @@
   margin: 0 0 0.35rem;
   color: #707a2d;
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.22em;
   text-transform: uppercase;
 }
 
 .order-bakery-heading h1 {
   margin: 0;
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: var(--font-display);
   font-size: clamp(2.5rem, 4.5vw, 3.9rem);
+  font-weight: 400;
   line-height: 0.96;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -2161,7 +2185,7 @@
   background: rgba(255, 251, 242, 0.95);
   color: #202118;
   font: inherit;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -2195,20 +2219,13 @@
   background: transparent;
   color: #16120d;
   font: inherit;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
 
 .order-bakery-category span {
   font-size: clamp(1rem, 1.3vw, 1.2rem);
-}
-
-.order-bakery-category small {
-  color: rgba(21, 17, 13, 0.42);
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
 }
 
 .order-bakery-category.active {
@@ -2239,7 +2256,7 @@
 .order-bakery-control span {
   color: rgba(21, 17, 13, 0.52);
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -2254,7 +2271,7 @@
   color: #17130f;
   font: inherit;
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .order-bakery-select:focus {
@@ -2271,7 +2288,7 @@
 .order-bakery-summary span {
   color: rgba(21, 17, 13, 0.56);
   font-size: 0.78rem;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -2328,7 +2345,7 @@
   background: rgba(252, 249, 241, 0.88);
   color: rgba(21, 17, 13, 0.7);
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -2353,9 +2370,9 @@
   border-radius: 1.25rem;
   background: rgba(255, 250, 243, 0.78);
   color: rgba(111, 123, 36, 0.82);
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: inherit;
   font-size: 4rem;
-  font-weight: 700;
+  font-weight: 400;
   text-transform: uppercase;
   box-shadow: 0 24px 34px rgba(115, 76, 28, 0.08);
   transform: translateY(12%);
@@ -2371,7 +2388,7 @@
 .order-bakery-card-copy h2 {
   margin: 0;
   font-size: 1.1rem;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: -0.02em;
   text-transform: uppercase;
 }
@@ -2407,7 +2424,7 @@
 .order-bakery-price span {
   color: rgba(21, 17, 13, 0.56);
   font-size: 0.72rem;
-  font-weight: 700;
+  font-weight: 400;
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -3761,7 +3778,7 @@ html {
   line-height: 1;
   color: var(--accent-gold, #c8a84b);
   margin-bottom: -1.5rem;
-  font-family: Georgia, serif;
+  font-family: var(--font-display);
   opacity: 0.6;
 }
 
@@ -4110,6 +4127,94 @@ html {
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+/* Shared typography normalization based on the online ordering page */
+.app-shell,
+.commerce-page,
+.rewards-showcase,
+.store-directory-page,
+.order-bakery-page {
+  font-family: var(--font-sans);
+  font-weight: 400;
+}
+
+.app-shell :is(button, input, select, textarea, strong, b),
+.commerce-page :is(button, input, select, textarea, strong, b),
+.rewards-showcase :is(button, input, select, textarea, strong, b),
+.store-directory-page :is(button, input, select, textarea, strong, b),
+.order-bakery-page :is(button, input, select, textarea, strong, b) {
+  font-family: inherit;
+  font-weight: 400;
+}
+
+.app-shell :is(h1, h2, h3),
+.commerce-page :is(h1, h2, h3),
+.rewards-showcase :is(h1, h2, h3),
+.store-directory-page :is(h1, h2, h3),
+.order-bakery-page :is(h1, h2, h3) {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.brand-button,
+.nav-link,
+.header-route-pill,
+.primary-button,
+.secondary-button,
+.timeline-step span,
+.store-rail-link,
+.store-basket-badge,
+.store-directory-hours-row dt,
+.store-order-orbit-ring text,
+.store-display-top,
+.store-display-bottom,
+.cart-inline-link,
+.cart-primary-pill,
+.cart-ghost-pill,
+.cart-product-badge,
+.rewards-kicker,
+.rewards-pill-button,
+.rewards-stat-card span,
+.rewards-tier-cell-header span,
+.rewards-tier-cell-heading,
+.rewards-inline-status,
+.rewards-offer-pill,
+.rewards-points-chip,
+.rewards-offer-meta span,
+.rewards-redeem-button,
+.commerce-kicker,
+.commerce-panel-kicker,
+.commerce-hero-pill,
+.commerce-primary-button,
+.commerce-secondary-button,
+.commerce-inline-status,
+.commerce-field span,
+.reserve-type-pill,
+.reserve-line-copy > span,
+.order-feature-media span,
+.order-item-media span,
+.order-feature-copy span,
+.order-item-meta span,
+.order-option-chip,
+.account-stat-card span,
+.account-notification-meta span,
+.auth-mode-pill,
+.gift-card-feature-card strong,
+.orders-feature-card strong,
+.orders-card-meta span,
+.track-step > span,
+.home-section-header h2,
+.home-feature-card h3,
+.home-step-number,
+.home-step h3,
+.header-cart-badge,
+.home-location-name,
+.home-location-hours,
+.home-footer-cta h2,
+.feedback-label,
+.feedback-rating-label {
+  font-weight: 400;
 }
 
 @media (max-width: 1280px) {
