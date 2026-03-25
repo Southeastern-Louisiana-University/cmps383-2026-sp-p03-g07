@@ -92,7 +92,7 @@ const locationProfiles: Record<number, StoreProfile> = {
 };
 
 type CommerceRailProps = {
-  activeTab?: "locations" | "reserve" | "order" | "rewards" | "account" | "feedback";
+  activeTab?: "locations" | "reserve" | "order" | "rewards" | "account" | "feedback" | "admin";
   navigate: PageProps["navigate"];
   labels?: Partial<{
     locations: string;
