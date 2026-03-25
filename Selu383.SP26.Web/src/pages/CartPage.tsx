@@ -4,12 +4,18 @@ import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
+import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems";
 import { StorefrontTopRail } from "./storefrontShared";
 
 export default function CartPage({ navigate }: PageProps) {
   const { user } = useAuth();
-  const { addItem, items, removeItem, subtotal, updateQuantity } = useCart();
+  const { addItem, items, removeItem, updateQuantity } = useCart();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const visibleCartItems = useMemo(() => filterRewardsExclusiveNamedItems(items), [items]);
+  const visibleSubtotal = useMemo(
+    () => visibleCartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+    [visibleCartItems],
+  );
 
   useEffect(() => {
     let isMounted = true;
@@ -30,12 +36,12 @@ export default function CartPage({ navigate }: PageProps) {
 
   const itemLookup = useMemo(() => new Map(menuItems.map((item) => [item.id, item])), [menuItems]);
   const recommendationItems = useMemo(() => {
-    const cartMenuItemIds = new Set(items.map((item) => item.menuItemId));
+    const cartMenuItemIds = new Set(visibleCartItems.map((item) => item.menuItemId));
     return menuItems
       .filter((item) => item.isAvailable && !cartMenuItemIds.has(item.id))
       .sort((left, right) => Number(right.isFeatured) - Number(left.isFeatured))
       .slice(0, 4);
-  }, [items, menuItems]);
+  }, [menuItems, visibleCartItems]);
 
   return (
     <div className="cart-showcase">
@@ -44,7 +50,7 @@ export default function CartPage({ navigate }: PageProps) {
       </header>
 
       <section className="cart-canvas">
-        {items.length === 0 ? (
+        {visibleCartItems.length === 0 ? (
           <div className="cart-empty-layout">
             <div className="cart-empty-copy">
               <h1>Your shopping cart is empty!</h1>
@@ -83,7 +89,7 @@ export default function CartPage({ navigate }: PageProps) {
               </div>
 
               <div className="cart-item-list">
-                {items.map((item) => {
+                {visibleCartItems.map((item) => {
                   const menuItem = itemLookup.get(item.menuItemId);
 
                   return (
@@ -122,15 +128,15 @@ export default function CartPage({ navigate }: PageProps) {
               <h2>YOUR ORDER</h2>
               <div className="cart-summary-row">
                 <span>Items</span>
-                <strong>{items.length}</strong>
+                <strong>{visibleCartItems.length}</strong>
               </div>
               <div className="cart-summary-row">
                 <span>Subtotal</span>
-                <strong>${subtotal.toFixed(2)}</strong>
+                <strong>${visibleSubtotal.toFixed(2)}</strong>
               </div>
               <div className="cart-summary-row">
                 <span>Lions earned</span>
-                <strong>{Math.max(Math.floor(subtotal), 1)}</strong>
+                <strong>{Math.max(Math.floor(visibleSubtotal), 1)}</strong>
               </div>
               <button className="cart-primary-pill" onClick={() => navigate("/checkout")} type="button">
                 CHECKOUT

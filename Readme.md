@@ -7,8 +7,9 @@ This repository contains:
 - `Selu383.SP26.Mobile`: Expo mobile app
 - `Selu383.SP26.Tests`: automated tests
 
-The easiest way to run the project from scratch on both macOS and Windows is Docker. Start there unless y
-## 1. Run the Project with Docker
+The easiest way to run the project locally on macOS or Windows is Docker Compose.
+
+## 1. Run the API with Docker
 
 This starts:
 
@@ -19,20 +20,27 @@ This starts:
 From the repo root, run:
 
 ```bash
-docker compose up --build
+docker compose up --build -d
 ```
 
-Start the web app:
+Then open:
+
+- `http://localhost:8080`
+- `http://localhost:8080/swagger/index.html`
+- `http://localhost:5173`
+
+Useful commands:
 
 ```bash
-cd Selu383.SP26.Web
-npm install
-npm run dev
+docker compose logs -f api
+docker compose down
 ```
 
+Note: in the current `docker-compose.yml`, the `api` service depends on both `db` and `web`, so starting the API through Docker Compose brings those services up as well.
 
-## 2. Run API
-In a second terminal, start the API with a SQL Server connection string:
+## 2. Run API without Docker
+
+If you prefer to run the API directly with `dotnet`, first make sure SQL Server is available on `localhost:1433`, then run:
 
 ```bash
 cd Selu383.SP26.Api
@@ -47,7 +55,7 @@ Then open:
 If you use `zsh` on macOS, the command above works as written. If you prefer another shell, set the environment variable using that shell's syntax.
 
 
-## 2. Mobile App
+## 3. Mobile App
 
 The mobile app is optional and separate from the Docker stack.
 
@@ -61,7 +69,7 @@ or npm run android
 
 ```
 
-## 3. Admin
+## 4. Admin
 
 
 ```bash
@@ -82,4 +90,3 @@ http://localhost:5173/#/admin
 ```
 
 Then choose one of the Expo targets shown in the terminal.
-

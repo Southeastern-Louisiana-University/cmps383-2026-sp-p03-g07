@@ -1,12 +1,22 @@
 import { apiRequest } from "./client";
 import type { CreateOrderInput, Order } from "../types/order.types";
+import { filterRewardsExclusiveOrderItems } from "../utils/rewardsExclusiveItems";
 
 export const orderApi = {
   getOrders() {
-    return apiRequest<Order[]>("/api/orders/history");
+    return apiRequest<Order[]>("/api/orders/history")
+      .then((orders) =>
+        orders.map((order) => ({
+          ...order,
+          items: filterRewardsExclusiveOrderItems(order.items),
+        })));
   },
   getOrder(id: number) {
-    return apiRequest<Order>(`/api/orders/${id}`);
+    return apiRequest<Order>(`/api/orders/${id}`)
+      .then((order) => ({
+        ...order,
+        items: filterRewardsExclusiveOrderItems(order.items),
+      }));
   },
   createOrder(input: CreateOrderInput) {
     return apiRequest<Order>("/api/orders", {

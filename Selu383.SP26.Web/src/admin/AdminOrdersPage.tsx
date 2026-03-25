@@ -60,9 +60,11 @@ export default function AdminOrdersPage() {
                   <p style={{ margin: "0.1rem 0", fontSize: "0.85rem", opacity: 0.7 }}>
                     {order.orderType} - {new Date(order.createdAt).toLocaleString()}
                   </p>
-                  <p style={{ margin: 0, fontSize: "0.85rem" }}>
-                    {order.items.map((i) => `${i.quantity}x ${i.itemName}`).join(", ")}
-                  </p>
+                  {order.items.length > 0 ? (
+                    <p style={{ margin: 0, fontSize: "0.85rem" }}>
+                      {order.items.map((i) => `${i.quantity}x ${i.itemName}`).join(", ")}
+                    </p>
+                  ) : null}
                 </div>
                 <strong>${order.total.toFixed(2)}</strong>
               </div>

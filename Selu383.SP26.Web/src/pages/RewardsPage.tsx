@@ -169,7 +169,7 @@ export default function RewardsPage({ navigate }: PageProps) {
     const [nextRewards, nextTiers, nextMenuItems] = await Promise.all([
       rewardsApi.getRewards(),
       rewardsApi.getTiers(),
-      menuApi.getMenu(),
+      menuApi.getMenu({ includeRewardsExclusive: true }),
     ]);
 
     setRewards(nextRewards);

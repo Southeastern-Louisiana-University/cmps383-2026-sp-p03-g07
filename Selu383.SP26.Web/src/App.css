@@ -762,57 +762,6 @@
   min-height: calc(100svh - 6.5rem);
 }
 
-.store-hero-product-strip {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(1.5rem, 3vh, 2.75rem);
-  width: min(70rem, calc(100% - 9rem));
-  transform: translateX(-50%);
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
-}
-
-.store-hero-product-card {
-  padding: 0;
-  border: 1px solid rgba(246, 239, 207, 0.12);
-  border-radius: 28px;
-  overflow: hidden;
-  background: rgba(246, 239, 207, 0.08);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 18px 36px rgba(22, 26, 8, 0.22);
-  text-align: left;
-}
-
-.store-hero-product-image {
-  display: block;
-  width: 100%;
-  height: clamp(15rem, 22vw, 20rem);
-  object-fit: cover;
-}
-
-.store-hero-product-copy {
-  display: grid;
-  gap: 0.35rem;
-  padding: 1rem 1.15rem 1.2rem;
-  background: linear-gradient(180deg, rgba(40, 48, 13, 0.2), rgba(40, 48, 13, 0.45));
-}
-
-.store-hero-product-copy span {
-  color: rgba(246, 239, 207, 0.72);
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-}
-
-.store-hero-product-copy strong {
-  color: #fff3cc;
-  font-size: 1.2rem;
-  line-height: 1.2;
-}
-
 .store-order-orbit {
   position: absolute;
   right: clamp(2rem, 5vw, 4.75rem);
@@ -2149,6 +2098,351 @@
   color: rgba(27, 23, 19, 0.7);
 }
 
+.order-bakery-page {
+  background:
+    linear-gradient(180deg, #f5f1e6 0%, #f4efe6 32%, #f3eee4 100%);
+  color: #15110d;
+}
+
+.order-bakery-topbar {
+  padding: 1.4rem clamp(1.25rem, 2.8vw, 3rem);
+  background: linear-gradient(180deg, #6f7b24 0%, #65711d 100%);
+  color: #d7d9a1;
+}
+
+.order-bakery-shell {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: clamp(1.8rem, 3vw, 2.5rem) clamp(1.25rem, 3vw, 3rem) 4.5rem;
+  display: grid;
+  gap: 1.6rem;
+}
+
+.order-bakery-heading {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: end;
+}
+
+.order-bakery-kicker {
+  margin: 0 0 0.35rem;
+  color: #707a2d;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.order-bakery-heading h1 {
+  margin: 0;
+  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-size: clamp(2.5rem, 4.5vw, 3.9rem);
+  line-height: 0.96;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.order-bakery-cart-button,
+.order-bakery-add-button,
+.order-bakery-category {
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.order-bakery-cart-button,
+.order-bakery-add-button {
+  border: 1px solid rgba(111, 123, 36, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 251, 242, 0.95);
+  color: #202118;
+  font: inherit;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.order-bakery-cart-button {
+  min-height: 3.25rem;
+  padding: 0 1.2rem;
+}
+
+.order-bakery-cart-button:hover,
+.order-bakery-add-button:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  box-shadow: 0 12px 24px rgba(78, 66, 43, 0.08);
+}
+
+.order-bakery-category-rail {
+  display: flex;
+  gap: 0.7rem 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0.1rem 0 0.4rem;
+}
+
+.order-bakery-category {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: baseline;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #16120d;
+  font: inherit;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.order-bakery-category span {
+  font-size: clamp(1rem, 1.3vw, 1.2rem);
+}
+
+.order-bakery-category small {
+  color: rgba(21, 17, 13, 0.42);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.order-bakery-category.active {
+  color: #75822c;
+  text-decoration: underline;
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.22em;
+}
+
+.order-bakery-category:hover {
+  transform: translateY(-1px);
+}
+
+.order-bakery-toolbar {
+  display: grid;
+  gap: 1rem 1.5rem;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: end;
+  padding: 1rem 0 1.1rem;
+  border-bottom: 1px solid rgba(126, 111, 80, 0.12);
+}
+
+.order-bakery-control {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.order-bakery-control span {
+  color: rgba(21, 17, 13, 0.52);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.order-bakery-select {
+  min-width: 12rem;
+  padding: 0 1.9rem 0.45rem 0;
+  border: none;
+  border-bottom: 1px solid rgba(111, 123, 36, 0.2);
+  border-radius: 0;
+  background: transparent;
+  color: #17130f;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.order-bakery-select:focus {
+  outline: none;
+  border-bottom-color: #75822c;
+}
+
+.order-bakery-toolbar-copy {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.order-bakery-toolbar-copy span,
+.order-bakery-summary span {
+  color: rgba(21, 17, 13, 0.56);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.order-bakery-toolbar-copy p {
+  margin: 0;
+  color: rgba(21, 17, 13, 0.72);
+  font-size: 0.96rem;
+}
+
+.order-bakery-summary {
+  display: grid;
+  gap: 0.2rem;
+  justify-items: end;
+}
+
+.order-bakery-summary strong {
+  font-size: 1.15rem;
+}
+
+.order-bakery-grid {
+  display: grid;
+  gap: 1.6rem 1.1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.order-bakery-card {
+  display: grid;
+  gap: 0.8rem;
+  align-content: start;
+}
+
+.order-bakery-media {
+  position: relative;
+  aspect-ratio: 0.84;
+  overflow: hidden;
+  background: linear-gradient(180deg, #ead3b1 0%, #edd9bd 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+}
+
+.order-bakery-media-labels {
+  position: absolute;
+  top: 0.95rem;
+  left: 0.95rem;
+  right: 0.95rem;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: space-between;
+  z-index: 1;
+}
+
+.order-bakery-media-labels span {
+  padding: 0.26rem 0.55rem;
+  background: rgba(252, 249, 241, 0.88);
+  color: rgba(21, 17, 13, 0.7);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.order-bakery-media img {
+  width: 76%;
+  height: 76%;
+  margin: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 1.25rem;
+  box-shadow: 0 24px 34px rgba(115, 76, 28, 0.15);
+  transform: translateY(12%);
+}
+
+.order-bakery-placeholder {
+  width: 76%;
+  height: 76%;
+  margin: auto;
+  display: grid;
+  place-items: center;
+  border-radius: 1.25rem;
+  background: rgba(255, 250, 243, 0.78);
+  color: rgba(111, 123, 36, 0.82);
+  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-size: 4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  box-shadow: 0 24px 34px rgba(115, 76, 28, 0.08);
+  transform: translateY(12%);
+}
+
+.order-bakery-card-copy {
+  display: grid;
+  gap: 0.85rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.order-bakery-card-copy h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+.order-bakery-card-copy p {
+  margin: 0.35rem auto 0;
+  max-width: 28ch;
+  color: rgba(21, 17, 13, 0.68);
+  font-size: 0.92rem;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+}
+
+.order-bakery-card-footer {
+  display: grid;
+  gap: 0.8rem;
+  justify-items: center;
+}
+
+.order-bakery-price {
+  display: grid;
+  gap: 0.18rem;
+  justify-items: center;
+}
+
+.order-bakery-price strong {
+  font-size: 1.3rem;
+}
+
+.order-bakery-price span {
+  color: rgba(21, 17, 13, 0.56);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.order-bakery-add-button {
+  min-height: 2.85rem;
+  min-width: 10.5rem;
+  padding: 0 1.1rem;
+}
+
+.order-bakery-add-button:disabled {
+  opacity: 0.46;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.order-bakery-empty-state {
+  display: grid;
+  gap: 0.7rem;
+  justify-items: start;
+  padding: 2rem;
+  border: 1px dashed rgba(111, 123, 36, 0.2);
+  background: rgba(255, 250, 241, 0.55);
+}
+
+.order-bakery-empty-state h2,
+.order-bakery-empty-state p {
+  margin: 0;
+}
+
+.order-bakery-empty-state p {
+  color: rgba(21, 17, 13, 0.72);
+}
+
 .reserve-summary-card {
   display: grid;
   gap: 1rem;
@@ -2633,11 +2927,6 @@
   .store-wordmark-splash {
     right: 0.15rem;
   }
-
-  .store-hero-product-strip {
-    width: min(58rem, calc(100% - 3rem));
-  }
-
   .store-hero-product-image {
     height: 12.5rem;
   }
@@ -2725,14 +3014,6 @@
   .store-copy {
     top: 56%;
     max-width: calc(100vw - 2rem);
-  }
-
-  .store-hero-product-strip {
-    position: static;
-    width: 100%;
-    transform: none;
-    margin-top: 22rem;
-    grid-template-columns: 1fr;
   }
 
   .store-hero-product-image {
@@ -3541,7 +3822,7 @@ html {
 
 .home-feature-img {
   width: 100%;
-  height: 220px;
+  height: 160px;
   object-fit: cover;
   border-radius: 0;
   margin-bottom: 0;
@@ -3829,6 +4110,76 @@ html {
   gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+@media (max-width: 1280px) {
+  .order-bakery-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 960px) {
+  .order-bakery-heading,
+  .order-bakery-toolbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+
+  .order-bakery-heading {
+    display: grid;
+  }
+
+  .order-bakery-toolbar-copy {
+    grid-column: 1 / -1;
+    order: 3;
+  }
+
+  .order-bakery-summary {
+    justify-items: start;
+  }
+
+  .order-bakery-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .order-bakery-shell {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .order-bakery-category-rail {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 0.65rem;
+  }
+
+  .order-bakery-category {
+    flex: 0 0 auto;
+  }
+
+  .order-bakery-toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .order-bakery-control,
+  .order-bakery-control-sort {
+    width: 100%;
+  }
+
+  .order-bakery-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .order-bakery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-bakery-media {
+    aspect-ratio: 0.92;
+  }
 }
 
 /* Responsive - home page */

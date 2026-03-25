@@ -7,34 +7,99 @@ import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
 import { StorefrontTopRail } from "./storefrontShared";
 
-const preferredCategoryOrder = [
+const menuDisplayCategories = [
   "Coffee",
+  "Matcha",
+  "Pastries",
+  "Bread",
+  "Breakfast",
   "Sandwiches & Bagels",
-  "Salad & Quiches",
-  "Sweet and Pops",
+  "Salads & Quiches",
+  "Cakes & Sweets",
   "Vegan",
-  "Gifts",
+] as const;
+
+type MenuDisplayCategory = (typeof menuDisplayCategories)[number];
+type MenuSort = "selected" | "price-low" | "price-high" | "name";
+
+const sortOptions: Array<{ value: MenuSort; label: string }> = [
+  { value: "selected", label: "Selected" },
+  { value: "price-low", label: "Price low to high" },
+  { value: "price-high", label: "Price high to low" },
+  { value: "name", label: "Name A-Z" },
 ];
 
-const defaultCategory = "Coffee";
-const defaultLocationName = "Hammond";
+function getItemSearchText(item: MenuItem) {
+  return `${item.name} ${item.category} ${item.description} ${item.preparationTag}`.toLowerCase();
+}
 
-function getDefaultLocationId(locations: Location[]) {
-  return (
-    locations.find((location) => location.name.toLowerCase() === defaultLocationName.toLowerCase())?.id ??
-    locations[0]?.id ??
-    0
-  );
+function getDisplayCategory(item: MenuItem): MenuDisplayCategory {
+  const text = getItemSearchText(item);
+  const itemName = item.name.toLowerCase();
+
+  if (text.includes("matcha")) {
+    return "Matcha";
+  }
+
+  if (item.category === "Vegan" || text.includes("plant-based") || text.includes("vegan")) {
+    return "Vegan";
+  }
+
+  if (/\bbread\b|\bloaf\b/.test(itemName)) {
+    return "Bread";
+  }
+
+  if (item.preparationTag.toLowerCase() === "bakery" || /croissant|muffin|pastry|brioche|roll/.test(text)) {
+    return "Pastries";
+  }
+
+  if (item.category === "Salad & Quiches") {
+    return "Salads & Quiches";
+  }
+
+  if (/breakfast|brunch|toast|muesli/.test(text)) {
+    return "Breakfast";
+  }
+
+  if (item.category === "Sweet and Pops") {
+    return "Cakes & Sweets";
+  }
+
+  if (item.category === "Sandwiches & Bagels") {
+    return "Sandwiches & Bagels";
+  }
+
+  return "Coffee";
+}
+
+function sortMenuItems(items: MenuItem[], sort: MenuSort) {
+  const nextItems = [...items];
+
+  switch (sort) {
+    case "price-low":
+      return nextItems.sort((left, right) => left.price - right.price || left.name.localeCompare(right.name));
+    case "price-high":
+      return nextItems.sort((left, right) => right.price - left.price || left.name.localeCompare(right.name));
+    case "name":
+      return nextItems.sort((left, right) => left.name.localeCompare(right.name));
+    case "selected":
+    default:
+      return nextItems.sort((left, right) =>
+        Number(right.isFeatured) - Number(left.isFeatured)
+        || left.preparationTag.localeCompare(right.preparationTag)
+        || left.name.localeCompare(right.name));
+  }
 }
 
 export default function MenuPage({ navigate }: PageProps) {
-  const { addItem } = useCart();
+  const { addItem, items: cartItems } = useCart();
+  const cartLocationId = cartItems[0]?.locationId ?? 0;
   const [items, setItems] = useState<MenuItem[]>([]);
-  const [categories, setCategories] = useState<string[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState(defaultCategory);
-  const [selectedLocationId, setSelectedLocationId] = useState<number>(0);
-  const [search, setSearch] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<MenuDisplayCategory>("Coffee");
+  const [selectedLocationId, setSelectedLocationId] = useState<number>(cartLocationId);
+  const [selectedSort, setSelectedSort] = useState<MenuSort>("selected");
+  const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
@@ -42,37 +107,16 @@ export default function MenuPage({ navigate }: PageProps) {
 
     void Promise.all([
       menuApi.getMenu(),
-      menuApi.getCategories(),
       locationsApi.getLocations(),
     ])
-      .then(([nextItems, nextCategories, nextLocations]) => {
+      .then(([nextItems, nextLocations]) => {
         if (!isMounted) {
           return;
         }
 
         setItems(nextItems);
-        setCategories(
-          Array.from(new Set([...preferredCategoryOrder, ...nextCategories])).sort((left, right) => {
-            const leftIndex = preferredCategoryOrder.indexOf(left);
-            const rightIndex = preferredCategoryOrder.indexOf(right);
-
-            if (leftIndex === -1 && rightIndex === -1) {
-              return left.localeCompare(right);
-            }
-
-            if (leftIndex === -1) {
-              return 1;
-            }
-
-            if (rightIndex === -1) {
-              return -1;
-            }
-
-            return leftIndex - rightIndex;
-          }),
-        );
         setLocations(nextLocations);
-        setSelectedLocationId((currentLocationId) => currentLocationId || getDefaultLocationId(nextLocations));
+        setSelectedLocationId((currentLocationId) => currentLocationId || cartLocationId);
         setStatusMessage("");
       })
       .catch((error) => {
@@ -81,219 +125,176 @@ export default function MenuPage({ navigate }: PageProps) {
         }
 
         setStatusMessage(error instanceof Error ? error.message : "Unable to load the online ordering menu.");
+      })
+      .finally(() => {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       });
 
     return () => {
       isMounted = false;
     };
-  }, []);
-
-  const filteredItems = useMemo(() => {
-    return items.filter((item) => {
-      const categoryMatch = !selectedCategory || item.category === selectedCategory;
-      const locationMatch = !selectedLocationId || item.locationId === selectedLocationId;
-      const searchMatch =
-        !search ||
-        item.name.toLowerCase().includes(search.toLowerCase()) ||
-        item.description.toLowerCase().includes(search.toLowerCase());
-
-      return categoryMatch && locationMatch && searchMatch;
-    });
-  }, [items, search, selectedCategory, selectedLocationId]);
+  }, [cartLocationId]);
 
   const locationLookup = useMemo(
     () => new Map(locations.map((location) => [location.id, location])),
     [locations],
   );
-  const featuredItems = useMemo(() => {
-    const sourceItems = filteredItems.length > 0 ? filteredItems : items;
-
-    return [...sourceItems]
-      .filter((item) => item.isAvailable)
-      .sort((left, right) => Number(right.isFeatured) - Number(left.isFeatured))
-      .slice(0, 3);
-  }, [filteredItems, items]);
-  const activeLocation = locations.find((location) => location.id === selectedLocationId);
-  const orderLabel = selectedCategory || "All categories";
-  const storeLabel = activeLocation?.name ?? `${Math.max(locations.length, 1)} stores`;
-
-  function resetFilters() {
-    setSelectedCategory(defaultCategory);
-    setSelectedLocationId(getDefaultLocationId(locations));
-    setSearch("");
-  }
+  const lockedLocationId = cartLocationId;
+  const locationFilteredItems = useMemo(
+    () => items.filter((item) => item.isAvailable && (!selectedLocationId || item.locationId === selectedLocationId)),
+    [items, selectedLocationId],
+  );
+  const categoryCounts = useMemo(
+    () =>
+      new Map(
+        menuDisplayCategories.map((category) => [
+          category,
+          locationFilteredItems.filter((item) => getDisplayCategory(item) === category).length,
+        ]),
+      ),
+    [locationFilteredItems],
+  );
+  const activeItems = useMemo(
+    () => locationFilteredItems.filter((item) => getDisplayCategory(item) === selectedCategory),
+    [locationFilteredItems, selectedCategory],
+  );
+  const sortedItems = useMemo(
+    () => sortMenuItems(activeItems, selectedSort),
+    [activeItems, selectedSort],
+  );
+  const activeLocationName = selectedLocationId
+    ? locationLookup.get(selectedLocationId)?.name ?? "Selected store"
+    : "All locations";
+  const lockedLocationName = lockedLocationId
+    ? locationLookup.get(lockedLocationId)?.name ?? "your current store"
+    : null;
 
   return (
-    <div className="commerce-page order-page">
-      <header className="commerce-topbar">
+    <div className="commerce-page order-page order-bakery-page">
+      <header className="order-bakery-topbar">
         <StorefrontTopRail activeTab="order" navigate={navigate} />
       </header>
 
-      <section className="commerce-canvas">
-        <section className="commerce-hero">
-          <div className="commerce-hero-copy">
-            <p className="commerce-kicker">Online order</p>
-            <h1>HOUSE FAVORITES, READY TO GO.</h1>
-            <p className="commerce-hero-description">
-              Filter the menu by store, browse featured drinks and bakery picks, and send your next
-              order straight to the cart in a couple of clicks.
-            </p>
+      <section className="order-bakery-shell">
+        <nav aria-label="Menu categories" className="order-bakery-category-rail">
+          {menuDisplayCategories.map((category) => {
+            const count = categoryCounts.get(category) ?? 0;
 
-            <div className="commerce-hero-pills">
-              <span className="commerce-hero-pill">{filteredItems.length} items ready</span>
-              <span className="commerce-hero-pill">{storeLabel}</span>
-              <span className="commerce-hero-pill">{orderLabel}</span>
-            </div>
-
-            <div className="commerce-hero-actions">
-              <button className="commerce-primary-button" onClick={() => navigate("/cart")} type="button">
-                View cart
-              </button>
-              <button className="commerce-secondary-button" onClick={resetFilters} type="button">
-                Reset filters
-              </button>
-            </div>
-
-            {statusMessage ? <p className="commerce-inline-status commerce-inline-status-error">{statusMessage}</p> : null}
-          </div>
-
-          <div className="order-hero-panel">
-            {featuredItems.map((item) => (
-              <article className="order-feature-card" key={item.id}>
-                <div className="order-feature-media">
-                  {item.imageUrl ? <img alt={item.name} src={item.imageUrl} /> : <span>{item.category}</span>}
-                </div>
-                <div className="order-feature-copy">
-                  <span>{item.category}</span>
-                  <strong>{item.name}</strong>
-                  <p>{item.preparationTag || "Ready for pickup"}</p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </section>
-
-        <section className="commerce-panel order-filter-panel">
-          <div className="commerce-panel-heading">
-            <div>
-              <p className="commerce-panel-kicker">Browse and filter</p>
-              <h2>Order online</h2>
-            </div>
-            <span>{filteredItems.length} products</span>
-          </div>
-
-          <div className="order-filter-grid">
-            <label className="commerce-field">
-              <span>Search</span>
-              <input
-                className="commerce-input"
-                placeholder="Search drinks, pastries, and signatures"
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-              />
-            </label>
-
-            <label className="commerce-field">
-              <span>Category</span>
-              <select
-                className="commerce-select"
-                value={selectedCategory}
-                onChange={(event) => setSelectedCategory(event.target.value)}
+            return (
+              <button
+                className={category === selectedCategory ? "order-bakery-category active" : "order-bakery-category"}
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                type="button"
               >
-                <option value="">All categories</option>
-                {categories.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="commerce-field">
-              <span>Store</span>
-              <select
-                className="commerce-select"
-                value={selectedLocationId}
-                onChange={(event) => setSelectedLocationId(Number(event.target.value))}
-              >
-                <option value="0">All stores</option>
-                {locations.map((location) => (
-                  <option key={location.id} value={location.id}>
-                    {location.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-        </section>
-
-        <section className="order-results-panel">
-          <div className="commerce-panel-heading">
-            <div>
-              <p className="commerce-panel-kicker">Menu lineup</p>
-              <h2>Available now</h2>
-            </div>
-            <button className="commerce-secondary-button" onClick={() => navigate("/cart")} type="button">
-              Go to cart
-            </button>
-          </div>
-
-          {filteredItems.length === 0 ? (
-            <div className="commerce-empty-state">
-              <h3>No items match those filters yet.</h3>
-              <p>Clear a filter or switch stores to see more drinks, pastries, and ready-to-order items.</p>
-              <button className="commerce-primary-button" onClick={resetFilters} type="button">
-                Show everything
+                <span>{category}</span>
+                <small>{count}</small>
               </button>
-            </div>
-          ) : (
-            <div className="order-grid">
-              {filteredItems.map((item) => (
-                <article className="order-item-card" key={item.id}>
-                  <div className="order-item-media">
-                    {item.imageUrl ? <img alt={item.name} src={item.imageUrl} /> : <span>{item.category}</span>}
+            );
+          })}
+        </nav>
+
+        <div className="order-bakery-toolbar">
+          <label className="order-bakery-control">
+            <span>Store</span>
+            <select
+              className="order-bakery-select"
+              value={selectedLocationId}
+              onChange={(event) => setSelectedLocationId(Number(event.target.value))}
+            >
+              <option value="0">All locations</option>
+              {locations.map((location) => (
+                <option key={location.id} value={location.id}>
+                  {location.name}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="order-bakery-toolbar-copy">
+            <span>{activeLocationName}</span>
+            {lockedLocationName ? <p>Cart currently holds items from {lockedLocationName}.</p> : <p>Browse the full counter and build your next pickup.</p>}
+          </div>
+
+          <label className="order-bakery-control order-bakery-control-sort">
+            <span>Sort by</span>
+            <select
+              className="order-bakery-select"
+              value={selectedSort}
+              onChange={(event) => setSelectedSort(event.target.value as MenuSort)}
+            >
+              {sortOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="order-bakery-summary">
+            <strong>{sortedItems.length} products</strong>
+            <span>{selectedCategory}</span>
+          </div>
+        </div>
+
+        {statusMessage ? <p className="commerce-inline-status commerce-inline-status-error">{statusMessage}</p> : null}
+
+        {isLoading ? (
+          <div className="order-bakery-empty-state">
+            <h2>Loading the counter...</h2>
+            <p>Pulling the current menu so the category wall can populate.</p>
+          </div>
+        ) : sortedItems.length === 0 ? (
+          <div className="order-bakery-empty-state">
+            <h2>Nothing is plated in {selectedCategory} just yet.</h2>
+            <p>Try another category or switch the store to see a different bakery lineup.</p>
+          </div>
+        ) : (
+          <div className="order-bakery-grid">
+            {sortedItems.map((item) => {
+              const canAddItem = !lockedLocationId || lockedLocationId === item.locationId;
+
+              return (
+                <article className="order-bakery-card" key={item.id}>
+                  <div className="order-bakery-media">
+                    <div className="order-bakery-media-labels">
+                      <span>{getDisplayCategory(item)}</span>
+                      <span>{locationLookup.get(item.locationId)?.name ?? "House counter"}</span>
+                    </div>
+                    {item.imageUrl ? (
+                      <img alt={item.name} src={item.imageUrl} />
+                    ) : (
+                      <div className="order-bakery-placeholder">{item.name.slice(0, 1)}</div>
+                    )}
                   </div>
 
-                  <div className="order-item-copy">
-                    <div className="order-item-meta">
-                      <span>{item.category}</span>
-                      <span>{locationLookup.get(item.locationId)?.name ?? "House blend"}</span>
+                  <div className="order-bakery-card-copy">
+                    <div>
+                      <h2>{item.name}</h2>
+                      <p>{item.description}</p>
                     </div>
-
-                    <h3>{item.name}</h3>
-                    <p>{item.description}</p>
-
-                    <div className="order-option-list">
-                      {item.customizations.slice(0, 3).map((customization) => (
-                        <span className="order-option-chip" key={customization.id}>
-                          {customization.optionName}
-                          {customization.additionalPrice > 0
-                            ? ` +$${customization.additionalPrice.toFixed(2)}`
-                            : ""}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="order-item-footer">
-                      <div className="order-item-pricing">
+                    <div className="order-bakery-card-footer">
+                      <div className="order-bakery-price">
                         <strong>${item.price.toFixed(2)}</strong>
-                        <span>{item.calories} cal</span>
+                        <span>{item.preparationTag}</span>
                       </div>
                       <button
-                        className="commerce-primary-button commerce-primary-button-compact"
-                        disabled={!item.isAvailable}
+                        className="order-bakery-add-button"
+                        disabled={!canAddItem}
                         onClick={() => addItem(item)}
                         type="button"
                       >
-                        {item.isAvailable ? "Add to cart" : "Unavailable"}
+                        {canAddItem ? "Add" : "Store locked"}
                       </button>
                     </div>
                   </div>
                 </article>
-              ))}
-            </div>
-          )}
-        </section>
+              );
+            })}
+          </div>
+        )}
       </section>
     </div>
   );

@@ -169,7 +169,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
                     </div>
                     <h3>{order.status}</h3>
                     <p>{order.orderType} order</p>
-                    <p>{order.items.map((item) => `${item.quantity}x ${item.itemName}`).join(", ")}</p>
+                    {order.items.length > 0 ? <p>{order.items.map((item) => `${item.quantity}x ${item.itemName}`).join(", ")}</p> : null}
                   </div>
 
                   <div className="orders-card-actions">
@@ -183,6 +183,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
                     </button>
                     <button
                       className="commerce-primary-button"
+                      disabled={order.items.length === 0}
                       onClick={async () => {
                         const newOrder = await orderApi.reorder(order.id);
                         navigate(`/order-status?id=${newOrder.id}`);
