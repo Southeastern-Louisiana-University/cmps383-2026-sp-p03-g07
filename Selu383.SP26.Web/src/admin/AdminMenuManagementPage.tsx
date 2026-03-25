@@ -2,47 +2,58 @@ import { useEffect, useState } from "react";
 import { menuApi } from "../api/menuApi";
 import type { MenuItem } from "../types/menu.types";
 
-const emptyItem: Partial<MenuItem> = {
-  name: "",
-  category: "",
-  description: "",
-  price: 0,
-  isAvailable: true,
-  locationId: 1,
-  imageUrl: "",
-  calories: 0,
-  isFeatured: false,
-  inventoryCount: 10,
-  preparationTag: "",
-  customizations: [],
-};
+function createEmptyItem(categories: string[]): Partial<MenuItem> {
+  return {
+    name: "",
+    category: categories[0] ?? "",
+    description: "",
+    price: 0,
+    isAvailable: true,
+    locationId: 1,
+    imageUrl: "",
+    calories: 0,
+    isFeatured: false,
+    inventoryCount: 10,
+    preparationTag: "",
+    customizations: [],
+  };
+}
 
 export default function AdminMenuManagementPage() {
   const [items, setItems] = useState<MenuItem[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [editing, setEditing] = useState<MenuItem | null>(null);
-  const [form, setForm] = useState<Partial<MenuItem>>(emptyItem);
+  const [form, setForm] = useState<Partial<MenuItem>>(() => createEmptyItem([]));
   const [saving, setSaving] = useState(false);
 
   function loadMenu() {
     void menuApi
-      .getMenu()
+      .getMenu({ includeUnsupported: true })
       .then(setItems)
       .catch((e: Error) => setError(e.message));
   }
 
   useEffect(() => {
     loadMenu();
+
+    void menuApi
+      .getCategories()
+      .then((nextCategories) => {
+        setCategories(nextCategories);
+        setForm((currentForm) => currentForm.category ? currentForm : { ...currentForm, category: nextCategories[0] ?? "" });
+      })
+      .catch((e: Error) => setError(e.message));
   }, []);
 
   function startEdit(item: MenuItem) {
     setEditing(item);
-    setForm({ ...item });
+    setForm({ ...item, category: categories.includes(item.category) ? item.category : "" });
   }
 
   function startCreate() {
     setEditing(null);
-    setForm({ ...emptyItem });
+    setForm(createEmptyItem(categories));
   }
 
   async function save() {
@@ -59,7 +70,7 @@ export default function AdminMenuManagementPage() {
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       loadMenu();
-      setForm(emptyItem);
+      setForm(createEmptyItem(categories));
       setEditing(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Save failed");
@@ -87,14 +98,14 @@ export default function AdminMenuManagementPage() {
         <div className="section-heading">
           <h2>{editing ? `Edit: ${editing.name}` : "Add menu item"}</h2>
           {editing && (
-            <button className="secondary-button" onClick={() => { setEditing(null); setForm(emptyItem); }} type="button">
+            <button className="secondary-button" onClick={() => { setEditing(null); setForm(createEmptyItem(categories)); }} type="button">
               Cancel
             </button>
           )}
         </div>
 
         <div style={{ display: "grid", gap: "0.75rem", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}>
-          {(["name", "category", "description", "imageUrl", "preparationTag"] as const).map((field) => (
+          {(["name", "description", "imageUrl", "preparationTag"] as const).map((field) => (
             <label key={field} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.85rem" }}>
               <span style={{ opacity: 0.7, textTransform: "capitalize" }}>{field}</span>
               <input
@@ -104,6 +115,23 @@ export default function AdminMenuManagementPage() {
               />
             </label>
           ))}
+          <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.85rem" }}>
+            <span style={{ opacity: 0.7, textTransform: "capitalize" }}>category</span>
+            <select
+              className="commerce-input"
+              value={form.category ?? ""}
+              onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+            >
+              <option disabled value="">
+                {categories.length > 0 ? "Select a category" : "Loading categories..."}
+              </option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </label>
           {(["price", "calories", "inventoryCount", "locationId"] as const).map((field) => (
             <label key={field} style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.85rem" }}>
               <span style={{ opacity: 0.7, textTransform: "capitalize" }}>{field}</span>
@@ -136,11 +164,11 @@ export default function AdminMenuManagementPage() {
         {error && <p style={{ color: "var(--error, red)", marginTop: "0.5rem" }}>{error}</p>}
 
         <div style={{ display: "flex", gap: "0.75rem", marginTop: "1rem" }}>
-          <button className="primary-button" disabled={saving || !form.name} onClick={() => void save()} type="button">
+          <button className="primary-button" disabled={saving || !form.name || !form.category} onClick={() => void save()} type="button">
             {saving ? "Saving..." : editing ? "Save changes" : "Create item"}
           </button>
           {isEditing && !editing && (
-            <button className="secondary-button" onClick={() => setForm(emptyItem)} type="button">Clear</button>
+            <button className="secondary-button" onClick={() => setForm(createEmptyItem(categories))} type="button">Clear</button>
           )}
         </div>
       </section>

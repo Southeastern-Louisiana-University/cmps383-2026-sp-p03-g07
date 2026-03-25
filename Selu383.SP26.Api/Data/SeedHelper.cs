@@ -227,7 +227,7 @@ public static class SeedHelper
             {
                 Name = "Caffeinated Lions Mug",
                 Category = "Gifts",
-                Description = "Branded ceramic mug with the house olive-and-gold storefront palette.",
+                Description = "Branded ceramic mug with the house olive-and-gold palette.",
                 Price = 16.00m,
                 IsAvailable = true,
                 LocationId = 1,
@@ -246,7 +246,6 @@ public static class SeedHelper
         var matchaLocationIds = new[] { 1, 2, 3 };
         var coffeeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "Butter Lattee",
             "Caramel Macchiato",
             "Cold Brew",
             "Iced Caramel Macchiato",
@@ -501,16 +500,6 @@ public static class SeedHelper
                 coffeeLocationIds.SelectMany(locationId => new[]
                 {
                     CreateMenuItem(
-                        "Butter Lattee",
-                        "Coffee",
-                        "Buttery caramel latte topped with whipped cream and a glossy drizzle.",
-                        6.75m,
-                        locationId,
-                        "/menu/coffee/butter-lattee.webp",
-                        340,
-                        "Signature Latte",
-                        isFeatured: locationId == 1),
-                    CreateMenuItem(
                         "Caramel Macchiato",
                         "Coffee",
                         "Layered espresso and milk with house caramel running through the glass.",
@@ -570,7 +559,8 @@ public static class SeedHelper
         var existingMenuItems = await dataContext.MenuItems.ToListAsync();
         var removedMenuItems = existingMenuItems
             .Where(existingItem =>
-                (string.Equals(existingItem.Category, "Coffee", StringComparison.OrdinalIgnoreCase)
+                !MenuCatalog.IsSupportedCategory(existingItem.Category)
+                || (string.Equals(existingItem.Category, "Coffee", StringComparison.OrdinalIgnoreCase)
                     && !coffeeMenuNames.Contains(existingItem.Name))
                 || (string.Equals(existingItem.Category, "Salad & Quiches", StringComparison.OrdinalIgnoreCase)
                     && !saladAndQuichesMenuNames.Contains(existingItem.Name))
@@ -614,8 +604,8 @@ public static class SeedHelper
 
         await dataContext.SaveChangesAsync();
 
-        var butterLatteeId = await dataContext.MenuItems
-            .Where(x => x.Name == "Butter Lattee" && x.LocationId == 1)
+        var caramelMacchiatoId = await dataContext.MenuItems
+            .Where(x => x.Name == "Caramel Macchiato" && x.LocationId == 1)
             .Select(x => x.Id)
             .FirstAsync();
         var icedMochaId = await dataContext.MenuItems
@@ -629,9 +619,9 @@ public static class SeedHelper
 
         var seededCustomizations = new[]
         {
-            new MenuCustomization { MenuItemId = butterLatteeId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
-            new MenuCustomization { MenuItemId = butterLatteeId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
-            new MenuCustomization { MenuItemId = butterLatteeId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
+            new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+            new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
+            new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
             new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Whipped Cream", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
             new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Chocolate Drizzle", AdditionalPrice = 0.50m, SortOrder = 2 },
             new MenuCustomization { MenuItemId = coldBrewId, GroupName = "Sweetener", OptionName = "Vanilla Sweet Cream", AdditionalPrice = 0.75m, SortOrder = 1 },

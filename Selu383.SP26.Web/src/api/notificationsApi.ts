@@ -21,4 +21,9 @@ export const notificationsApi = {
       method: "PUT",
     });
   },
+  clearAll() {
+    return apiRequest<void>("/api/notifications", {
+      method: "DELETE",
+    });
+  },
 };

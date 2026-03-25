@@ -1,6 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
+using Selu383.SP26.Api.Data;
+using Selu383.SP26.Api.Features.Menu;
 using Selu383.SP26.Tests.Controllers.Authentication;
 using Selu383.SP26.Tests.Helpers;
 
@@ -50,7 +53,7 @@ public class ApiBehaviorTests
         var anonymousResponse = await webClient.PostAsJsonAsync("/api/menu", new
         {
             name = "Test Drink",
-            category = "Drinks",
+            category = "Coffee",
             price = 5.25m,
             isAvailable = true,
             locationId
@@ -63,7 +66,7 @@ public class ApiBehaviorTests
         var userResponse = await webClient.PostAsJsonAsync("/api/menu", new
         {
             name = "Test Drink",
-            category = "Drinks",
+            category = "Coffee",
             price = 5.25m,
             isAvailable = true,
             locationId
@@ -77,7 +80,7 @@ public class ApiBehaviorTests
         var invalidLocationResponse = await webClient.PostAsJsonAsync("/api/menu", new
         {
             name = "Ghost Drink",
-            category = "Drinks",
+            category = "Coffee",
             price = 5.25m,
             isAvailable = true,
             locationId = 99999
@@ -85,10 +88,21 @@ public class ApiBehaviorTests
 
         invalidLocationResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
+        var invalidCategoryResponse = await webClient.PostAsJsonAsync("/api/menu", new
+        {
+            name = "Ghost Drink",
+            category = "Drinks",
+            price = 5.25m,
+            isAvailable = true,
+            locationId
+        });
+
+        invalidCategoryResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
         var adminResponse = await webClient.PostAsJsonAsync("/api/menu", new
         {
-            name = "Manager Approved Drink",
-            category = "Drinks",
+            name = "Manager Approved Latte",
+            category = "Coffee",
             price = 5.25m,
             isAvailable = true,
             locationId
@@ -98,6 +112,54 @@ public class ApiBehaviorTests
         var createdItem = await adminResponse.Content.ReadAsJsonAsync<MenuItemDto>();
         createdItem.Should().NotBeNull();
         createdItem!.LocationId.Should().Be(locationId);
+    }
+
+    [TestMethod]
+    public async Task MenuGet_HidesUnsupportedCategoriesFromThePublicCatalog()
+    {
+        var locationId = context.GetAnyLocationId();
+        var legacyItemId = 0;
+
+        using (var scope = context.GetServices().CreateScope())
+        {
+            var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
+            var legacyItem = new MenuItem
+            {
+                Name = "Legacy Drink",
+                Category = "Drinks",
+                Description = "Legacy category item",
+                Price = 4.50m,
+                IsAvailable = true,
+                LocationId = locationId,
+                ImageUrl = "",
+                Calories = 90,
+                InventoryCount = 5,
+                PreparationTag = "Legacy"
+            };
+            dataContext.MenuItems.Add(legacyItem);
+            await dataContext.SaveChangesAsync();
+            legacyItemId = legacyItem.Id;
+        }
+
+        using var webClient = context.GetStandardWebClient();
+
+        var publicResponse = await webClient.GetAsync("/api/menu");
+        publicResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var publicItems = await publicResponse.Content.ReadAsJsonAsync<List<MenuItemDto>>();
+        publicItems.Should().NotContain(item => item.Name == "Legacy Drink");
+
+        var publicDetailResponse = await webClient.GetAsync($"/api/menu/{legacyItemId}");
+        publicDetailResponse.StatusCode.Should().Be(HttpStatusCode.NotFound);
+
+        await webClient.AssertLoggedInAsAdmin();
+
+        var managementResponse = await webClient.GetAsync("/api/menu?includeUnsupported=true");
+        managementResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+        var managementItems = await managementResponse.Content.ReadAsJsonAsync<List<MenuItemDto>>();
+        managementItems.Should().Contain(item => item.Name == "Legacy Drink");
+
+        var managementDetailResponse = await webClient.GetAsync($"/api/menu/{legacyItemId}?includeUnsupported=true");
+        managementDetailResponse.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
     [TestMethod]
@@ -240,6 +302,7 @@ public class ApiBehaviorTests
     private sealed class MenuItemDto
     {
         public int Id { get; set; }
+        public string? Name { get; set; }
         public int LocationId { get; set; }
     }
 

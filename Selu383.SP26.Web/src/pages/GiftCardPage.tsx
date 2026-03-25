@@ -3,7 +3,7 @@ import { paymentsApi } from "../api/paymentsApi";
 import { useAuth } from "../store/authStore";
 import type { GiftCard } from "../types/payment.types";
 import type { PageProps } from "../types/router.types";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 export default function GiftCardPage({ navigate }: PageProps) {
   const { user } = useAuth();
@@ -44,7 +44,7 @@ export default function GiftCardPage({ navigate }: PageProps) {
     return (
       <div className="commerce-page gift-card-page">
         <header className="commerce-topbar">
-          <StorefrontTopRail activeTab="account" navigate={navigate} />
+          <CommerceTopRail activeTab="account" navigate={navigate} />
         </header>
 
         <section className="commerce-canvas">
@@ -88,7 +88,7 @@ export default function GiftCardPage({ navigate }: PageProps) {
               </article>
               <article className="gift-card-feature-card">
                 <strong>Keep it on-brand</strong>
-                <p>Gift cards now live inside the same storefront flow as orders, rewards, and account details.</p>
+                <p>Gift cards now live inside the same account flow as orders, rewards, and account details.</p>
               </article>
             </div>
           </section>
@@ -100,7 +100,7 @@ export default function GiftCardPage({ navigate }: PageProps) {
   return (
     <div className="commerce-page gift-card-page">
       <header className="commerce-topbar">
-        <StorefrontTopRail activeTab="account" navigate={navigate} />
+        <CommerceTopRail activeTab="account" navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">
@@ -109,7 +109,7 @@ export default function GiftCardPage({ navigate }: PageProps) {
             <p className="commerce-kicker">Gift cards</p>
             <h1>LOAD, SEND, AND CHECK EVERY BALANCE.</h1>
             <p className="commerce-hero-description">
-              Keep gift cards in the same storefront system as orders and rewards, whether you are buying
+              Keep gift cards in the same account system as orders and rewards, whether you are buying
               one for someone else or checking a saved card before checkout.
             </p>
 
