@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { menuApi } from "../api/menuApi";
 import { rewardsApi } from "../api/rewardsApi";
+import { resolveApiAssetUrl } from "../services/api";
 import { useAuth } from "../store/authStore";
 import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
@@ -169,7 +170,7 @@ export default function RewardsPage({ navigate }: PageProps) {
     const [nextRewards, nextTiers, nextMenuItems] = await Promise.all([
       rewardsApi.getRewards(),
       rewardsApi.getTiers(),
-      menuApi.getMenu(),
+      menuApi.getMenu({ includeRewardsExclusive: true }),
     ]);
 
     setRewards(nextRewards);
@@ -351,7 +352,7 @@ export default function RewardsPage({ navigate }: PageProps) {
                 <img
                   alt={activeHeroItem.name}
                   className="rewards-hero-image"
-                  src={activeHeroItem.imageUrl}
+                  src={resolveApiAssetUrl(activeHeroItem.imageUrl)}
                 />
               ) : (
                 <div className="rewards-hero-placeholder">
@@ -453,7 +454,7 @@ export default function RewardsPage({ navigate }: PageProps) {
                 <article className="rewards-offer-card" key={reward.id}>
                   <div className="rewards-offer-media-shell">
                     {menuItem?.imageUrl ? (
-                      <img alt={reward.name} className="rewards-offer-image" src={menuItem.imageUrl} />
+                      <img alt={reward.name} className="rewards-offer-image" src={resolveApiAssetUrl(menuItem.imageUrl)} />
                     ) : (
                       <div className="rewards-offer-image-fallback">
                         <RewardGiftIcon />

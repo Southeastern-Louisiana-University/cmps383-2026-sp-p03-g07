@@ -1,5 +1,7 @@
 :root {
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
+  --font-sans: "Suisse Int'l", "Suisse Intl", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-display: "Freight Big Pro", "Freight Big", "Freight Display Pro", "Freight Display", Georgia, serif;
+  font-family: var(--font-sans);
   line-height: 1.5;
   font-weight: 400;
   font-synthesis: none;
@@ -69,8 +71,14 @@ p {
 h1,
 h2,
 h3 {
-  font-family: "Avenir Next Condensed", "Trebuchet MS", sans-serif;
+  font-family: var(--font-display);
+  font-weight: 400;
   letter-spacing: 0.03em;
+}
+
+strong,
+b {
+  font-weight: 400;
 }
 
 ::selection {

@@ -3,6 +3,7 @@ import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-nati
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
+import { resolveApiAssetUrl } from '@/constants/api';
 import { locationService } from '@/services/locationService';
 import { menuService } from '@/services/menuService';
 import { orderService } from '@/services/orderService';
@@ -173,7 +174,7 @@ export default function HomeScreen() {
                 addItem(item);
                 router.push('/cart');
               }}>
-              <Image source={{ uri: item.imageUrl }} style={styles.heroShowcaseImage} resizeMode="cover" />
+              <Image source={{ uri: resolveApiAssetUrl(item.imageUrl) }} style={styles.heroShowcaseImage} resizeMode="cover" />
               <View style={styles.heroShowcaseOverlay} />
               <View style={styles.heroShowcaseCopy}>
                 <Text style={styles.heroShowcaseName} numberOfLines={2}>
@@ -208,7 +209,9 @@ export default function HomeScreen() {
                   <Image
                     source={{
                       uri:
-                        leadMenuItem?.imageUrl ??
+                        (leadMenuItem?.imageUrl
+                          ? resolveApiAssetUrl(leadMenuItem.imageUrl)
+                          : undefined) ??
                         'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=480&h=320&fit=crop',
                     }}
                     style={styles.spotlightImage}
@@ -237,7 +240,7 @@ export default function HomeScreen() {
               ))
             : featuredItems.map((item) => (
                 <View key={item.id} style={styles.spotlightCard}>
-                  <Image source={{ uri: item.imageUrl }} style={styles.spotlightImage} resizeMode="cover" />
+                  <Image source={{ uri: resolveApiAssetUrl(item.imageUrl) }} style={styles.spotlightImage} resizeMode="cover" />
                   <View style={styles.spotlightCopy}>
                     <Text style={styles.spotlightEyebrow}>{item.category}</Text>
                     <Text style={styles.spotlightTitle} numberOfLines={2}>
