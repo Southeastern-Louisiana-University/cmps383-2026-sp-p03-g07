@@ -772,9 +772,19 @@ public static class SeedHelper
             .Select(x => x.Id)
             .FirstAsync();
 
-        var icedMocha = await dataContext.MenuItems.FirstAsync(x => x.Name == "Iced Mocha" && x.LocationId == locationId);
-        var sugarShakenEspresso = await dataContext.MenuItems.FirstAsync(x => x.Name == "Sugar Shaken Espresso" && x.LocationId == locationId);
-        var croissant = await dataContext.MenuItems.FirstAsync(x => x.Name == "CROISSANT" && x.LocationId == locationId);
+        var locationMenuItems = await dataContext.MenuItems
+            .Where(x => x.LocationId == locationId)
+            .ToListAsync();
+
+        var icedMocha = locationMenuItems.FirstOrDefault(x => x.Name == "Iced Mocha")
+            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Coffee")
+            ?? await dataContext.MenuItems.FirstAsync();
+        var sugarShakenEspresso = locationMenuItems.FirstOrDefault(x => x.Name == "Sugar Shaken Espresso")
+            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Coffee" && x.Id != icedMocha.Id)
+            ?? icedMocha;
+        var croissant = locationMenuItems.FirstOrDefault(x => x.Name == "CROISSANT")
+            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Pastries")
+            ?? icedMocha;
 
         var orders = new[]
         {
