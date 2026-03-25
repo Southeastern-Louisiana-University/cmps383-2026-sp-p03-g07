@@ -66,34 +66,33 @@ public static class SeedHelper
         var adminUser = await userManager.FindByNameAsync("galkadi");
         if (adminUser == null)
         {
-            adminUser = new User
-            {
-                UserName = "galkadi"
-            };
+            adminUser = new User { UserName = "galkadi" };
             await userManager.CreateAsync(adminUser, defaultPassword);
+        }
+        if (!await userManager.IsInRoleAsync(adminUser, RoleNames.Admin))
+        {
             await userManager.AddToRoleAsync(adminUser, RoleNames.Admin);
         }
 
         var bob = await userManager.FindByNameAsync("bob");
         if (bob == null)
         {
-            bob = new User
-            {
-                UserName = "bob"
-            };
+            bob = new User { UserName = "bob" };
             await userManager.CreateAsync(bob, defaultPassword);
+        }
+        if (!await userManager.IsInRoleAsync(bob, RoleNames.User))
+        {
             await userManager.AddToRoleAsync(bob, RoleNames.User);
         }
 
         var sue = await userManager.FindByNameAsync("sue");
         if (sue == null)
         {
-            sue = new User
-            {
-                UserName = "sue",
-                Points = 80
-            };
+            sue = new User { UserName = "sue", Points = 80 };
             await userManager.CreateAsync(sue, defaultPassword);
+        }
+        if (!await userManager.IsInRoleAsync(sue, RoleNames.User))
+        {
             await userManager.AddToRoleAsync(sue, RoleNames.User);
         }
     }

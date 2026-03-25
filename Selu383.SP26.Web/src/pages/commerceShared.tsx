@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
@@ -298,6 +299,8 @@ export function StoreLocationIcon({ variant }: { variant: StoreProfile["icon"] }
 
 export function CommerceTopRail({ activeTab, navigate, labels: labelOverrides }: CommerceRailProps) {
   const { items } = useCart();
+  const { user } = useAuth();
+  const isAdmin = !!user?.roles.includes("Admin");
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const labels = {
     locations: "Locations",
@@ -341,6 +344,11 @@ export function CommerceTopRail({ activeTab, navigate, labels: labelOverrides }:
         <button className={getLinkClass(activeTab === "account")} onClick={() => navigate("/profile")} type="button">
           {resolvedLabels.account}
         </button>
+        {isAdmin && (
+          <button className={getLinkClass(activeTab === "admin")} onClick={() => navigate("/admin")} type="button">
+            Admin
+          </button>
+        )}
       </nav>
 
       <div className="store-rail-tools">
