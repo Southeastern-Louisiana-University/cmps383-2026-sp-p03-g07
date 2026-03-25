@@ -586,8 +586,22 @@
   --store-ink: #d7d9a1;
   --store-gold: #d7b26d;
   --store-gold-deep: #b48a48;
+  --panel: linear-gradient(180deg, rgba(65, 75, 22, 0.82), rgba(24, 31, 18, 0.96));
+  --border: rgba(246, 239, 207, 0.12);
+  --text-main: #f6efcf;
+  --text-soft: rgba(246, 239, 207, 0.84);
+  --text-muted: rgba(246, 239, 207, 0.62);
+  --shadow: 0 28px 64px rgba(12, 16, 8, 0.32);
+  --accent-gold: #d8bb74;
+  --accent-gold-light: #f3e4ad;
+  --accent-gold-deep: #ac8540;
   display: grid;
   gap: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(221, 191, 113, 0.22), transparent 24%),
+    radial-gradient(circle at 100% 0%, rgba(118, 133, 38, 0.18), transparent 28%),
+    linear-gradient(180deg, #384210 0%, #1f2710 44%, #11170d 100%);
   color: var(--store-ink);
 }
 
