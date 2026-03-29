@@ -42,7 +42,7 @@ const routes: RouteDefinition[] = [
   { path: "/login", label: "Login", element: LoginPage },
   { path: "/orders", label: "Orders", element: OrderHistory, protected: true, showInPrimaryNav: true },
   { path: "/order-status", label: "Track", element: OrderStatusPage, protected: true },
-  { path: "/gift-cards", label: "Gift Cards", element: GiftCardPage, protected: true, showInPrimaryNav: true },
+  { path: "/gift-cards", label: "Gift Cards", element: GiftCardPage, protected: true, showInPrimaryNav: false },
   { path: "/profile", label: "Profile", element: ProfilePage, protected: true },
   { path: "/reservations", label: "Reservations", element: ReservationsPage, protected: true, showInPrimaryNav: true },
   { path: "/feedback", label: "Feedback", element: FeedbackPage, showInPrimaryNav: false },
@@ -108,6 +108,32 @@ function SunIcon() {
       <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
       <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
     </svg>
+  );
+}
+
+function FloatingCart({ navigate, activePath }: { navigate: PageProps["navigate"]; activePath: string }) {
+  const { items, subtotal, lastAdded } = useCart();
+  const count = items.reduce((sum, i) => sum + i.quantity, 0);
+  if (count === 0 || activePath === "/cart" || activePath === "/checkout") return null;
+  return (
+    <button
+      className={`floating-cart${lastAdded ? " floating-cart-pulse" : ""}`}
+      onClick={() => navigate("/cart")}
+      type="button"
+      aria-label="View cart"
+    >
+      {lastAdded ? (
+        <span className="floating-cart-added">Added: {lastAdded}</span>
+      ) : null}
+      <span className="floating-cart-count">{count} {count === 1 ? "item" : "items"}</span>
+      <span className="floating-cart-divider" />
+      <span className="floating-cart-subtotal">${subtotal.toFixed(2)}</span>
+      <svg className="floating-cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 01-8 0"/>
+      </svg>
+    </button>
   );
 }
 
@@ -250,6 +276,7 @@ function AppLayout() {
           <Page navigate={navigate} query={routeState.query} />
         )}
       </main>
+      <FloatingCart navigate={navigate} activePath={activeRoute.path} />
     </div>
   );
 }

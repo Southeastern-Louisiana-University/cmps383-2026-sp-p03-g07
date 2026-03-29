@@ -4,14 +4,10 @@ public static class MenuCatalog
 {
     public static readonly string[] SupportedCategories =
     [
-        "Coffee",
-        "Matcha",
-        "Pastries",
-        "Salad & Quiches",
-        "Sandwiches & Bagels",
-        "Sweet and Pops",
-        "Vegan",
-        "Gifts"
+        "Drinks",
+        "Sweet Crepes",
+        "Savory Crepes",
+        "Bagels"
     ];
 
     private static readonly Dictionary<string, string> CategoryLookup = SupportedCategories

@@ -636,7 +636,7 @@
 .store-top-rail {
   display: flex;
   gap: clamp(1rem, 2.2vw, 2.75rem);
-  align-items: flex-start;
+  align-items: center;
 }
 
 .store-mark,
@@ -698,12 +698,12 @@
 }
 
 .store-rail-links-primary {
-  padding-top: 0.2rem;
+  padding-top: 0;
 }
 
 .store-rail-links-secondary {
   margin-left: auto;
-  padding-top: 0.2rem;
+  padding-top: 0;
 }
 
 .store-rail-spacer {
@@ -4807,4 +4807,97 @@ html {
   .home-footer-cta {
     padding: 3rem 1.25rem;
   }
+}
+
+/* ── Floating Cart Bar ───────────────────────────────────── */
+.floating-cart {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 1.75rem;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: #3d4a0e;
+  color: #f0ecc8;
+  border: none;
+  border-radius: 999px;
+  padding: 0.85rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+  animation: float-cart-in 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+  letter-spacing: 0.01em;
+  max-width: calc(100vw - 3.5rem);
+}
+
+.floating-cart:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 36px rgba(0,0,0,0.4);
+  background: #4a5a10;
+}
+
+.floating-cart-pulse {
+  animation: float-cart-pulse 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+  background: #5a6e12;
+}
+
+.floating-cart-added {
+  color: #d7c96a;
+  font-size: 0.82rem;
+  font-weight: 600;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.floating-cart-count {
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.floating-cart-divider {
+  width: 1px;
+  height: 1rem;
+  background: rgba(240,236,200,0.3);
+  flex-shrink: 0;
+}
+
+.floating-cart-subtotal {
+  font-weight: 800;
+  color: #d7c96a;
+  white-space: nowrap;
+}
+
+.floating-cart-icon {
+  width: 1.3rem;
+  height: 1.3rem;
+  color: #d7b26d;
+  flex-shrink: 0;
+}
+
+@keyframes float-cart-in {
+  from { opacity: 0; transform: translateY(20px) scale(0.92); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+
+@keyframes float-cart-pulse {
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.07); }
+  70%  { transform: scale(0.97); }
+  100% { transform: scale(1); }
+}
+
+@media (max-width: 500px) {
+  .floating-cart {
+    bottom: 1rem;
+    right: 1rem;
+    left: 1rem;
+    border-radius: 16px;
+    justify-content: center;
+  }
+  .floating-cart-added { max-width: 120px; }
 }

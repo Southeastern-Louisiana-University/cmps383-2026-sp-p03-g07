@@ -29,6 +29,7 @@ type CartContextValue = {
   updateQuantity: (id: string, quantity: number) => void;
   clear: () => void;
   subtotal: number;
+  lastAdded: string | null;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -60,6 +61,7 @@ function writeStoredCart(items: CartItem[]) {
 
 export function CartProvider({ children }: PropsWithChildren) {
   const [items, setItems] = useState<CartItem[]>(() => readStoredCart());
+  const [lastAdded, setLastAdded] = useState<string | null>(null);
 
   const value = useMemo<CartContextValue>(() => {
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -67,6 +69,7 @@ export function CartProvider({ children }: PropsWithChildren) {
     return {
       items,
       subtotal,
+      lastAdded,
       addItem(menuItem) {
         if (isRewardsExclusiveItemName(menuItem.name)) {
           return;
@@ -106,6 +109,8 @@ export function CartProvider({ children }: PropsWithChildren) {
           writeStoredCart(nextItems);
           return nextItems;
         });
+        setLastAdded(menuItem.name);
+        setTimeout(() => setLastAdded(null), 2500);
       },
       removeItem(id) {
         setItems((currentItems) => {
@@ -129,7 +134,7 @@ export function CartProvider({ children }: PropsWithChildren) {
         setItems([]);
       },
     };
-  }, [items]);
+  }, [items, lastAdded]);
 
   return createElement(CartContext.Provider, { value }, children);
 }
