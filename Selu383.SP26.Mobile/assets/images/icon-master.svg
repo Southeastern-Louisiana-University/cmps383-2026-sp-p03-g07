@@ -40,8 +40,7 @@
     <rect x="248" y="241" width="528" height="560" rx="168" fill="url(#panelFill)"/>
     <rect x="276" y="269" width="472" height="504" rx="140" stroke="url(#inkLine)" stroke-opacity="0.22" stroke-width="8"/>
 
-    <path d="M658 332C624.462 301.154 582.087 285 530 285C412.364 285 335 363.346 335 478C335 592.654 412.364 671 529 671C581.306 671 624.098 654.22 656 622.5" stroke="url(#goldStroke)" stroke-width="58" stroke-linecap="round"/>
-    <path d="M688 314V622C688 668.944 649.944 707 603 707H451" stroke="url(#goldStroke)" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="512" y="584" text-anchor="middle" font-size="314" font-weight="800" font-family="Arial, Helvetica, sans-serif" letter-spacing="-18" fill="url(#goldFill)">CL</text>
     <path d="M355 742C392.474 707.531 454.387 687 533 687C609.141 687 668.543 706.56 709 742" stroke="#EADBB3" stroke-opacity="0.58" stroke-width="20" stroke-linecap="round"/>
     <circle cx="515" cy="204" r="28" fill="#EADBB3" fill-opacity="0.42"/>
   </g>

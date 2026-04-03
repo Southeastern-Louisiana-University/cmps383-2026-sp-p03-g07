@@ -7,7 +7,6 @@
   </defs>
 
   <circle cx="256" cy="256" r="156" fill="#F8EED8" fill-opacity="0.14"/>
-  <path d="M333 162C309.919 140.503 280.903 129 245 129C164.649 129 112 182.352 112 260C112 337.648 164.649 391 244 391C280.364 391 309.646 379.33 331 358" stroke="url(#fgGold)" stroke-width="34" stroke-linecap="round"/>
-  <path d="M354 150V354C354 385.48 328.48 411 297 411H195" stroke="url(#fgGold)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="256" y="286" text-anchor="middle" font-size="146" font-weight="800" font-family="Arial, Helvetica, sans-serif" letter-spacing="-10" fill="url(#fgGold)">CL</text>
   <path d="M127 434C154.06 409.594 198.506 392 254 392C308.174 392 350.446 404.045 379 425" stroke="#F8EED8" stroke-opacity="0.88" stroke-width="12" stroke-linecap="round"/>
 </svg>
