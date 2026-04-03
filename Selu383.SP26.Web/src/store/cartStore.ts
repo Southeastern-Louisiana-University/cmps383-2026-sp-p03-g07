@@ -1,6 +1,7 @@
 import {
   createContext,
   createElement,
+  useEffect,
   useContext,
   useMemo,
   useState,
@@ -11,12 +12,18 @@ import {
   filterRewardsExclusiveNamedItems,
   isRewardsExclusiveItemName,
 } from "../utils/rewardsExclusiveItems";
+import {
+  calculateMenuItemPrice,
+  getCustomizationSummary,
+  type MenuCustomizationSelection,
+} from "../utils/menuCustomization";
 
 export type CartItem = {
   id: string;
   menuItemId: number;
   locationId: number;
   name: string;
+  imageUrl: string;
   price: number;
   quantity: number;
   customizations: string;
@@ -24,11 +31,12 @@ export type CartItem = {
 
 type CartContextValue = {
   items: CartItem[];
-  addItem: (menuItem: MenuItem) => void;
+  addItem: (menuItem: MenuItem, selection?: MenuCustomizationSelection) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clear: () => void;
   subtotal: number;
+  cartNotice: { id: number; message: string } | null;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -60,6 +68,19 @@ function writeStoredCart(items: CartItem[]) {
 
 export function CartProvider({ children }: PropsWithChildren) {
   const [items, setItems] = useState<CartItem[]>(() => readStoredCart());
+  const [cartNotice, setCartNotice] = useState<{ id: number; message: string } | null>(null);
+
+  useEffect(() => {
+    if (!cartNotice) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCartNotice(null);
+    }, 2500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [cartNotice]);
 
   const value = useMemo<CartContextValue>(() => {
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -67,21 +88,20 @@ export function CartProvider({ children }: PropsWithChildren) {
     return {
       items,
       subtotal,
-      addItem(menuItem) {
+      cartNotice,
+      addItem(menuItem, selection) {
         if (isRewardsExclusiveItemName(menuItem.name)) {
           return;
         }
 
-        const defaultCustomizations = menuItem.customizations
-          .filter((customization) => customization.isDefault)
-          .map((customization) => customization.optionName)
-          .join(", ");
+        const customizations = getCustomizationSummary(menuItem, selection);
+        const price = calculateMenuItemPrice(menuItem, selection);
 
         setItems((currentItems) => {
           const existingItem = currentItems.find(
             (item) =>
               item.menuItemId === menuItem.id &&
-              item.customizations === defaultCustomizations,
+              item.customizations === customizations,
           );
 
           const nextItems = existingItem
@@ -97,14 +117,20 @@ export function CartProvider({ children }: PropsWithChildren) {
                   menuItemId: menuItem.id,
                   locationId: menuItem.locationId,
                   name: menuItem.name,
-                  price: menuItem.price,
+                  imageUrl: menuItem.imageUrl,
+                  price,
                   quantity: 1,
-                  customizations: defaultCustomizations,
+                  customizations,
                 },
               ];
 
           writeStoredCart(nextItems);
           return nextItems;
+        });
+
+        setCartNotice({
+          id: Date.now(),
+          message: `${menuItem.name} has been added to your cart.`,
         });
       },
       removeItem(id) {
@@ -129,7 +155,7 @@ export function CartProvider({ children }: PropsWithChildren) {
         setItems([]);
       },
     };
-  }, [items]);
+  }, [cartNotice, items]);
 
   return createElement(CartContext.Provider, { value }, children);
 }

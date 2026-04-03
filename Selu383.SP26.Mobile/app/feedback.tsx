@@ -48,6 +48,8 @@ export default function FeedbackScreen() {
     );
   }
 
+  const currentUser = user;
+
   async function submitFeedback() {
     if (rating === 0) {
       setErrorMessage('Please select a rating.');
@@ -63,7 +65,7 @@ export default function FeedbackScreen() {
       await feedbackService.submit({
         category: 'Overall',
         rating,
-        name: user.displayName || user.userName,
+        name: currentUser.displayName || currentUser.userName,
         comment: comment.trim(),
       });
       setSubmitted(true);

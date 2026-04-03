@@ -11,6 +11,7 @@ import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
 import { useRewards } from '@/store/rewardsStore';
 import type { Location, MenuItem, Order } from '@/types/app';
+import { FIRST_TIER_THRESHOLD, POINTS_PER_DOLLAR } from '@/utils/rewardsProgram';
 
 const PRIMARY_ACTIONS = [
   {
@@ -86,8 +87,9 @@ export default function HomeScreen() {
   }, [user]);
 
   const featuredItems = useMemo(() => {
-    const featured = menuItems.filter((item) => item.isFeatured);
-    return (featured.length > 0 ? featured : menuItems).slice(0, 6);
+    const imageReadyItems = menuItems.filter((item) => item.imageUrl);
+    const featured = imageReadyItems.filter((item) => item.isFeatured);
+    return (featured.length > 0 ? featured : imageReadyItems).slice(0, 6);
   }, [menuItems]);
 
   const heroShowcaseItems = featuredItems.slice(0, 3);
@@ -133,7 +135,7 @@ export default function HomeScreen() {
           </View>
           <View style={styles.heroNavCopy}>
             <Text style={styles.heroNavKicker}>Fresh roasted daily</Text>
-            <Text style={styles.heroNavLocation}>{locations[0]?.name ?? 'Louisiana favorites'}</Text>
+            <Text style={styles.heroNavLocation}>{locations[0]?.name ?? 'Pilot favorites'}</Text>
           </View>
           <Pressable style={styles.navCartBtn} onPress={() => router.push('/cart')}>
             <Text style={styles.navCartIcon}>Cart</Text>
@@ -150,7 +152,7 @@ export default function HomeScreen() {
           <Text style={styles.heroTop}>CAFFEINATED</Text>
           <Text style={styles.heroBottom}>LIONS</Text>
           <Text style={styles.heroDescription}>
-            Order faster, jump back into a favorite, and keep the whole demo flow one tap away.
+            Order faster, jump back into a favorite, and keep the whole pilot flow one tap away.
           </Text>
           <View style={styles.heroActions}>
             <Pressable style={styles.heroPrimaryButton} onPress={() => router.push('/(tabs)/menu')}>
@@ -307,8 +309,9 @@ export default function HomeScreen() {
         <View style={styles.earnBannerContent}>
           <Text style={styles.earnBannerKicker}>Lions Rewards</Text>
           <Text style={styles.earnBannerTitle}>Earn Lions{'\n'}Every Visit.</Text>
-          <Text style={styles.earnBannerSub}>
-            {balance?.points ?? user?.points ?? 0} Lions - {(balance?.currentTier ?? 'member').toUpperCase()}
+          <Text style={styles.earnBannerSub}>{balance?.points ?? user?.points ?? 0} Lions available</Text>
+          <Text style={styles.earnBannerMicro}>
+            {POINTS_PER_DOLLAR} points per $1 • {FIRST_TIER_THRESHOLD} points = choose a reward
           </Text>
           <Pressable style={styles.earnBannerBtn} onPress={() => router.push('/(tabs)/rewards')}>
             <Text style={styles.earnBannerBtnText}>View Rewards</Text>
@@ -320,7 +323,7 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.sectionKicker}>Three Louisiana locations</Text>
+              <Text style={styles.sectionKicker}>Three pilot locations</Text>
               <Text style={styles.sectionTitle}>Find your Lions</Text>
             </View>
             <Pressable onPress={() => router.push('/locations')}>
@@ -738,6 +741,13 @@ const styles = StyleSheet.create({
     color: 'rgba(215,217,161,0.75)',
     fontWeight: '600',
     letterSpacing: 0.5,
+  },
+  earnBannerMicro: {
+    fontSize: 11,
+    color: GOLD,
+    fontWeight: '700',
+    letterSpacing: 0.8,
+    textTransform: 'uppercase',
   },
   earnBannerBtn: {
     alignSelf: 'flex-start',

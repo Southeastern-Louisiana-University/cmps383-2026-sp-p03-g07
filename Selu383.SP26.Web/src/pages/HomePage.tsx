@@ -211,7 +211,8 @@ export default function HomePage({ navigate }: PageProps) {
 
             <p className="home-hero-lead">
               Fresh pours, soft-baked pastries, and seasonal favorites now lead the page like a bakery window.
-              Put the product first, then let guests jump straight into ordering, rewards, or the nearest store.
+              Put the product first, keep the menu simple, and let guests jump straight into ordering,
+              rewards, or the nearest pilot cafe.
             </p>
 
             <div className="home-hero-actions">
@@ -300,7 +301,7 @@ export default function HomePage({ navigate }: PageProps) {
               className="home-feature-img"
             />
             <h3>Craft Roasts</h3>
-            <p>Single-origin beans sourced from family farms. Roasted fresh every week at our Hammond facility.</p>
+            <p>Single-origin beans sourced from family farms and poured across our current pilot lineup.</p>
           </div>
           <div className="home-feature-card">
             <img
@@ -309,7 +310,7 @@ export default function HomePage({ navigate }: PageProps) {
               className="home-feature-img"
             />
             <h3>Table Reservation</h3>
-            <p>Reserve your spot at any of our three Louisiana locations. Book a table in seconds from your phone.</p>
+            <p>Reserve your spot at any of our three pilot locations. Book a table in seconds from your phone.</p>
           </div>
           <div className="home-feature-card">
             <img
@@ -318,7 +319,7 @@ export default function HomePage({ navigate }: PageProps) {
               className="home-feature-img"
             />
             <h3>Lions Rewards</h3>
-            <p>Earn Lions on every order. Redeem them for free drinks, pastries, and exclusive member perks.</p>
+            <p>Earn 10 Lions on every dollar and keep your balance visible as you work toward the 1,000-Lion milestone.</p>
           </div>
           <div className="home-feature-card">
             <img
@@ -327,7 +328,7 @@ export default function HomePage({ navigate }: PageProps) {
               className="home-feature-img"
             />
             <h3>Dine-In Comfort</h3>
-            <p>Three cozy locations with free Wi-Fi, ample seating, and the perfect atmosphere to work or unwind.</p>
+            <p>Three cozy pilot cafes with free Wi-Fi, ample seating, and the right atmosphere to work or unwind.</p>
           </div>
         </div>
       </section>
@@ -354,7 +355,7 @@ export default function HomePage({ navigate }: PageProps) {
           <div className="home-step">
             <div className="home-step-number">03</div>
             <h3>Reserve or dine in</h3>
-            <p>Book a table at any of our three Louisiana locations, or walk in and enjoy our dine-in experience.</p>
+            <p>Book a table at any of our three pilot locations, or walk in and enjoy our dine-in experience.</p>
           </div>
         </div>
         <div className="home-how-cta">
@@ -370,7 +371,7 @@ export default function HomePage({ navigate }: PageProps) {
       {/* Locations Preview */}
       <section className="home-locations-section">
         <div className="home-section-header">
-          <p className="commerce-kicker">Three locations across Louisiana</p>
+          <p className="commerce-kicker">Three pilot locations</p>
           <h2>Find your Lions</h2>
         </div>
         <div className="home-locations-grid">

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Selu383.SP26.Api.Features.Auth;
+using Selu383.SP26.Api.Services;
 
 namespace Selu383.SP26.Api.Controllers;
 
@@ -25,7 +26,10 @@ public class UsersController : ControllerBase
 
         var newUser = new User
         {
-            UserName = dto.UserName,
+            UserName = InputSanitizer.CleanSingleLine(dto.UserName, 64),
+            DisplayName = InputSanitizer.CleanSingleLine(dto.UserName, 64),
+            Email = InputSanitizer.NormalizeEmail(dto.Email),
+            PhoneNumber = InputSanitizer.NormalizePhone(dto.PhoneNumber),
         };
         var createResult = await userManager.CreateAsync(newUser, dto.Password);
         if (!createResult.Succeeded)
@@ -53,6 +57,8 @@ public class UsersController : ControllerBase
             Id = newUser.Id,
             Roles = dto.Roles,
             UserName = newUser.UserName,
+            Email = newUser.Email ?? string.Empty,
+            PhoneNumber = newUser.PhoneNumber ?? string.Empty,
         });
     }
 }

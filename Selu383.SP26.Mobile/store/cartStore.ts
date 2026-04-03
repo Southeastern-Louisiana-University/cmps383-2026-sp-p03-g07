@@ -7,12 +7,18 @@ import {
   type PropsWithChildren,
 } from 'react';
 import type { MenuItem } from '@/types/app';
+import {
+  calculateMenuItemPrice,
+  getCustomizationSummary,
+  type MenuCustomizationSelection,
+} from '@/utils/menuCustomization';
 
 type CartItem = {
   id: string;
   menuItemId: number;
   locationId: number;
   name: string;
+  imageUrl: string;
   price: number;
   quantity: number;
   customizations: string;
@@ -21,7 +27,7 @@ type CartItem = {
 type CartContextValue = {
   items: CartItem[];
   subtotal: number;
-  addItem: (item: MenuItem, customizations?: string) => void;
+  addItem: (item: MenuItem, selection?: MenuCustomizationSelection) => void;
   updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
   clear: () => void;
@@ -38,7 +44,10 @@ export function CartProvider({ children }: PropsWithChildren) {
     return {
       items,
       subtotal,
-      addItem(item, customizations = '') {
+      addItem(item, selection) {
+        const customizations = getCustomizationSummary(item, selection);
+        const price = calculateMenuItemPrice(item, selection);
+
         setItems((currentItems) => {
           const existingItem = currentItems.find(
             (entry) => entry.menuItemId === item.id && entry.customizations === customizations,
@@ -58,7 +67,8 @@ export function CartProvider({ children }: PropsWithChildren) {
               menuItemId: item.id,
               locationId: item.locationId,
               name: item.name,
-              price: item.price,
+              imageUrl: item.imageUrl,
+              price,
               quantity: 1,
               customizations,
             },

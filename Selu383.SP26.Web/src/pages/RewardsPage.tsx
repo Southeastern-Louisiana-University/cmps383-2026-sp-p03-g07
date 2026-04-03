@@ -5,60 +5,32 @@ import { resolveApiAssetUrl } from "../services/api";
 import { useAuth } from "../store/authStore";
 import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
-import type { PointsBalance, Reward, RewardHistoryItem, RewardTier } from "../types/reward.types";
+import type { PointsBalance, Reward } from "../types/reward.types";
+import { FIRST_TIER_THRESHOLD, POINTS_PER_DOLLAR } from "../utils/rewardsProgram";
 import { CommerceTopRail } from "./commerceShared";
 
-const fallbackTiers: RewardTier[] = [
+const simpleProgramSteps = [
   {
-    id: 1,
-    name: "Bronze",
-    minPoints: 0,
-    benefits: "Birthday treat and basic earn rate",
-    accentColor: "#9a6b3a",
+    label: "Join",
+    title: "10% off your first order",
+    description: "Create your Lions account and start with a clear welcome perk.",
   },
   {
-    id: 2,
-    name: "Silver",
-    minPoints: 150,
-    benefits: "1.5x Lions, early seasonal access",
-    accentColor: "#7c8a99",
+    label: "Earn",
+    title: "10 points for every $1 spent",
+    description: "Every qualifying coffee, pastry, and cafe order adds Lions fast.",
   },
   {
-    id: 3,
-    name: "Gold",
-    minPoints: 300,
-    benefits: "2x Lions, premium offers, surprise drops",
-    accentColor: "#d7a526",
-  },
-];
-
-const tierRows = [
-  {
-    title: "Welcome reward",
-    description: "10% off your first Lions order after joining the program.",
-    minTierIndex: 0,
+    label: "Redeem",
+    title: "1000 points = choose a reward",
+    description: "Once you hit 1000 Lions, pick from drinks, pastries, breakfast, or cake and sweets.",
   },
   {
-    title: "Birthday treat",
-    description: "A surprise pastry or drink during your birthday month.",
-    minTierIndex: 0,
+    label: "Celebrate",
+    title: "Birthday month treat",
+    description: "Add your birthday to your profile so we can celebrate with you during your birthday month.",
   },
-  {
-    title: "Faster Lions earning",
-    description: "Boost your earn rate on every qualifying in-store or online order.",
-    minTierIndex: 1,
-  },
-  {
-    title: "Early seasonal access",
-    description: "Unlock launch-week access to limited drinks and bakery drops.",
-    minTierIndex: 1,
-  },
-  {
-    title: "Surprise drops",
-    description: "Premium members get exclusive flash offers and special weekend perks.",
-    minTierIndex: 2,
-  },
-];
+] as const;
 
 function RewardGiftIcon() {
   return (
@@ -98,14 +70,6 @@ function CarouselChevron({ direction }: { direction: "left" | "right" }) {
   );
 }
 
-function formatHistoryDate(redeemedAt: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(redeemedAt));
-}
-
 function isRewardsHeroItem(item?: MenuItem | null): item is MenuItem {
   return !!item?.isAvailable && !!item.imageUrl;
 }
@@ -128,7 +92,15 @@ function getRewardMenuItem(reward: Reward, menuItems: MenuItem[], index: number)
       keywords: ["croissant", "pastry", "bagel", "toast", "sandwich", "bread", "muffin"],
     },
     {
-      test: /discount|stars|lions/.test(rewardText),
+      test: /breakfast/.test(rewardText),
+      keywords: ["breakfast sandwich", "breakfast", "toast", "bagel", "sandwich"],
+    },
+    {
+      test: /cake|sweet|sweets|dessert|brownie|cheesecake|slice/.test(rewardText),
+      keywords: ["brownie", "cake", "cheesecake", "slice", "sweet"],
+    },
+    {
+      test: /discount|stars|lions|reward/.test(rewardText),
       keywords: ["featured", "seasonal", "special", "house"],
     },
   ];
@@ -162,38 +134,27 @@ function getRewardMenuItem(reward: Reward, menuItems: MenuItem[], index: number)
 export default function RewardsPage({ navigate }: PageProps) {
   const { user, refresh } = useAuth();
   const [rewards, setRewards] = useState<Reward[]>([]);
-  const [tiers, setTiers] = useState<RewardTier[]>(fallbackTiers);
   const [balance, setBalance] = useState<PointsBalance | null>(null);
-  const [history, setHistory] = useState<RewardHistoryItem[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [heroIndex, setHeroIndex] = useState(0);
 
   const loadRewards = useCallback(async () => {
-    const [nextRewards, nextTiers, nextMenuItems] = await Promise.all([
+    const [nextRewards, nextMenuItems] = await Promise.all([
       rewardsApi.getRewards(),
-      rewardsApi.getTiers(),
       menuApi.getMenu({ includeRewardsExclusive: true }),
     ]);
 
     setRewards(nextRewards);
-    setTiers(nextTiers.length > 0 ? nextTiers : fallbackTiers);
     setMenuItems(nextMenuItems);
 
     if (user) {
-      const [nextBalance, nextHistory] = await Promise.all([
-        rewardsApi.getMyPoints(),
-        rewardsApi.getHistory(),
-      ]);
-
-      setBalance(nextBalance);
-      setHistory(nextHistory);
+      setBalance(await rewardsApi.getMyPoints());
       return;
     }
 
     setBalance(null);
-    setHistory([]);
   }, [user]);
 
   useEffect(() => {
@@ -252,9 +213,9 @@ export default function RewardsPage({ navigate }: PageProps) {
     .map(({ menuItem }) => menuItem)
     .find(isRewardsHeroItem);
   const activeHeroItem = featuredMenuItems[safeHeroIndex] ?? fallbackHeroItem;
-  const resolvedTiers = tiers.length > 0 ? tiers : fallbackTiers;
   const availablePoints = balance?.points ?? user?.points ?? 0;
-  const recentReward = history[0];
+  const rewardsReady = Math.floor(availablePoints / FIRST_TIER_THRESHOLD);
+  const pointsToReward = Math.max(FIRST_TIER_THRESHOLD - availablePoints, 0);
 
   function cycleHero(direction: -1 | 1) {
     if (featuredMenuItems.length <= 1) {
@@ -280,18 +241,17 @@ export default function RewardsPage({ navigate }: PageProps) {
       <section className="rewards-canvas">
         <section className="rewards-hero">
           <div className="rewards-hero-copy">
-            <p className="rewards-kicker">Loyalty club</p>
-            <h1>MORE LIONS. MORE FOR YOU.</h1>
+            <p className="rewards-kicker">Lions Rewards</p>
+            <h1>SIMPLE REWARDS THAT FEEL WORTH IT.</h1>
             <p className="rewards-hero-description">
-              Collect Lions with every coffee, pastry, and pickup order. The more you earn, the faster
-              you unlock better perks, earlier drops, and redeemable house favorites.
+              Earn Lions on every visit and redeem them for simple cafe perks.
             </p>
 
             <div className="rewards-hero-actions">
               {user ? (
                 <>
                   <button className="rewards-pill-button rewards-pill-button-primary" onClick={scrollToOffers} type="button">
-                    Redeem rewards
+                    Redeem reward
                   </button>
                   <button
                     className="rewards-pill-button rewards-pill-button-secondary"
@@ -315,36 +275,30 @@ export default function RewardsPage({ navigate }: PageProps) {
                     onClick={() => navigate("/login?mode=register")}
                     type="button"
                   >
-                    Register
+                    Join now
                   </button>
                 </>
               )}
             </div>
 
             <div className="rewards-stat-strip">
-              <article className="rewards-stat-card">
-                <span>Lions</span>
+              <article className="rewards-stat-card rewards-stat-card-balance">
+                <span>Lions balance</span>
                 <strong>{availablePoints}</strong>
-                <p>{user ? "Ready to spend on your next treat." : "Sign in to start earning."}</p>
+                <p>{user ? "Your current balance is ready whenever you want to redeem." : "Sign in to start earning and tracking Lions."}</p>
               </article>
               <article className="rewards-stat-card">
-                <span>Current tier</span>
-                <strong>{balance?.currentTier ?? resolvedTiers[0]?.name ?? "Bronze"}</strong>
-                <p>
-                  {balance
-                    ? balance.pointsToNextTier > 0
-                      ? `${balance.pointsToNextTier} Lions to ${balance.nextTier}.`
-                      : "Top tier unlocked."
-                    : "Each order moves you up the ladder."}
-                </p>
+                <span>Earn rate</span>
+                <strong>{POINTS_PER_DOLLAR} per $1</strong>
+                <p>Every qualifying dollar spent earns {POINTS_PER_DOLLAR} Lions.</p>
               </article>
               <article className="rewards-stat-card">
-                <span>Latest reward</span>
-                <strong>{recentReward?.rewardName ?? "Keep collecting"}</strong>
+                <span>Next reward</span>
+                <strong>{rewardsReady > 0 ? `${rewardsReady} ready` : `${pointsToReward} Lions`}</strong>
                 <p>
-                  {recentReward
-                    ? `Redeemed ${formatHistoryDate(recentReward.redeemedAt)}.`
-                    : "Redeem Lions for drinks, pastries, and premium extras."}
+                  {rewardsReady > 0
+                    ? "Redeem a reward now."
+                    : `Reach ${FIRST_TIER_THRESHOLD.toLocaleString()} Lions to unlock your next reward.`}
                 </p>
               </article>
             </div>
@@ -364,7 +318,7 @@ export default function RewardsPage({ navigate }: PageProps) {
               ) : (
                 <div className="rewards-hero-placeholder">
                   <RewardGiftIcon />
-                  <span>House perks rotate here</span>
+                  <span>Simple Lions perks</span>
                 </div>
               )}
 
@@ -392,117 +346,93 @@ export default function RewardsPage({ navigate }: PageProps) {
               <div className="rewards-hero-caption">
                 <span className="rewards-offer-pill">Featured favorite</span>
                 <strong>{activeHeroItem?.name ?? "Bakery case perks"}</strong>
-                <p>{activeHeroItem?.description ?? "New drops and rotating rewards land here first."}</p>
+                <p>{activeHeroItem?.description ?? "Coffee and pastry favorites land here first."}</p>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="rewards-tier-section">
+        <section className="rewards-program-section">
           <div className="rewards-section-heading">
             <span />
-            <h2>Tiers</h2>
+            <h2>How It Works</h2>
             <span />
           </div>
 
-          <div className="rewards-tier-table-shell">
-            <div className="rewards-tier-table">
-              <div
-                className="rewards-tier-row rewards-tier-row-header"
-                style={{ gridTemplateColumns: `minmax(18rem, 1.8fr) repeat(${resolvedTiers.length}, minmax(9rem, 1fr))` }}
-              >
-                <div className="rewards-tier-cell rewards-tier-cell-heading">Tier rewards</div>
-                {resolvedTiers.map((tier) => (
-                  <div className="rewards-tier-cell rewards-tier-cell-header" key={tier.id}>
-                    <strong>{tier.name}</strong>
-                    <span>from {tier.minPoints} Lions</span>
-                  </div>
-                ))}
-              </div>
-
-              {tierRows.map((row) => (
-                <div
-                  className="rewards-tier-row"
-                  key={row.title}
-                  style={{ gridTemplateColumns: `minmax(18rem, 1.8fr) repeat(${resolvedTiers.length}, minmax(9rem, 1fr))` }}
-                >
-                  <div className="rewards-tier-cell rewards-tier-benefit-cell">
-                    <strong>{row.title}</strong>
-                    <p>{row.description}</p>
-                  </div>
-                  {resolvedTiers.map((tier, index) => (
-                    <div className="rewards-tier-cell rewards-tier-check-cell" key={`${row.title}-${tier.id}`}>
-                      {index >= row.minTierIndex ? <RewardGiftIcon /> : <span className="rewards-tier-empty">-</span>}
-                    </div>
-                  ))}
-                </div>
-              ))}
-            </div>
+          <div className="rewards-program-grid">
+            {simpleProgramSteps.map((step) => (
+              <article className="rewards-program-card" key={step.title}>
+                <span className="rewards-program-step">{step.label}</span>
+                <h3>{step.title}</h3>
+                <p>{step.description}</p>
+              </article>
+            ))}
           </div>
-
-          <p className="rewards-tier-footnote">
-            Join the Lions loyalty program and turn everyday orders into faster upgrades, seasonal access,
-            and premium rewards.
-          </p>
         </section>
 
         <section className="rewards-offers-section" id="rewards-offers">
           <div className="rewards-section-heading">
             <span />
-            <h2>Rewards</h2>
+            <h2>Reward</h2>
             <span />
           </div>
 
-          <div className="rewards-offer-grid">
-            {rewardCards.map(({ reward, menuItem }) => {
-              const isLocked = !!user && availablePoints < reward.pointsCost;
+          {rewardCards.length === 0 ? (
+            <div className="rewards-empty-state">
+              <h3>No reward loaded yet.</h3>
+              <p>Check back soon for the current Lions redemption.</p>
+            </div>
+          ) : (
+            <div className="rewards-offer-grid">
+              {rewardCards.map(({ reward, menuItem }) => {
+                const isLocked = !!user && availablePoints < reward.pointsCost;
 
-              return (
-                <article className="rewards-offer-card" key={reward.id}>
-                  <div className="rewards-offer-media-shell">
-                    {menuItem?.imageUrl ? (
-                      <img alt={reward.name} className="rewards-offer-image" src={resolveApiAssetUrl(menuItem.imageUrl)} />
-                    ) : (
-                      <div className="rewards-offer-image-fallback">
-                        <RewardGiftIcon />
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="rewards-offer-copy">
-                    <span className="rewards-points-chip">{reward.pointsCost} Lions</span>
-                    <h3>{reward.name}</h3>
-                    <p>{reward.description}</p>
-
-                    <div className="rewards-offer-meta">
-                      <span>{reward.tierName || "Any tier"}</span>
-                      <span>{reward.offerType}</span>
+                return (
+                  <article className="rewards-offer-card" key={reward.id}>
+                    <div className="rewards-offer-media-shell">
+                      {menuItem?.imageUrl ? (
+                        <img alt={reward.name} className="rewards-offer-image" src={resolveApiAssetUrl(menuItem.imageUrl)} />
+                      ) : (
+                        <div className="rewards-offer-image-fallback">
+                          <RewardGiftIcon />
+                        </div>
+                      )}
                     </div>
 
-                    <button
-                      className="rewards-redeem-button"
-                      disabled={isLocked}
-                      onClick={() => {
-                        if (!user) {
-                          navigate("/login");
-                          return;
-                        }
+                    <div className="rewards-offer-copy">
+                      <span className="rewards-points-chip">{reward.pointsCost} Lions</span>
+                      <h3>{reward.name}</h3>
+                      <p>{reward.description}</p>
 
-                        void redeemReward(reward.id);
-                      }}
-                      type="button"
-                    >
-                      {!user
-                        ? "Sign in to redeem"
-                        : isLocked
-                          ? `${reward.pointsCost - availablePoints} more Lions`
-                          : "Redeem"}
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                      <div className="rewards-offer-meta">
+                        <span>1000-point reward</span>
+                      </div>
+
+                      <button
+                        className="rewards-redeem-button"
+                        disabled={isLocked}
+                        onClick={() => {
+                          if (!user) {
+                            navigate("/login");
+                            return;
+                          }
+
+                          void redeemReward(reward.id);
+                        }}
+                        type="button"
+                      >
+                        {!user
+                          ? "Sign in to redeem"
+                          : isLocked
+                            ? `${reward.pointsCost - availablePoints} more Lions`
+                            : "Redeem now"}
+                      </button>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </section>
       </section>
     </div>

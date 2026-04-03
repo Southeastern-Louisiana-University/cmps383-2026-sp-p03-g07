@@ -84,7 +84,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
               </article>
               <article className="orders-feature-card">
                 <strong>Keep receipts together</strong>
-                <p>Orders, rewards, and gift cards stay connected to the same account session.</p>
+                <p>Orders, rewards, and account activity stay connected to the same session.</p>
               </article>
             </div>
           </section>

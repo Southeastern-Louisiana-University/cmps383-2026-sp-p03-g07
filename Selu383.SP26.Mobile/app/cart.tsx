@@ -1,7 +1,9 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
+import { resolveApiAssetUrl } from '@/constants/api';
 import { useCart } from '@/store/cartStore';
+import { calculateLions } from '@/utils/rewardsProgram';
 
 export default function CartScreen() {
   const { items, subtotal, updateQuantity, removeItem } = useCart();
@@ -20,26 +22,41 @@ export default function CartScreen() {
         <>
           {items.map((item) => (
             <View key={item.id} style={styles.card}>
-              <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>{item.name}</Text>
-                <Pressable onPress={() => removeItem(item.id)}>
-                  <Text style={styles.removeBtn}>Remove</Text>
-                </Pressable>
-              </View>
-              <View style={styles.row}>
-                <Pressable style={styles.secondaryButton} onPress={() => updateQuantity(item.id, item.quantity - 1)}>
-                  <Text style={styles.secondaryButtonText}>-</Text>
-                </Pressable>
-                <Text style={styles.quantityText}>{item.quantity}</Text>
-                <Pressable style={styles.secondaryButton} onPress={() => updateQuantity(item.id, item.quantity + 1)}>
-                  <Text style={styles.secondaryButtonText}>+</Text>
-                </Pressable>
-                <Text style={styles.price}>${(item.quantity * item.price).toFixed(2)}</Text>
+              <View style={styles.itemRow}>
+                {!!item.imageUrl && (
+                  <Image
+                    source={{ uri: resolveApiAssetUrl(item.imageUrl) }}
+                    style={styles.itemImage}
+                    resizeMode="cover"
+                  />
+                )}
+                <View style={styles.itemCopy}>
+                  <View style={styles.cardHeader}>
+                    <Text style={styles.cardTitle}>{item.name}</Text>
+                    <Pressable onPress={() => removeItem(item.id)}>
+                      <Text style={styles.removeBtn}>Remove</Text>
+                    </Pressable>
+                  </View>
+                  {!!item.customizations && (
+                    <Text style={styles.customizationText}>{item.customizations}</Text>
+                  )}
+                  <View style={styles.row}>
+                    <Pressable style={styles.secondaryButton} onPress={() => updateQuantity(item.id, item.quantity - 1)}>
+                      <Text style={styles.secondaryButtonText}>-</Text>
+                    </Pressable>
+                    <Text style={styles.quantityText}>{item.quantity}</Text>
+                    <Pressable style={styles.secondaryButton} onPress={() => updateQuantity(item.id, item.quantity + 1)}>
+                      <Text style={styles.secondaryButtonText}>+</Text>
+                    </Pressable>
+                    <Text style={styles.price}>${(item.quantity * item.price).toFixed(2)}</Text>
+                  </View>
+                </View>
               </View>
             </View>
           ))}
           <View style={styles.card}>
             <Text style={styles.cardTitle}>Subtotal ${subtotal.toFixed(2)}</Text>
+            <Text style={styles.earnText}>Estimated Lions {calculateLions(subtotal)}</Text>
             <Pressable style={styles.primaryButton} onPress={() => router.push('/checkout')}>
               <Text style={styles.primaryButtonText}>Checkout</Text>
             </Pressable>
@@ -55,11 +72,15 @@ const styles = StyleSheet.create({
   content: { gap: 14, padding: 20, paddingBottom: 40 },
   title: { fontSize: 28, fontWeight: '700', color: '#1f1a17' },
   card: { gap: 10, borderRadius: 22, backgroundColor: '#fffaf4', padding: 16 },
+  itemRow: { flexDirection: 'row', gap: 12, alignItems: 'center' },
+  itemImage: { width: 84, height: 84, borderRadius: 18, backgroundColor: '#ead7c5' },
+  itemCopy: { flex: 1, gap: 10 },
   cardTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a17' },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  customizationText: { color: '#6c5b4d', fontSize: 13 },
   removeBtn: { color: '#c0392b', fontSize: 13, fontWeight: '600' },
   quantityText: { fontSize: 15, fontWeight: '700', color: '#1f1a17', minWidth: 24, textAlign: 'center' },
-  row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 10, flexWrap: 'wrap' },
   primaryButton: {
     alignSelf: 'flex-start',
     borderRadius: 999,
@@ -76,4 +97,5 @@ const styles = StyleSheet.create({
   },
   secondaryButtonText: { color: '#40261a', fontWeight: '700' },
   price: { color: '#8a5124', fontWeight: '700' },
+  earnText: { color: '#4a6741', fontWeight: '700' },
 });

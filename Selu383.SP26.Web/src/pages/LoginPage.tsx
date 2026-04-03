@@ -8,19 +8,29 @@ export default function LoginPage({ navigate, query }: PageProps) {
   const requestedMode = query.get("mode") === "register" ? "register" : "login";
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [mode, setMode] = useState<"login" | "register">(requestedMode);
   const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
     setMode(requestedMode);
+    setStatusMessage("");
   }, [requestedMode]);
 
   async function submitForm() {
     try {
+      setStatusMessage("");
+
       if (mode === "login") {
         await login(userName, password);
       } else {
-        await register(userName, password);
+        await register({
+          userName,
+          password,
+          email,
+          phoneNumber,
+        });
       }
 
       navigate("/profile");
@@ -41,7 +51,7 @@ export default function LoginPage({ navigate, query }: PageProps) {
             <p className="commerce-kicker">Account access</p>
             <h1>{mode === "login" ? "SIGN IN TO YOUR ACCOUNT." : "CREATE YOUR ACCOUNT."}</h1>
             <p className="commerce-hero-description">
-              Use the same account to connect rewards, orders, reservations, gift cards, and account
+              Use the same account to connect rewards, orders, reservations, and account
               notifications across the whole Lions experience.
             </p>
 
@@ -56,14 +66,20 @@ export default function LoginPage({ navigate, query }: PageProps) {
             <div className="auth-mode-toggle">
               <button
                 className={mode === "login" ? "auth-mode-pill active" : "auth-mode-pill"}
-                onClick={() => setMode("login")}
+                onClick={() => {
+                  setMode("login");
+                  setStatusMessage("");
+                }}
                 type="button"
               >
                 Sign in
               </button>
               <button
                 className={mode === "register" ? "auth-mode-pill active" : "auth-mode-pill"}
-                onClick={() => setMode("register")}
+                onClick={() => {
+                  setMode("register");
+                  setStatusMessage("");
+                }}
                 type="button"
               >
                 Register
@@ -82,6 +98,7 @@ export default function LoginPage({ navigate, query }: PageProps) {
                 <span>Username</span>
                 <input
                   className="commerce-input"
+                  autoComplete="username"
                   value={userName}
                   onChange={(event) => setUserName(event.target.value)}
                 />
@@ -91,11 +108,38 @@ export default function LoginPage({ navigate, query }: PageProps) {
                 <span>Password</span>
                 <input
                   className="commerce-input"
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
                   type="password"
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
                 />
               </label>
+
+              {mode === "register" ? (
+                <>
+                  <label className="commerce-field">
+                    <span>Email</span>
+                    <input
+                      className="commerce-input"
+                      autoComplete="email"
+                      type="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                    />
+                  </label>
+
+                  <label className="commerce-field">
+                    <span>Phone number</span>
+                    <input
+                      className="commerce-input"
+                      autoComplete="tel"
+                      inputMode="tel"
+                      value={phoneNumber}
+                      onChange={(event) => setPhoneNumber(event.target.value)}
+                    />
+                  </label>
+                </>
+              ) : null}
             </div>
 
             {statusMessage ? <p className="commerce-inline-status commerce-inline-status-error">{statusMessage}</p> : null}

@@ -7,7 +7,7 @@ import {
   useState,
   type PropsWithChildren,
 } from "react";
-import { authApi } from "../api/authApi";
+import { authApi, type RegisterInput, type UpdateProfileInput } from "../api/authApi";
 import type { UserSession } from "../types/user.types";
 
 type AuthContextValue = {
@@ -15,10 +15,10 @@ type AuthContextValue = {
   loading: boolean;
   error: string;
   login: (userName: string, password: string) => Promise<void>;
-  register: (userName: string, password: string) => Promise<void>;
+  register: (input: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
-  updateProfile: (data: { displayName?: string; birthday?: string | null; profilePictureUrl?: string }) => Promise<void>;
+  updateProfile: (data: UpdateProfileInput) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -71,8 +71,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setError("");
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
       },
-      async register(userName, password) {
-        const nextUser = await authApi.register(userName, password);
+      async register(input) {
+        const nextUser = await authApi.register(input);
         setUser(nextUser);
         setError("");
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));

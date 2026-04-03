@@ -33,7 +33,6 @@ export default function RootLayout() {
                 <Stack.Screen name="reservations" options={{ title: 'Reservations' }} />
                 <Stack.Screen name="feedback" options={{ title: 'Feedback' }} />
                 <Stack.Screen name="locations" options={{ title: 'Store finder' }} />
-                <Stack.Screen name="gift-card" options={{ title: 'Gift cards' }} />
                 <Stack.Screen name="favorites" options={{ title: 'Favorites' }} />
                 <Stack.Screen name="receipt" options={{ title: 'Receipt' }} />
                 <Stack.Screen name="drive-thru" options={{ title: 'Drive-thru' }} />

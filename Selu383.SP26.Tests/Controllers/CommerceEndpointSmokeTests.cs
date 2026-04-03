@@ -1,6 +1,13 @@
 using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
+using Selu383.SP26.Api.Features.Feedback;
+using Selu383.SP26.Api.Features.Locations;
+using Selu383.SP26.Api.Features.Menu;
+using Selu383.SP26.Api.Features.Notifications;
+using Selu383.SP26.Api.Features.Orders;
+using Selu383.SP26.Api.Features.Reservations;
+using Selu383.SP26.Api.Features.Rewards;
 using Selu383.SP26.Tests.Controllers.Authentication;
 using Selu383.SP26.Tests.Dtos;
 using Selu383.SP26.Tests.Helpers;
@@ -33,6 +40,9 @@ public class CommerceEndpointSmokeTests
         locationsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var locations = await locationsResponse.Content.ReadAsJsonAsync<List<LocationDto>>();
         locations.Should().NotBeNullOrEmpty();
+        locations.Should().Contain(location => location.Address == "110 N Cate St, Hammond, LA");
+        locations.Should().Contain(location => location.Address == "72 E 1st St, New York, NY");
+        locations.Should().Contain(location => location.Address == "1140 S Carrollton Ave, New Orleans, LA");
 
         var firstLocation = locations!.First();
 
@@ -87,11 +97,15 @@ public class CommerceEndpointSmokeTests
         {
             category = "Overall",
             rating = 5,
-            name = "",
-            comment = "Loved it."
+            name = "  <b>Anonymous</b>  ",
+            comment = " Loved it. <script>alert('x')</script> Great service. "
         });
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var feedback = await response.Content.ReadAsJsonAsync<FeedbackDto>();
+        feedback.Should().NotBeNull();
+        feedback!.Name.Should().Be("Anonymous");
+        feedback.Comment.Should().Be("Loved it. alert('x') Great service.");
     }
 
     [TestMethod]
@@ -108,6 +122,8 @@ public class CommerceEndpointSmokeTests
         var me = await meResponse.Content.ReadAsJsonAsync<UserDto>();
         me.Should().NotBeNull();
         me!.UserName.Should().Be(userName);
+        me.Email.Should().Be($"{userName}@example.com");
+        me.PhoneNumber.Should().Be("9855550109");
 
         var locationId = context.GetAnyLocationId();
         const decimal orderTotal = 12.34m;
@@ -169,33 +185,6 @@ public class CommerceEndpointSmokeTests
 
         var reservationByIdResponse = await webClient.GetAsync($"/api/reservations/{reservation!.Id}");
         reservationByIdResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var giftCardPurchaseResponse = await webClient.PostAsJsonAsync("/api/payments/gift-cards/purchase", new
-        {
-            amount = 25m,
-            recipientName = "Gift Recipient",
-            recipientEmail = "gift@example.com",
-            message = "Enjoy"
-        });
-
-        giftCardPurchaseResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var giftCard = await giftCardPurchaseResponse.Content.ReadAsJsonAsync<GiftCardDto>();
-        giftCard.Should().NotBeNull();
-
-        var giftCardLookupResponse = await webClient.GetAsync($"/api/payments/gift-cards/{giftCard!.Code}");
-        giftCardLookupResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var giftCardRedeemResponse = await webClient.PostAsJsonAsync("/api/payments/gift-cards/redeem", new
-        {
-            code = giftCard.Code,
-            amount = 5m,
-            orderId = createdOrder.Id
-        });
-
-        giftCardRedeemResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var redeemedGiftCard = await giftCardRedeemResponse.Content.ReadAsJsonAsync<GiftCardDto>();
-        redeemedGiftCard.Should().NotBeNull();
-        redeemedGiftCard!.Balance.Should().Be(20m);
 
         var notificationsResponse = await webClient.GetAsync("/api/notifications");
         notificationsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -276,6 +265,8 @@ public class CommerceEndpointSmokeTests
         {
             userName = managerUserName,
             password = AuthenticationHelpers.DefaultUserPassword,
+            email = $"{managerUserName}@example.com",
+            phoneNumber = "9855550199",
             roles = new[] { "Manager" }
         });
 
@@ -410,6 +401,7 @@ public class CommerceEndpointSmokeTests
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string Address { get; set; } = string.Empty;
         public int? ManagerId { get; set; }
     }
 
@@ -448,12 +440,6 @@ public class CommerceEndpointSmokeTests
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
-    }
-
-    private sealed class GiftCardDto
-    {
-        public string Code { get; set; } = string.Empty;
-        public decimal Balance { get; set; }
     }
 
     private sealed class NotificationDto

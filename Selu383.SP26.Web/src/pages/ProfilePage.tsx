@@ -9,7 +9,7 @@ import { CommerceTopRail } from "./commerceShared";
 const guestHighlights = [
   {
     title: "Track rewards",
-    description: "See your Lions balance, current tier, and redeemable perks in one place.",
+    description: "See your Lions balance and how close you are to your next reward.",
   },
   {
     title: "Save order history",
@@ -41,6 +41,8 @@ export default function ProfilePage({ navigate }: PageProps) {
   const [loadingNotifications, setLoadingNotifications] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [birthday, setBirthday] = useState("");
   const [profilePictureUrl, setProfilePictureUrl] = useState("");
   const [savingProfile, setSavingProfile] = useState(false);
@@ -87,6 +89,8 @@ export default function ProfilePage({ navigate }: PageProps) {
 
   function openEdit() {
     setDisplayName(user?.displayName ?? "");
+    setEmail(user?.email ?? "");
+    setPhoneNumber(user?.phoneNumber ?? "");
     setBirthday(user?.birthday ? user.birthday.slice(0, 10) : "");
     setProfilePictureUrl(user?.profilePictureUrl ?? "");
     setProfileMessage("");
@@ -99,6 +103,8 @@ export default function ProfilePage({ navigate }: PageProps) {
     try {
       await authApi.updateProfile({
         displayName,
+        email,
+        phoneNumber,
         birthday: birthday || null,
         profilePictureUrl,
       });
@@ -232,6 +238,14 @@ export default function ProfilePage({ navigate }: PageProps) {
                   <input className="commerce-input" value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
                 </label>
                 <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.9rem" }}>
+                  <span>Email</span>
+                  <input className="commerce-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.9rem" }}>
+                  <span>Phone number</span>
+                  <input className="commerce-input" inputMode="tel" value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                </label>
+                <label style={{ display: "flex", flexDirection: "column", gap: "0.25rem", fontSize: "0.9rem" }}>
                   <span>Birthday (get a free item on your birthday!)</span>
                   <input className="commerce-input" type="date" value={birthday} onChange={(e) => setBirthday(e.target.value)} />
                 </label>
@@ -262,17 +276,18 @@ export default function ProfilePage({ navigate }: PageProps) {
               <strong>{isPrivilegedUser ? user.roles.join(", ") : "Member"}</strong>
             </div>
             <div className="commerce-summary-row">
+              <span>Email</span>
+              <strong>{user.email || "Not set"}</strong>
+            </div>
+            <div className="commerce-summary-row">
+              <span>Phone</span>
+              <strong>{user.phoneNumber || "Not set"}</strong>
+            </div>
+            <div className="commerce-summary-row">
               <span>Unread alerts</span>
               <strong>{unreadCount}</strong>
             </div>
 
-            <button
-              className="commerce-primary-button commerce-primary-button-block"
-              onClick={() => navigate("/gift-cards")}
-              type="button"
-            >
-              Gift cards
-            </button>
           </aside>
         </section>
 

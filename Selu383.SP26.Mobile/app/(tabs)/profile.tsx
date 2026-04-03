@@ -8,6 +8,8 @@ export default function ProfileScreen() {
   const { logout, updateProfile, user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
+  const [email, setEmail] = useState(user?.email ?? '');
+  const [phoneNumber, setPhoneNumber] = useState(user?.phoneNumber ?? '');
   const [birthday, setBirthday] = useState(user?.birthday ?? '');
   const [profilePictureUrl, setProfilePictureUrl] = useState(user?.profilePictureUrl ?? '');
   const [saving, setSaving] = useState(false);
@@ -19,6 +21,8 @@ export default function ProfileScreen() {
     try {
       await updateProfile({
         displayName: displayName || undefined,
+        email: email || undefined,
+        phoneNumber: phoneNumber || undefined,
         birthday: birthday || null,
         profilePictureUrl: profilePictureUrl || undefined,
       });
@@ -53,10 +57,6 @@ export default function ProfileScreen() {
           <Text style={styles.copy}>Map, hours, and directions</Text>
         </Pressable>
 
-        <Pressable style={styles.actionCard} onPress={() => router.push('/gift-card')}>
-          <Text style={styles.actionTitle}>Gift cards</Text>
-          <Text style={styles.copy}>Buy, redeem, and check balance</Text>
-        </Pressable>
       </ScrollView>
     );
   }
@@ -77,6 +77,8 @@ export default function ProfileScreen() {
         <Text style={styles.heroCopy}>
           {user.points} Lions • {user.roles.join(', ')}
         </Text>
+        <Text style={styles.contactLine}>{user.email || 'No email on file'}</Text>
+        <Text style={styles.contactLine}>{user.phoneNumber || 'No phone on file'}</Text>
         {user.birthday && (
           <Text style={styles.birthdayNote}>
             Birthday month reward unlocked on your birthday!
@@ -95,6 +97,27 @@ export default function ProfileScreen() {
             onChangeText={setDisplayName}
             placeholder="Your display name"
             placeholderTextColor="#8f7d70"
+          />
+
+          <Text style={styles.label}>Email</Text>
+          <TextInput
+            style={styles.input}
+            value={email}
+            onChangeText={setEmail}
+            placeholder="you@example.com"
+            placeholderTextColor="#8f7d70"
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+
+          <Text style={styles.label}>Phone number</Text>
+          <TextInput
+            style={styles.input}
+            value={phoneNumber}
+            onChangeText={setPhoneNumber}
+            placeholder="(555) 555-0101"
+            placeholderTextColor="#8f7d70"
+            keyboardType="phone-pad"
           />
 
           <Text style={styles.label}>Birthday (YYYY-MM-DD)</Text>
@@ -138,12 +161,14 @@ export default function ProfileScreen() {
           style={styles.actionCard}
           onPress={() => {
             setDisplayName(user.displayName ?? '');
+            setEmail(user.email ?? '');
+            setPhoneNumber(user.phoneNumber ?? '');
             setBirthday(user.birthday ?? '');
             setProfilePictureUrl(user.profilePictureUrl ?? '');
             setEditing(true);
           }}>
           <Text style={styles.actionTitle}>Edit profile</Text>
-          <Text style={styles.copy}>Update display name, birthday, and picture</Text>
+          <Text style={styles.copy}>Update display name, contact info, birthday, and picture</Text>
         </Pressable>
       )}
 
@@ -155,11 +180,6 @@ export default function ProfileScreen() {
       <Pressable style={styles.actionCard} onPress={() => router.push('/locations')}>
         <Text style={styles.actionTitle}>Store finder</Text>
         <Text style={styles.copy}>Map, hours, and directions</Text>
-      </Pressable>
-
-      <Pressable style={styles.actionCard} onPress={() => router.push('/gift-card')}>
-        <Text style={styles.actionTitle}>Gift cards</Text>
-        <Text style={styles.copy}>Buy, redeem, and check balance</Text>
       </Pressable>
 
       {user.roles.includes('Admin') || user.roles.includes('Manager') ? (
@@ -188,6 +208,7 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 28, fontWeight: '700', color: '#fffaf4' },
   heroCopy: { color: '#9eb4c8' },
+  contactLine: { color: '#d7d9a1', fontSize: 13 },
   birthdayNote: { color: '#f2c57d', fontSize: 13, marginTop: 4 },
   heroButtons: { flexDirection: 'row', gap: 10, marginTop: 8 },
   avatar: { width: 70, height: 70, borderRadius: 35, marginBottom: 4 },

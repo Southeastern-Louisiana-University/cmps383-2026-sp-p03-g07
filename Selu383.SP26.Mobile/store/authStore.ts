@@ -7,17 +7,17 @@ import {
   useState,
   type PropsWithChildren,
 } from 'react';
-import { authService } from '@/services/authService';
+import { authService, type RegisterInput, type UpdateProfileInput } from '@/services/authService';
 import type { UserSession } from '@/types/app';
 
 type AuthContextValue = {
   user: UserSession | null;
   loading: boolean;
   login: (userName: string, password: string) => Promise<void>;
-  register: (userName: string, password: string) => Promise<void>;
+  register: (input: RegisterInput) => Promise<void>;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
-  updateProfile: (data: { displayName?: string; birthday?: string | null; profilePictureUrl?: string }) => Promise<void>;
+  updateProfile: (data: UpdateProfileInput) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -49,8 +49,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
         const nextUser = await authService.login(userName, password);
         setUser(nextUser);
       },
-      async register(userName, password) {
-        const nextUser = await authService.register(userName, password);
+      async register(input) {
+        const nextUser = await authService.register(input);
         setUser(nextUser);
       },
       refresh,

@@ -4,6 +4,7 @@ using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Extensions;
 using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Feedback;
+using Selu383.SP26.Api.Services;
 
 namespace Selu383.SP26.Api.Controllers;
 
@@ -22,10 +23,14 @@ public class FeedbackController(DataContext dataContext) : ControllerBase
         var feedback = new Feedback
         {
             UserId = User.GetCurrentUserId(),
-            Name = string.IsNullOrWhiteSpace(input.Name) ? "Anonymous" : input.Name.Trim(),
-            Category = string.IsNullOrWhiteSpace(input.Category) ? "Overall" : input.Category.Trim(),
+            Name = string.IsNullOrWhiteSpace(input.Name)
+                ? "Anonymous"
+                : InputSanitizer.CleanSingleLine(input.Name, 80),
+            Category = string.IsNullOrWhiteSpace(input.Category)
+                ? "Overall"
+                : InputSanitizer.CleanSingleLine(input.Category, 60),
             Rating = input.Rating,
-            Comment = string.IsNullOrWhiteSpace(input.Comment) ? string.Empty : input.Comment.Trim(),
+            Comment = InputSanitizer.CleanMultiline(input.Comment, 1000),
             CreatedAt = DateTime.UtcNow,
         };
 

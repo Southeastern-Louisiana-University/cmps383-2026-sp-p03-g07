@@ -5,6 +5,7 @@ import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
+import { calculateLions } from "../utils/rewardsProgram";
 import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems";
 import { CommerceTopRail } from "./commerceShared";
 
@@ -92,13 +93,14 @@ export default function CartPage({ navigate }: PageProps) {
               <div className="cart-item-list">
                 {visibleCartItems.map((item) => {
                   const menuItem = itemLookup.get(item.menuItemId);
+                  const itemImageUrl = item.imageUrl || menuItem?.imageUrl;
 
                   return (
                     <article className="cart-line-card" key={item.id}>
                       <div
                         aria-hidden="true"
                         className="cart-line-image"
-                        style={menuItem?.imageUrl ? { backgroundImage: `url(${resolveApiAssetUrl(menuItem.imageUrl)})` } : undefined}
+                        style={itemImageUrl ? { backgroundImage: `url(${resolveApiAssetUrl(itemImageUrl)})` } : undefined}
                       />
                       <div className="cart-line-copy">
                         <h3>{item.name}</h3>
@@ -137,7 +139,7 @@ export default function CartPage({ navigate }: PageProps) {
               </div>
               <div className="cart-summary-row">
                 <span>Lions earned</span>
-                <strong>{Math.max(Math.floor(visibleSubtotal), 1)}</strong>
+                <strong>{calculateLions(visibleSubtotal)}</strong>
               </div>
               <button className="cart-primary-pill" onClick={() => navigate("/checkout")} type="button">
                 CHECKOUT

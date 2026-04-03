@@ -9,7 +9,6 @@ import StoreMapPage from "./pages/StoreMapPage";
 import LoginPage from "./pages/LoginPage";
 import OrderHistory from "./pages/OrderHistory";
 import OrderStatusPage from "./pages/OrderStatusPage";
-import GiftCardPage from "./pages/GiftCardPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminDashboardPage from "./admin/AdminDashboardPage";
 import AdminOrdersPage from "./admin/AdminOrdersPage";
@@ -42,7 +41,6 @@ const routes: RouteDefinition[] = [
   { path: "/login", label: "Login", element: LoginPage },
   { path: "/orders", label: "Orders", element: OrderHistory, protected: true, showInPrimaryNav: true },
   { path: "/order-status", label: "Track", element: OrderStatusPage, protected: true },
-  { path: "/gift-cards", label: "Gift Cards", element: GiftCardPage, protected: true, showInPrimaryNav: true },
   { path: "/profile", label: "Profile", element: ProfilePage, protected: true },
   { path: "/reservations", label: "Reservations", element: ReservationsPage, protected: true, showInPrimaryNav: true },
   { path: "/feedback", label: "Feedback", element: FeedbackPage, showInPrimaryNav: false },
@@ -113,7 +111,7 @@ function SunIcon() {
 
 function AppLayout() {
   const { user, loading } = useAuth();
-  const { items } = useCart();
+  const { items, cartNotice } = useCart();
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const [routeState, setRouteState] = useState(getCurrentHashRoute);
   const [isDark, setIsDark] = useState(() => localStorage.getItem("theme") !== "light");
@@ -164,7 +162,6 @@ function AppLayout() {
     activeRoute.path !== "/profile" &&
     activeRoute.path !== "/orders" &&
     activeRoute.path !== "/order-status" &&
-    activeRoute.path !== "/gift-cards" &&
     activeRoute.path !== "/reservations";
   const blockedByRole = activeRoute.adminOnly && !isAdmin;
   const isImmersiveRoute =
@@ -178,7 +175,6 @@ function AppLayout() {
     activeRoute.path === "/login" ||
     activeRoute.path === "/orders" ||
     activeRoute.path === "/order-status" ||
-    activeRoute.path === "/gift-cards" ||
     activeRoute.path === "/reservations" ||
     activeRoute.path === "/feedback";
   const Page = activeRoute.element;
@@ -250,6 +246,13 @@ function AppLayout() {
           <Page navigate={navigate} query={routeState.query} />
         )}
       </main>
+
+      {cartNotice ? (
+        <div aria-atomic="true" aria-live="polite" className="cart-toast" role="status">
+          <span className="cart-toast-label">Cart updated</span>
+          <p>{cartNotice.message}</p>
+        </div>
+      ) : null}
     </div>
   );
 }

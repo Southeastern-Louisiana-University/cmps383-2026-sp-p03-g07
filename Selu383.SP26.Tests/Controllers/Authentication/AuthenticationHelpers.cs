@@ -17,10 +17,12 @@ internal static class AuthenticationHelpers
     {
         try
         {
-            var responseMessage = await webClient.PostAsJsonAsync("/api/authentication/register", new LoginDto
+            var responseMessage = await webClient.PostAsJsonAsync("/api/authentication/register", new
             {
-                UserName = userName,
-                Password = password
+                userName,
+                password,
+                email = $"{userName}@example.com",
+                phoneNumber = "9855550109",
             });
             return await AssertLoginFunctions(responseMessage);
         }
@@ -89,6 +91,8 @@ internal static class AuthenticationHelpers
         Assert.IsNotNull(resultDto);
         resultDto.Id.Should().BeGreaterThan(0, "we should have a valid user Id returned after logging in");
         resultDto.UserName.Should().NotBeNullOrEmpty("we should have a valid user name returned after logging in");
+        resultDto.Email.Should().NotBeNullOrEmpty("registered users should have an email address");
+        resultDto.PhoneNumber.Should().NotBeNullOrEmpty("registered users should have a phone number");
 
         return resultDto;
     }

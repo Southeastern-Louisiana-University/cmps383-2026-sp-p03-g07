@@ -12,8 +12,6 @@ public class AdminDashboardDto
 
     public int RewardsRedeemed { get; set; }
 
-    public decimal OutstandingGiftCardBalance { get; set; }
-
     public List<DashboardProductStatDto> TopProducts { get; set; } = [];
 
     public List<DashboardOrderSummaryDto> RecentOrders { get; set; } = [];

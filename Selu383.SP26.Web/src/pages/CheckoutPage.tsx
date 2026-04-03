@@ -6,6 +6,7 @@ import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
+import { calculateLions } from "../utils/rewardsProgram";
 import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems";
 import { CommerceTopRail } from "./commerceShared";
 
@@ -23,7 +24,6 @@ export default function CheckoutPage({ navigate }: PageProps) {
   const [orderType, setOrderType] = useState("pickup");
   const [pickupName, setPickupName] = useState(user?.userName ?? "");
   const [specialInstructions, setSpecialInstructions] = useState("");
-  const [giftCardCode, setGiftCardCode] = useState("");
   const [cardLastFour, setCardLastFour] = useState("4242");
   const [statusMessage, setStatusMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -58,7 +58,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
   const isReady = useMemo(() => visibleItems.length > 0, [visibleItems.length]);
   const selectedLocation = locations.find((location) => location.id === locationId);
   const selectedOrderType = orderTypes.find((option) => option.value === orderType)?.label ?? "Pickup";
-  const starsEarned = Math.max(Math.floor(visibleSubtotal), 1);
+  const starsEarned = calculateLions(visibleSubtotal);
 
   async function submitCheckout() {
     if (!isReady) {
@@ -90,7 +90,6 @@ export default function CheckoutPage({ navigate }: PageProps) {
         orderId: order.id,
         paymentMethod: "Card",
         amount: visibleSubtotal,
-        giftCardCode,
         cardLastFour,
       });
 
@@ -204,16 +203,6 @@ export default function CheckoutPage({ navigate }: PageProps) {
                   className="commerce-input"
                   value={pickupName}
                   onChange={(event) => setPickupName(event.target.value)}
-                />
-              </label>
-
-              <label className="commerce-field">
-                <span>Gift card code</span>
-                <input
-                  className="commerce-input"
-                  placeholder="Optional"
-                  value={giftCardCode}
-                  onChange={(event) => setGiftCardCode(event.target.value)}
                 />
               </label>
 

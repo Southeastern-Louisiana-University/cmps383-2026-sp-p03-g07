@@ -8,11 +8,36 @@ using Selu383.SP26.Api.Features.Orders;
 using Selu383.SP26.Api.Features.Payments;
 using Selu383.SP26.Api.Features.Notifications;
 using Selu383.SP26.Api.Features.Rewards;
+using Selu383.SP26.Api.Services;
 
 namespace Selu383.SP26.Api.Data;
 
 public static class SeedHelper
 {
+    private const int SeedMemberRewardPoints = 1350;
+
+    private static readonly HashSet<string> DefaultFeaturedItemNames = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "Caramel Macchiato",
+        "STRAWBERRY MATCHA",
+        "CROISSANT",
+        "BREAKFAST SANDWICH",
+        "Smoked Chicken Salad",
+        "BROWNIE",
+    };
+
+    private static bool IsDefaultFeaturedItem(string itemName)
+    {
+        return DefaultFeaturedItemNames.Contains(itemName);
+    }
+
+    private sealed record MenuCustomizationSeed(
+        string GroupName,
+        string OptionName,
+        decimal AdditionalPrice,
+        bool IsDefault,
+        int SortOrder);
+
     public static async Task MigrateAndSeed(IServiceProvider serviceProvider)
     {
         var dataContext = serviceProvider.GetRequiredService<DataContext>();
@@ -26,7 +51,6 @@ public static class SeedHelper
         await AddRewards(dataContext);
         await AddRewardTiers(dataContext);
         await AddSampleOrders(dataContext);
-        await AddGiftCards(dataContext);
         await AddNotifications(dataContext);
     }
 
@@ -66,9 +90,19 @@ public static class SeedHelper
         var adminUser = await userManager.FindByNameAsync("galkadi");
         if (adminUser == null)
         {
-            adminUser = new User { UserName = "galkadi" };
+            adminUser = new User
+            {
+                UserName = "galkadi",
+                DisplayName = "Gia Alkadi",
+                Email = "galkadi@caffeinatedlions.com",
+                PhoneNumber = "+19855550101",
+            };
             await userManager.CreateAsync(adminUser, defaultPassword);
         }
+        adminUser.DisplayName = string.IsNullOrWhiteSpace(adminUser.DisplayName) ? "Gia Alkadi" : adminUser.DisplayName;
+        adminUser.Email = string.IsNullOrWhiteSpace(adminUser.Email) ? "galkadi@caffeinatedlions.com" : adminUser.Email;
+        adminUser.PhoneNumber = string.IsNullOrWhiteSpace(adminUser.PhoneNumber) ? "+19855550101" : adminUser.PhoneNumber;
+        await userManager.UpdateAsync(adminUser);
         if (!await userManager.IsInRoleAsync(adminUser, RoleNames.Admin))
         {
             await userManager.AddToRoleAsync(adminUser, RoleNames.Admin);
@@ -77,9 +111,19 @@ public static class SeedHelper
         var bob = await userManager.FindByNameAsync("bob");
         if (bob == null)
         {
-            bob = new User { UserName = "bob" };
+            bob = new User
+            {
+                UserName = "bob",
+                DisplayName = "Bob",
+                Email = "bob@caffeinatedlions.com",
+                PhoneNumber = "+19855550102",
+            };
             await userManager.CreateAsync(bob, defaultPassword);
         }
+        bob.DisplayName = string.IsNullOrWhiteSpace(bob.DisplayName) ? "Bob" : bob.DisplayName;
+        bob.Email = string.IsNullOrWhiteSpace(bob.Email) ? "bob@caffeinatedlions.com" : bob.Email;
+        bob.PhoneNumber = string.IsNullOrWhiteSpace(bob.PhoneNumber) ? "+19855550102" : bob.PhoneNumber;
+        await userManager.UpdateAsync(bob);
         if (!await userManager.IsInRoleAsync(bob, RoleNames.User))
         {
             await userManager.AddToRoleAsync(bob, RoleNames.User);
@@ -88,9 +132,21 @@ public static class SeedHelper
         var sue = await userManager.FindByNameAsync("sue");
         if (sue == null)
         {
-            sue = new User { UserName = "sue", Points = 80 };
+            sue = new User
+            {
+                UserName = "sue",
+                DisplayName = "Sue",
+                Email = "sue@caffeinatedlions.com",
+                PhoneNumber = "+19855550103",
+                Points = SeedMemberRewardPoints,
+            };
             await userManager.CreateAsync(sue, defaultPassword);
         }
+        sue.DisplayName = string.IsNullOrWhiteSpace(sue.DisplayName) ? "Sue" : sue.DisplayName;
+        sue.Email = string.IsNullOrWhiteSpace(sue.Email) ? "sue@caffeinatedlions.com" : sue.Email;
+        sue.PhoneNumber = string.IsNullOrWhiteSpace(sue.PhoneNumber) ? "+19855550103" : sue.PhoneNumber;
+        sue.Points = Math.Max(sue.Points, SeedMemberRewardPoints);
+        await userManager.UpdateAsync(sue);
         if (!await userManager.IsInRoleAsync(sue, RoleNames.User))
         {
             await userManager.AddToRoleAsync(sue, RoleNames.User);
@@ -109,21 +165,21 @@ public static class SeedHelper
             new Location
             {
                 Name = "Hammond",
-                Address = "123 Main St, Hammond, LA",
-                TableCount = 10
+                Address = "110 N Cate St, Hammond, LA",
+                TableCount = 14
             },
             new Location
             {
-                Name = "Covington",
-                Address = "456 Oak Ave, Covington, LA",
-                TableCount = 20,
+                Name = "New York",
+                Address = "72 E 1st St, New York, NY",
+                TableCount = 18
+            },
+            new Location
+            {
+                Name = "New Orleans",
+                Address = "1140 S Carrollton Ave, New Orleans, LA",
+                TableCount = 22,
                 ManagerId = sueManagerId
-            },
-            new Location
-            {
-                Name = "Baton Rouge",
-                Address = "789 Pine Ln, Baton Rouge, LA",
-                TableCount = 15
             }
         };
 
@@ -218,7 +274,7 @@ public static class SeedHelper
                 LocationId = 3,
                 ImageUrl = "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=400&q=80",
                 Calories = 340,
-                IsFeatured = true,
+                IsFeatured = false,
                 InventoryCount = 5,
                 PreparationTag = "Plant-Based"
             },
@@ -292,7 +348,8 @@ public static class SeedHelper
                         locationId,
                         "/menu/pastries/croissant.webp",
                         280,
-                        "Bakery"),
+                        "Bakery",
+                        isFeatured: locationId == 1 && IsDefaultFeaturedItem("CROISSANT")),
                     CreateMenuItem(
                         "BRIOCHE WITH CHOCOLATE",
                         "Pastries",
@@ -333,7 +390,7 @@ public static class SeedHelper
                         "/menu/salads-quiches/smoked-chicken-salad.jpg",
                         430,
                         "Fresh",
-                        isFeatured: locationId == 1),
+                        isFeatured: locationId == 1 && IsDefaultFeaturedItem("Smoked Chicken Salad")),
                 }))
             .Concat(
                 sandwichLocationIds.SelectMany(locationId => new[]
@@ -346,8 +403,7 @@ public static class SeedHelper
                         locationId,
                         "/menu/sandwiches-bagels/avocado-bagel.webp",
                         420,
-                        "Cafe Favorite",
-                        isFeatured: locationId == 1),
+                        "Cafe Favorite"),
                     CreateMenuItem(
                         "AVOCADO TOAST",
                         "Sandwiches & Bagels",
@@ -356,8 +412,7 @@ public static class SeedHelper
                         locationId,
                         "/menu/sandwiches-bagels/avocado-toast.webp",
                         360,
-                        "Brunch",
-                        isFeatured: locationId == 1),
+                        "Brunch"),
                     CreateMenuItem(
                         "BREAKFAST SANDWICH",
                         "Sandwiches & Bagels",
@@ -366,7 +421,8 @@ public static class SeedHelper
                         locationId,
                         "/menu/sandwiches-bagels/breakfast-sandwich.webp",
                         480,
-                        "Breakfast"),
+                        "Breakfast",
+                        isFeatured: locationId == 1 && IsDefaultFeaturedItem("BREAKFAST SANDWICH")),
                     CreateMenuItem(
                         "KALE TURKEY FOCACCIA",
                         "Sandwiches & Bagels",
@@ -407,7 +463,7 @@ public static class SeedHelper
                         "/menu/cakes-sweets/brownie.webp",
                         420,
                         "Slice",
-                        isFeatured: locationId == 1),
+                        isFeatured: locationId == 1 && IsDefaultFeaturedItem("BROWNIE")),
                     CreateMenuItem(
                         "CARROT CAKE",
                         "Sweet and Pops",
@@ -456,8 +512,7 @@ public static class SeedHelper
                         locationId,
                         "/menu/matcha/hojicha-strawberry-latte.webp",
                         220,
-                        "Seasonal Matcha",
-                        isFeatured: locationId == 1),
+                        "Seasonal Matcha"),
                     CreateMenuItem(
                         "Matcha Latte W:Matcha Foam",
                         "Matcha",
@@ -493,7 +548,8 @@ public static class SeedHelper
                         locationId,
                         "/menu/matcha/strawberry-matcha.webp",
                         215,
-                        "Fruit Matcha"),
+                        "Fruit Matcha",
+                        isFeatured: locationId == 1 && IsDefaultFeaturedItem("STRAWBERRY MATCHA")),
                 }))
             .Concat(
                 coffeeLocationIds.SelectMany(locationId => new[]
@@ -506,7 +562,8 @@ public static class SeedHelper
                         locationId,
                         "/menu/coffee/caramel-macchiato.webp",
                         250,
-                        "Signature Latte"),
+                        "Signature Latte",
+                        isFeatured: locationId == 1 && IsDefaultFeaturedItem("Caramel Macchiato")),
                     CreateMenuItem(
                         "Cold Brew",
                         "Coffee",
@@ -603,30 +660,96 @@ public static class SeedHelper
 
         await dataContext.SaveChangesAsync();
 
-        var caramelMacchiatoId = await dataContext.MenuItems
-            .Where(x => x.Name == "Caramel Macchiato" && x.LocationId == 1)
-            .Select(x => x.Id)
-            .FirstAsync();
-        var icedMochaId = await dataContext.MenuItems
-            .Where(x => x.Name == "Iced Mocha" && x.LocationId == 1)
-            .Select(x => x.Id)
-            .FirstAsync();
-        var coldBrewId = await dataContext.MenuItems
-            .Where(x => x.Name == "Cold Brew" && x.LocationId == 1)
-            .Select(x => x.Id)
-            .FirstAsync();
-
-        var seededCustomizations = new[]
+        var customizationTemplatesByItemName = new Dictionary<string, MenuCustomizationSeed[]>(StringComparer.OrdinalIgnoreCase)
         {
-            new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
-            new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
-            new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
-            new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Whipped Cream", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
-            new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Chocolate Drizzle", AdditionalPrice = 0.50m, SortOrder = 2 },
-            new MenuCustomization { MenuItemId = coldBrewId, GroupName = "Sweetener", OptionName = "Vanilla Sweet Cream", AdditionalPrice = 0.75m, SortOrder = 1 },
-            new MenuCustomization { MenuItemId = coldBrewId, GroupName = "Sweetener", OptionName = "Sugar Free Vanilla", AdditionalPrice = 0.50m, SortOrder = 2 }
+            ["Caramel Macchiato"] =
+            [
+                new("Size", "12 oz", 0, true, 1),
+                new("Size", "16 oz", 0.75m, false, 2),
+                new("Milk", "Whole Milk", 0, true, 3),
+                new("Milk", "Oatmilk", 0.75m, false, 4),
+                new("Milk", "Almond Milk", 0.75m, false, 5),
+                new("Espresso", "Standard Shot", 0, true, 6),
+                new("Espresso", "Extra Shot", 1.25m, false, 7),
+            ],
+            ["Iced Mocha"] =
+            [
+                new("Size", "12 oz", 0, true, 1),
+                new("Size", "16 oz", 0.75m, false, 2),
+                new("Whipped Cream", "With Whipped Cream", 0, true, 3),
+                new("Whipped Cream", "No Whipped Cream", 0, false, 4),
+                new("Drizzle", "No Drizzle", 0, true, 5),
+                new("Drizzle", "Chocolate Drizzle", 0.50m, false, 6),
+            ],
+            ["Cold Brew"] =
+            [
+                new("Size", "12 oz", 0, true, 1),
+                new("Size", "16 oz", 0.75m, false, 2),
+                new("Sweetener", "Unsweetened", 0, true, 3),
+                new("Sweetener", "Vanilla Sweet Cream", 0.75m, false, 4),
+                new("Sweetener", "Sugar-Free Vanilla", 0.50m, false, 5),
+            ],
+            ["STRAWBERRY MATCHA"] =
+            [
+                new("Milk", "Whole Milk", 0, true, 1),
+                new("Milk", "Oatmilk", 0.75m, false, 2),
+                new("Sweetness", "House Sweet", 0, true, 3),
+                new("Sweetness", "Light Sweet", 0, false, 4),
+                new("Sweetness", "No Added Sweetener", 0, false, 5),
+            ],
+            ["BREAKFAST SANDWICH"] =
+            [
+                new("Finish", "Standard", 0, true, 1),
+                new("Finish", "Warmed", 0, false, 2),
+                new("Build", "House Build", 0, true, 3),
+                new("Build", "Add Avocado", 1.25m, false, 4),
+            ],
+            ["CROISSANT"] =
+            [
+                new("Finish", "Fresh Case", 0, true, 1),
+                new("Finish", "Warmed", 0, false, 2),
+            ],
         };
-        var existingCustomizations = await dataContext.MenuCustomizations.ToListAsync();
+
+        var customizableItemNames = customizationTemplatesByItemName.Keys.ToArray();
+        var customizableMenuItems = await dataContext.MenuItems
+            .Where(x => customizableItemNames.Contains(x.Name))
+            .Select(x => new { x.Id, x.Name })
+            .ToListAsync();
+
+        var targetMenuItemIds = customizableMenuItems
+            .Select(x => x.Id)
+            .ToHashSet();
+
+        var seededCustomizations = customizableMenuItems
+            .SelectMany(item => customizationTemplatesByItemName[item.Name]
+                .Select(template => new MenuCustomization
+                {
+                    MenuItemId = item.Id,
+                    GroupName = template.GroupName,
+                    OptionName = template.OptionName,
+                    AdditionalPrice = template.AdditionalPrice,
+                    IsDefault = template.IsDefault,
+                    SortOrder = template.SortOrder,
+                }))
+            .ToList();
+
+        var existingCustomizations = await dataContext.MenuCustomizations
+            .Where(x => targetMenuItemIds.Contains(x.MenuItemId))
+            .ToListAsync();
+
+        var customizationsToRemove = existingCustomizations
+            .Where(existingCustomization => !seededCustomizations.Any(seededCustomization =>
+                seededCustomization.MenuItemId == existingCustomization.MenuItemId
+                && string.Equals(seededCustomization.GroupName, existingCustomization.GroupName, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(seededCustomization.OptionName, existingCustomization.OptionName, StringComparison.OrdinalIgnoreCase)))
+            .ToList();
+
+        if (customizationsToRemove.Count > 0)
+        {
+            dataContext.MenuCustomizations.RemoveRange(customizationsToRemove);
+            existingCustomizations = existingCustomizations.Except(customizationsToRemove).ToList();
+        }
 
         foreach (var seededCustomization in seededCustomizations)
         {
@@ -652,94 +775,121 @@ public static class SeedHelper
 
     private static async Task AddRewards(DataContext dataContext)
     {
-        if (await dataContext.Rewards.AnyAsync())
+        var seededRewards = new[]
         {
-            return;
-        }
-
-        dataContext.Set<Reward>().AddRange(
             new Reward
             {
-                Name = "Free Coffee",
-                Description = "Get any size coffee for free",
-                PointsCost = 100,
+                Name = "Free Drink",
+                Description = "Redeem for one free drink.",
+                PointsCost = StarEarningService.RewardThreshold,
                 IsActive = true,
-                TierName = "Bronze",
+                TierName = StarEarningService.MemberTierName,
                 OfferType = "Drink"
             },
             new Reward
             {
                 Name = "Free Pastry",
-                Description = "Get any pastry item for free",
-                PointsCost = 75,
+                Description = "Redeem for one free pastry.",
+                PointsCost = StarEarningService.RewardThreshold,
                 IsActive = true,
-                TierName = "Bronze",
-                OfferType = "Food"
+                TierName = StarEarningService.MemberTierName,
+                OfferType = "Pastry"
             },
             new Reward
             {
-                Name = "$5 Off Purchase",
-                Description = "$5 discount on your next order",
-                PointsCost = 150,
+                Name = "Free Breakfast Item",
+                Description = "Redeem for one item from the breakfast menu.",
+                PointsCost = StarEarningService.RewardThreshold,
                 IsActive = true,
-                TierName = "Silver",
-                OfferType = "Discount",
-                DiscountAmount = 5m
+                TierName = StarEarningService.MemberTierName,
+                OfferType = "Breakfast"
             },
             new Reward
             {
-                Name = "Free Drink Upgrade",
-                Description = "Upgrade any drink to large size",
-                PointsCost = 50,
+                Name = "Free Cake & Sweets Item",
+                Description = "Redeem for one item from cakes and sweets.",
+                PointsCost = StarEarningService.RewardThreshold,
                 IsActive = true,
-                TierName = "Bronze",
-                OfferType = "Upgrade"
+                TierName = StarEarningService.MemberTierName,
+                OfferType = "Sweet"
             },
-            new Reward
+        };
+
+        var existingRewards = await dataContext.Rewards.ToListAsync();
+        var seededRewardNames = seededRewards
+            .Select(x => x.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var seededReward in seededRewards)
+        {
+            var existingReward = existingRewards.FirstOrDefault(x =>
+                string.Equals(x.Name, seededReward.Name, StringComparison.OrdinalIgnoreCase));
+
+            if (existingReward == null)
             {
-                Name = "Double Lions Weekend",
-                Description = "Bank bonus Lions on your next mobile order",
-                PointsCost = 180,
-                IsActive = true,
-                TierName = "Gold",
-                OfferType = "Lions",
-                BonusStars = 50
+                dataContext.Set<Reward>().Add(seededReward);
+                continue;
             }
-        );
+
+            existingReward.Description = seededReward.Description;
+            existingReward.PointsCost = seededReward.PointsCost;
+            existingReward.IsActive = seededReward.IsActive;
+            existingReward.TierName = seededReward.TierName;
+            existingReward.OfferType = seededReward.OfferType;
+            existingReward.DiscountAmount = seededReward.DiscountAmount;
+            existingReward.BonusStars = seededReward.BonusStars;
+        }
+
+        foreach (var existingReward in existingRewards.Where(x => !seededRewardNames.Contains(x.Name)))
+        {
+            existingReward.IsActive = false;
+        }
 
         await dataContext.SaveChangesAsync();
     }
 
     private static async Task AddRewardTiers(DataContext dataContext)
     {
-        if (await dataContext.RewardTiers.AnyAsync())
+        var seededRewardTiers = new[]
         {
-            return;
+            new RewardTier
+            {
+                Name = StarEarningService.MemberTierName,
+                MinPoints = 0,
+                Benefits = $"Earn {StarEarningService.PointsPerDollar} Lions per dollar and redeem {StarEarningService.RewardThreshold} Lions for a drink, pastry, breakfast item, or cake and sweets item.",
+                AccentColor = "#bbc96d"
+            },
+        };
+
+        var existingRewardTiers = await dataContext.RewardTiers.ToListAsync();
+        var seededTierNames = seededRewardTiers
+            .Select(x => x.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var seededRewardTier in seededRewardTiers)
+        {
+            var existingRewardTier = existingRewardTiers.FirstOrDefault(x =>
+                string.Equals(x.Name, seededRewardTier.Name, StringComparison.OrdinalIgnoreCase));
+
+            if (existingRewardTier == null)
+            {
+                dataContext.RewardTiers.Add(seededRewardTier);
+                continue;
+            }
+
+            existingRewardTier.MinPoints = seededRewardTier.MinPoints;
+            existingRewardTier.Benefits = seededRewardTier.Benefits;
+            existingRewardTier.AccentColor = seededRewardTier.AccentColor;
         }
 
-        dataContext.RewardTiers.AddRange(
-            new RewardTier
-            {
-                Name = "Bronze",
-                MinPoints = 0,
-                Benefits = "Birthday treat and basic earn rate",
-                AccentColor = "#9a6b3a"
-            },
-            new RewardTier
-            {
-                Name = "Silver",
-                MinPoints = 150,
-                Benefits = "1.5x Lions, early seasonal access",
-                AccentColor = "#7c8a99"
-            },
-            new RewardTier
-            {
-                Name = "Gold",
-                MinPoints = 300,
-                Benefits = "2x Lions, premium offers, surprise drops",
-                AccentColor = "#d7a526"
-            }
-        );
+        var obsoleteRewardTiers = existingRewardTiers
+            .Where(x => !seededTierNames.Contains(x.Name))
+            .ToList();
+
+        if (obsoleteRewardTiers.Count > 0)
+        {
+            dataContext.RewardTiers.RemoveRange(obsoleteRewardTiers);
+        }
 
         await dataContext.SaveChangesAsync();
     }
@@ -757,7 +907,7 @@ public static class SeedHelper
             .FirstAsync();
 
         var locationId = await dataContext.Locations
-            .Where(x => x.Name.Contains("Covington"))
+            .Where(x => x.Name.Contains("New Orleans"))
             .Select(x => x.Id)
             .FirstAsync();
 
@@ -856,46 +1006,11 @@ public static class SeedHelper
                 UserId = sueId,
                 OrderId = orders[1].Id,
                 Amount = orders[1].Total,
-                Method = "GiftCard",
+                Method = "Card",
                 Status = "Approved",
-                ProviderReference = "LION-SEED-1001",
+                ProviderReference = "seed-payment-2",
+                CardLastFour = "1111",
                 CreatedAt = orders[1].CreatedAt
-            }
-        );
-
-        await dataContext.SaveChangesAsync();
-    }
-
-    private static async Task AddGiftCards(DataContext dataContext)
-    {
-        if (await dataContext.GiftCards.AnyAsync())
-        {
-            return;
-        }
-
-        var sueId = await dataContext.Users
-            .Where(x => x.UserName == "sue")
-            .Select(x => x.Id)
-            .FirstAsync();
-
-        dataContext.GiftCards.AddRange(
-            new GiftCard
-            {
-                Code = "LION-SEED-1001",
-                InitialBalance = 50m,
-                Balance = 18.50m,
-                IsActive = true,
-                PurchasedByUserId = sueId,
-                PurchasedAt = DateTime.UtcNow.AddDays(-10)
-            },
-            new GiftCard
-            {
-                Code = "LION-SEED-2002",
-                InitialBalance = 25m,
-                Balance = 25m,
-                IsActive = true,
-                PurchasedByUserId = sueId,
-                PurchasedAt = DateTime.UtcNow.AddDays(-2)
             }
         );
 

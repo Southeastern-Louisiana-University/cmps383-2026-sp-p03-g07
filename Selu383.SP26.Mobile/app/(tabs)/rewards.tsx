@@ -5,12 +5,42 @@ import { router } from 'expo-router';
 import { rewardsService } from '@/services/rewardsService';
 import { useAuth } from '@/store/authStore';
 import { useRewards } from '@/store/rewardsStore';
+import { FIRST_TIER_THRESHOLD, POINTS_PER_DOLLAR } from '@/utils/rewardsProgram';
+
+const programSteps = [
+  {
+    label: 'Join',
+    title: '10% off your first order',
+    description: 'Create your Lions account and start with a clear welcome perk.',
+  },
+  {
+    label: 'Earn',
+    title: '10 points for every $1 spent',
+    description: 'Every qualifying order keeps the math simple and easy to explain.',
+  },
+  {
+    label: 'Redeem',
+    title: '1000 points = choose a reward',
+    description: 'Hit 1000 Lions and choose from drinks, pastries, breakfast, or cake and sweets.',
+  },
+  {
+    label: 'Birthday',
+    title: 'Birthday month treat',
+    description: 'Add your birthday in your profile so we can celebrate with you during your birthday month.',
+  },
+] as const;
+
+const clientFacingSummary =
+  'Members earn 10 points per dollar, and once they reach 1,000 points, they can choose a reward.';
 
 export default function RewardsScreen() {
   const { user } = useAuth();
   const { balance, refresh, rewards } = useRewards();
   const [redeeming, setRedeeming] = useState<number | null>(null);
   const [message, setMessage] = useState('');
+  const availablePoints = balance?.points ?? user?.points ?? 0;
+  const rewardsReady = Math.floor(availablePoints / FIRST_TIER_THRESHOLD);
+  const pointsToReward = Math.max(FIRST_TIER_THRESHOLD - availablePoints, 0);
 
   async function handleRedeem(rewardId: number, pointsCost: number) {
     if (!user) {
@@ -37,18 +67,30 @@ export default function RewardsScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.heroCard}>
-        <Text style={styles.eyebrow}>Lions and offers</Text>
-        <Text style={styles.balanceValue}>{balance?.points ?? 0}</Text>
+        <Text style={styles.eyebrow}>Lions Rewards</Text>
+        <Text style={styles.balanceValue}>{availablePoints}</Text>
         <Text style={styles.balanceLabel}>
-          {balance
-            ? `${balance.currentTier} tier • ${balance.pointsToNextTier} Lions to ${balance.nextTier}`
-            : 'Login to unlock tiers and earn Lions'}
+          {user
+            ? rewardsReady > 0
+              ? `${rewardsReady} reward${rewardsReady === 1 ? '' : 's'} ready to redeem.`
+              : `${pointsToReward} Lions until your next reward.`
+            : 'Login to start earning and tracking Lions.'}
         </Text>
+        <View style={styles.programMeta}>
+          <Text style={styles.programMetaText}>{POINTS_PER_DOLLAR} points per $1</Text>
+          <Text style={styles.programMetaText}>{FIRST_TIER_THRESHOLD} points = choose a reward</Text>
+          <Text style={styles.programMetaText}>Birthday month treat</Text>
+        </View>
         {!user && (
           <Pressable style={styles.loginButton} onPress={() => router.push('/Auth/login')}>
-            <Text style={styles.loginButtonText}>Login to earn Lions</Text>
+            <Text style={styles.loginButtonText}>Login to join</Text>
           </Pressable>
         )}
+      </View>
+
+      <View style={styles.summaryCard}>
+        <Text style={styles.summaryTitle}>Simple, clear rewards</Text>
+        <Text style={styles.summaryText}>{clientFacingSummary}</Text>
       </View>
 
       {message ? (
@@ -57,6 +99,14 @@ export default function RewardsScreen() {
         </View>
       ) : null}
 
+      {programSteps.map((step) => (
+        <View key={step.title} style={styles.programCard}>
+          <Text style={styles.programLabel}>{step.label}</Text>
+          <Text style={styles.programTitle}>{step.title}</Text>
+          <Text style={styles.programCopy}>{step.description}</Text>
+        </View>
+      ))}
+
       {rewards.map((reward) => {
         const canRedeem = user && (balance?.points ?? 0) >= reward.pointsCost;
         return (
@@ -64,9 +114,7 @@ export default function RewardsScreen() {
             <View style={styles.rewardInfo}>
               <Text style={styles.rewardTitle}>{reward.name}</Text>
               <Text style={styles.rewardCopy}>{reward.description}</Text>
-              <Text style={styles.rewardMeta}>
-                {reward.pointsCost} Lions • {reward.tierName} • {reward.offerType}
-              </Text>
+              <Text style={styles.rewardMeta}>{reward.pointsCost} Lions</Text>
             </View>
             <Pressable
               style={[
@@ -77,7 +125,13 @@ export default function RewardsScreen() {
               onPress={() => handleRedeem(reward.id, reward.pointsCost)}
               disabled={redeeming === reward.id}>
               <Text style={styles.redeemButtonText}>
-                {redeeming === reward.id ? 'Redeeming...' : 'Redeem'}
+                {redeeming === reward.id
+                  ? 'Redeeming...'
+                  : !user
+                    ? 'Sign in'
+                    : canRedeem
+                      ? 'Redeem now'
+                      : `${reward.pointsCost - (balance?.points ?? 0)} more`}
               </Text>
             </Pressable>
           </View>
@@ -86,7 +140,8 @@ export default function RewardsScreen() {
 
       {rewards.length === 0 && (
         <View style={styles.emptyCard}>
-          <Text style={styles.emptyText}>No rewards available right now. Check back soon!</Text>
+          <Text style={styles.emptyTitle}>No reward loaded yet.</Text>
+          <Text style={styles.emptyText}>Check back soon for the current Lions redemption.</Text>
         </View>
       )}
     </ScrollView>
@@ -104,7 +159,15 @@ const styles = StyleSheet.create({
   },
   eyebrow: { color: '#f2c57d', textTransform: 'uppercase', letterSpacing: 2, fontSize: 12 },
   balanceValue: { color: '#fffaf4', fontSize: 42, fontWeight: '700', marginTop: 10 },
-  balanceLabel: { color: '#eadcd1', marginTop: 6 },
+  balanceLabel: { color: '#eadcd1', marginTop: 6, lineHeight: 20 },
+  programMeta: { flexDirection: 'row', gap: 8, flexWrap: 'wrap', marginTop: 10 },
+  programMetaText: {
+    color: '#f2c57d',
+    fontSize: 12,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 0.8,
+  },
   loginButton: {
     alignSelf: 'flex-start',
     borderRadius: 999,
@@ -114,12 +177,41 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   loginButtonText: { color: '#40261a', fontWeight: '700' },
+  summaryCard: {
+    borderRadius: 22,
+    backgroundColor: '#fffaf4',
+    padding: 16,
+    gap: 8,
+  },
+  summaryTitle: { color: '#1f1a17', fontSize: 18, fontWeight: '700' },
+  summaryText: { color: '#6c5b4d', lineHeight: 20 },
   messageCard: {
     borderRadius: 14,
     backgroundColor: '#fffaf4',
     padding: 12,
   },
   messageText: { color: '#1a6b2a', fontWeight: '600' },
+  programCard: {
+    borderRadius: 22,
+    backgroundColor: '#fffaf4',
+    padding: 16,
+    gap: 6,
+  },
+  programLabel: {
+    alignSelf: 'flex-start',
+    borderRadius: 999,
+    backgroundColor: '#ece4c8',
+    color: '#7d6220',
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
+    overflow: 'hidden',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    textTransform: 'uppercase',
+  },
+  programTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a17' },
+  programCopy: { color: '#6c5b4d', lineHeight: 20 },
   rewardCard: {
     borderRadius: 22,
     backgroundColor: '#fffaf4',
@@ -131,7 +223,7 @@ const styles = StyleSheet.create({
   },
   rewardInfo: { flex: 1, gap: 4 },
   rewardTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a17' },
-  rewardCopy: { color: '#6c5b4d', marginTop: 2 },
+  rewardCopy: { color: '#6c5b4d', marginTop: 2, lineHeight: 20 },
   rewardMeta: { color: '#8a5124', fontWeight: '700', fontSize: 13, marginTop: 4 },
   redeemButton: {
     borderRadius: 999,
@@ -145,6 +237,8 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     backgroundColor: '#fffaf4',
     padding: 16,
+    gap: 6,
   },
+  emptyTitle: { color: '#1f1a17', fontSize: 17, fontWeight: '700', textAlign: 'center' },
   emptyText: { color: '#6c5b4d', textAlign: 'center' },
 });

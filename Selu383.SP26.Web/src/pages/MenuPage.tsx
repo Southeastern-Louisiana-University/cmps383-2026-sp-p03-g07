@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { locationsApi } from "../api/locationsApi";
 import { menuApi } from "../api/menuApi";
 import { resolveApiAssetUrl } from "../services/api";
@@ -6,6 +6,12 @@ import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
+import {
+  calculateMenuItemPrice,
+  getDefaultCustomizationSelection,
+  groupMenuCustomizations,
+  type MenuCustomizationSelection,
+} from "../utils/menuCustomization";
 import { CommerceTopRail } from "./commerceShared";
 
 const menuDisplayCategories = [
@@ -21,7 +27,6 @@ const menuDisplayCategories = [
 
 type MenuDisplayCategory = (typeof menuDisplayCategories)[number];
 type MenuSort = "selected" | "price-low" | "price-high" | "name";
-type MenuStatusTone = "error" | "success";
 type MenuDisplayMeta = {
   locationLabel: string;
 };
@@ -122,29 +127,29 @@ export default function MenuPage({ navigate }: PageProps) {
   const [selectedSort, setSelectedSort] = useState<MenuSort>("selected");
   const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState("");
-  const [statusTone, setStatusTone] = useState<MenuStatusTone>("success");
-  const statusTimeoutRef = useRef<number | null>(null);
-
-  function clearStatusTimeout() {
-    if (statusTimeoutRef.current !== null) {
-      window.clearTimeout(statusTimeoutRef.current);
-      statusTimeoutRef.current = null;
-    }
-  }
-
-  function showAddToCartMessage() {
-    clearStatusTimeout();
-    setStatusTone("success");
-    setStatusMessage("1 item has been added to your cart.");
-    statusTimeoutRef.current = window.setTimeout(() => {
-      setStatusMessage("");
-      statusTimeoutRef.current = null;
-    }, 2500);
-  }
+  const [activeCustomizerItemId, setActiveCustomizerItemId] = useState<number | null>(null);
+  const [customizationSelection, setCustomizationSelection] = useState<MenuCustomizationSelection>({});
 
   function handleAddItem(menuItem: MenuItem) {
     addItem(menuItem);
-    showAddToCartMessage();
+    setActiveCustomizerItemId(null);
+    setCustomizationSelection({});
+  }
+
+  function openCustomizer(menuItem: MenuItem) {
+    setActiveCustomizerItemId(menuItem.id);
+    setCustomizationSelection(getDefaultCustomizationSelection(menuItem));
+  }
+
+  function handleCustomizedAdd(menuItem: MenuItem) {
+    addItem(menuItem, customizationSelection);
+    setActiveCustomizerItemId(null);
+    setCustomizationSelection({});
+  }
+
+  function closeCustomizer() {
+    setActiveCustomizerItemId(null);
+    setCustomizationSelection({});
   }
 
   useEffect(() => {
@@ -162,7 +167,8 @@ export default function MenuPage({ navigate }: PageProps) {
         setItems(nextItems);
         setLocations(nextLocations);
         setSelectedLocationId((currentLocationId) => currentLocationId || cartLocationId);
-        clearStatusTimeout();
+        setActiveCustomizerItemId(null);
+        setCustomizationSelection({});
         setStatusMessage("");
       })
       .catch((error) => {
@@ -170,8 +176,6 @@ export default function MenuPage({ navigate }: PageProps) {
           return;
         }
 
-        clearStatusTimeout();
-        setStatusTone("error");
         setStatusMessage(error instanceof Error ? error.message : "Unable to load the online ordering menu.");
       })
       .finally(() => {
@@ -182,7 +186,6 @@ export default function MenuPage({ navigate }: PageProps) {
 
     return () => {
       isMounted = false;
-      clearStatusTimeout();
     };
   }, [cartLocationId]);
 
@@ -323,7 +326,7 @@ export default function MenuPage({ navigate }: PageProps) {
         </div>
 
         {statusMessage ? (
-          <p className={`commerce-inline-status ${statusTone === "error" ? "commerce-inline-status-error" : "commerce-inline-status-success"}`}>
+          <p className="commerce-inline-status commerce-inline-status-error">
             {statusMessage}
           </p>
         ) : null}
@@ -343,6 +346,12 @@ export default function MenuPage({ navigate }: PageProps) {
             {sortedItems.map((item) => {
               const canAddItem = !lockedLocationId || lockedLocationId === item.locationId;
               const displayCategory = getDisplayCategory(item) ?? selectedCategory;
+              const customizationGroups = groupMenuCustomizations(item.customizations);
+              const isCustomizing = activeCustomizerItemId === item.id;
+              const activeSelection = isCustomizing
+                ? customizationSelection
+                : getDefaultCustomizationSelection(item);
+              const customizedPrice = calculateMenuItemPrice(item, activeSelection);
 
               return (
                 <article className="order-bakery-card" key={item.id}>
@@ -362,22 +371,80 @@ export default function MenuPage({ navigate }: PageProps) {
                     <div>
                       <h2>{item.name}</h2>
                       <p>{item.description}</p>
+                      {customizationGroups.length > 0 ? (
+                        <div className="order-bakery-customization-meta">
+                          <span>{customizationGroups.length} quick customizations</span>
+                          <span>Simple preset options only</span>
+                        </div>
+                      ) : null}
                     </div>
                     <div className="order-bakery-card-footer">
                       <div className="order-bakery-price">
-                        <strong>${item.price.toFixed(2)}</strong>
+                        <strong>${customizedPrice.toFixed(2)}</strong>
                         <span>{item.preparationTag}</span>
                       </div>
-                      <button
-                        className="order-bakery-add-button"
-                        disabled={!canAddItem}
-                        onClick={() => handleAddItem(item)}
-                        type="button"
-                      >
-                        {canAddItem ? "Add" : "Store locked"}
-                      </button>
+                      {customizationGroups.length > 0 ? (
+                        <button
+                          className="order-bakery-add-button"
+                          disabled={!canAddItem}
+                          onClick={() => openCustomizer(item)}
+                          type="button"
+                        >
+                          {canAddItem ? "Customize" : "Store locked"}
+                        </button>
+                      ) : (
+                        <button
+                          className="order-bakery-add-button"
+                          disabled={!canAddItem}
+                          onClick={() => handleAddItem(item)}
+                          type="button"
+                        >
+                          {canAddItem ? "Add" : "Store locked"}
+                        </button>
+                      )}
                     </div>
                   </div>
+
+                  {isCustomizing ? (
+                    <div className="order-bakery-customizer">
+                      {customizationGroups.map((group) => (
+                        <section className="order-bakery-customizer-group" key={group.groupName}>
+                          <div className="order-bakery-customizer-heading">
+                            <strong>{group.groupName}</strong>
+                            <span>Pick one</span>
+                          </div>
+                          <div className="order-bakery-option-row">
+                            {group.options.map((option) => {
+                              const isSelected = customizationSelection[group.groupName] === option.optionName;
+                              return (
+                                <button
+                                  className={isSelected ? "order-bakery-option-chip active" : "order-bakery-option-chip"}
+                                  key={`${group.groupName}-${option.id}`}
+                                  onClick={() => setCustomizationSelection((currentSelection) => ({
+                                    ...currentSelection,
+                                    [group.groupName]: option.optionName,
+                                  }))}
+                                  type="button"
+                                >
+                                  <span>{option.optionName}</span>
+                                  <span>{option.additionalPrice > 0 ? `+$${option.additionalPrice.toFixed(2)}` : "Included"}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </section>
+                      ))}
+
+                      <div className="order-bakery-customizer-actions">
+                        <button className="order-bakery-add-button" onClick={() => handleCustomizedAdd(item)} type="button">
+                          Add to cart
+                        </button>
+                        <button className="order-bakery-add-button order-bakery-add-button-secondary" onClick={closeCustomizer} type="button">
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : null}
                 </article>
               );
             })}

@@ -7,6 +7,7 @@ import { orderService } from '@/services/orderService';
 import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
 import type { Location } from '@/types/app';
+import { calculateLions } from '@/utils/rewardsProgram';
 
 const ORDER_TYPES = ['pickup', 'drive-thru', 'dine-in'] as const;
 type OrderType = (typeof ORDER_TYPES)[number];
@@ -65,7 +66,7 @@ export default function CheckoutScreen() {
           quantity: item.quantity,
           unitPrice: item.price,
           total: item.quantity * item.price,
-          customizations: '',
+          customizations: item.customizations,
           specialInstructions: '',
         })),
       });
@@ -170,13 +171,18 @@ export default function CheckoutScreen() {
       <View style={styles.card}>
         <Text style={styles.cardTitle}>Order summary</Text>
         {items.map((item) => (
-          <Text key={item.id} style={styles.cardCopy}>
-            {item.quantity}x {item.name} - ${(item.price * item.quantity).toFixed(2)}
-          </Text>
+          <View key={item.id} style={styles.summaryLine}>
+            <Text style={styles.cardCopy}>
+              {item.quantity}x {item.name} - ${(item.price * item.quantity).toFixed(2)}
+            </Text>
+            {!!item.customizations && (
+              <Text style={styles.summaryCustomization}>{item.customizations}</Text>
+            )}
+          </View>
         ))}
         <Text style={[styles.cardCopy, styles.total]}>Total: ${subtotal.toFixed(2)}</Text>
         <Text style={styles.cardCopy}>
-          Estimated Lions: {Math.max(Math.floor(subtotal), 1)}
+          Estimated Lions: {calculateLions(subtotal)}
         </Text>
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
         <Pressable
@@ -199,6 +205,8 @@ const styles = StyleSheet.create({
   card: { gap: 10, borderRadius: 22, backgroundColor: '#fffaf4', padding: 16 },
   cardTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a17' },
   cardCopy: { color: '#6c5b4d' },
+  summaryLine: { gap: 4 },
+  summaryCustomization: { color: '#8f7d70', fontSize: 12 },
   total: { fontWeight: '700', color: '#1f1a17', marginTop: 4 },
   input: {
     borderRadius: 18,

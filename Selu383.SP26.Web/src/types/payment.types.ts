@@ -9,12 +9,3 @@ export type Payment = {
   cardLastFour: string;
   createdAt: string;
 };
-
-export type GiftCard = {
-  id: number;
-  code: string;
-  initialBalance: number;
-  balance: number;
-  isActive: boolean;
-  purchasedAt: string;
-};
