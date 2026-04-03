@@ -1,0 +1,50 @@
+<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bgGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(720 236) rotate(124.193) scale(912.997)">
+      <stop offset="0" stop-color="#88953C"/>
+      <stop offset="0.45" stop-color="#6F7C23"/>
+      <stop offset="1" stop-color="#556112"/>
+    </radialGradient>
+    <linearGradient id="panelFill" x1="284" y1="210" x2="772" y2="826" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#69761F"/>
+      <stop offset="1" stop-color="#44510C"/>
+    </linearGradient>
+    <linearGradient id="goldStroke" x1="335" y1="266" x2="707" y2="759" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#E5C77B"/>
+      <stop offset="1" stop-color="#BA8B3A"/>
+    </linearGradient>
+    <linearGradient id="goldFill" x1="357" y1="293" x2="688" y2="723" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F2D790"/>
+      <stop offset="1" stop-color="#CB9C4A"/>
+    </linearGradient>
+    <linearGradient id="inkLine" x1="336" y1="281" x2="706" y2="733" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBF1D7"/>
+      <stop offset="1" stop-color="#E8DBB6"/>
+    </linearGradient>
+    <filter id="shadow" x="180" y="173" width="664" height="696" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+      <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+      <feOffset dy="28"/>
+      <feGaussianBlur stdDeviation="34"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0.160784 0 0 0 0 0.133333 0 0 0 0 0.0588235 0 0 0 0.25 0"/>
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1_2"/>
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1_2" result="shape"/>
+    </filter>
+  </defs>
+
+  <rect width="1024" height="1024" rx="224" fill="url(#bgGlow)"/>
+  <circle cx="788" cy="194" r="144" fill="#DDBF71" fill-opacity="0.16"/>
+  <circle cx="240" cy="834" r="168" fill="#FBF1D7" fill-opacity="0.08"/>
+
+  <g filter="url(#shadow)">
+    <rect x="248" y="241" width="528" height="560" rx="168" fill="url(#panelFill)"/>
+    <rect x="276" y="269" width="472" height="504" rx="140" stroke="url(#inkLine)" stroke-opacity="0.22" stroke-width="8"/>
+
+    <path d="M658 332C624.462 301.154 582.087 285 530 285C412.364 285 335 363.346 335 478C335 592.654 412.364 671 529 671C581.306 671 624.098 654.22 656 622.5" stroke="url(#goldStroke)" stroke-width="58" stroke-linecap="round"/>
+    <path d="M688 314V622C688 668.944 649.944 707 603 707H451" stroke="url(#goldStroke)" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M355 742C392.474 707.531 454.387 687 533 687C609.141 687 668.543 706.56 709 742" stroke="#EADBB3" stroke-opacity="0.58" stroke-width="20" stroke-linecap="round"/>
+    <circle cx="515" cy="204" r="28" fill="#EADBB3" fill-opacity="0.42"/>
+  </g>
+
+  <text x="512" y="860" text-anchor="middle" font-size="72" font-weight="700" letter-spacing="14" fill="#EADBB3" fill-opacity="0.9">LIONS</text>
+</svg>

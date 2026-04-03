@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
@@ -30,9 +30,6 @@ const programSteps = [
   },
 ] as const;
 
-const clientFacingSummary =
-  'Members earn 10 points per dollar, and once they reach 1,000 points, they can choose a reward.';
-
 export default function RewardsScreen() {
   const { user } = useAuth();
   const { balance, refresh, rewards } = useRewards();
@@ -41,6 +38,10 @@ export default function RewardsScreen() {
   const availablePoints = balance?.points ?? user?.points ?? 0;
   const rewardsReady = Math.floor(availablePoints / FIRST_TIER_THRESHOLD);
   const pointsToReward = Math.max(FIRST_TIER_THRESHOLD - availablePoints, 0);
+  const orderedRewards = useMemo(
+    () => [...rewards].sort((left, right) => left.pointsCost - right.pointsCost || left.name.localeCompare(right.name)),
+    [rewards],
+  );
 
   async function handleRedeem(rewardId: number, pointsCost: number) {
     if (!user) {
@@ -88,14 +89,17 @@ export default function RewardsScreen() {
         )}
       </View>
 
-      <View style={styles.summaryCard}>
-        <Text style={styles.summaryTitle}>Simple, clear rewards</Text>
-        <Text style={styles.summaryText}>{clientFacingSummary}</Text>
-      </View>
-
       {message ? (
         <View style={styles.messageCard}>
-          <Text style={styles.messageText}>{message}</Text>
+          <Text
+            style={[
+              styles.messageText,
+              message.toLowerCase().includes('failed') || message.toLowerCase().includes('not enough')
+                ? styles.messageTextError
+                : null,
+            ]}>
+            {message}
+          </Text>
         </View>
       ) : null}
 
@@ -107,14 +111,15 @@ export default function RewardsScreen() {
         </View>
       ))}
 
-      {rewards.map((reward) => {
+      {orderedRewards.map((reward) => {
         const canRedeem = user && (balance?.points ?? 0) >= reward.pointsCost;
         return (
           <View key={reward.id} style={styles.rewardCard}>
             <View style={styles.rewardInfo}>
+              <Text style={styles.rewardPointsChip}>{reward.pointsCost} Lions</Text>
               <Text style={styles.rewardTitle}>{reward.name}</Text>
               <Text style={styles.rewardCopy}>{reward.description}</Text>
-              <Text style={styles.rewardMeta}>{reward.pointsCost} Lions</Text>
+              <Text style={styles.rewardMeta}>{reward.pointsCost}-point reward</Text>
             </View>
             <Pressable
               style={[
@@ -138,10 +143,10 @@ export default function RewardsScreen() {
         );
       })}
 
-      {rewards.length === 0 && (
+      {orderedRewards.length === 0 && (
         <View style={styles.emptyCard}>
           <Text style={styles.emptyTitle}>No reward loaded yet.</Text>
-          <Text style={styles.emptyText}>Check back soon for the current Lions redemption.</Text>
+          <Text style={styles.emptyText}>Check back soon for the current Lions rewards.</Text>
         </View>
       )}
     </ScrollView>
@@ -177,20 +182,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   loginButtonText: { color: '#40261a', fontWeight: '700' },
-  summaryCard: {
-    borderRadius: 22,
-    backgroundColor: '#fffaf4',
-    padding: 16,
-    gap: 8,
-  },
-  summaryTitle: { color: '#1f1a17', fontSize: 18, fontWeight: '700' },
-  summaryText: { color: '#6c5b4d', lineHeight: 20 },
   messageCard: {
     borderRadius: 14,
     backgroundColor: '#fffaf4',
     padding: 12,
   },
   messageText: { color: '#1a6b2a', fontWeight: '600' },
+  messageTextError: { color: '#8b4129' },
   programCard: {
     borderRadius: 22,
     backgroundColor: '#fffaf4',
@@ -216,20 +214,31 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     backgroundColor: '#fffaf4',
     padding: 16,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    gap: 12,
+    gap: 14,
   },
-  rewardInfo: { flex: 1, gap: 4 },
+  rewardInfo: { gap: 6 },
+  rewardPointsChip: {
+    alignSelf: 'flex-start',
+    borderRadius: 999,
+    backgroundColor: '#ece4c8',
+    color: '#7d6220',
+    fontSize: 12,
+    fontWeight: '700',
+    letterSpacing: 1,
+    overflow: 'hidden',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    textTransform: 'uppercase',
+  },
   rewardTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a17' },
   rewardCopy: { color: '#6c5b4d', marginTop: 2, lineHeight: 20 },
-  rewardMeta: { color: '#8a5124', fontWeight: '700', fontSize: 13, marginTop: 4 },
+  rewardMeta: { color: '#8a5124', fontWeight: '700', fontSize: 13, marginTop: 2 },
   redeemButton: {
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 14,
     paddingVertical: 10,
+    alignItems: 'center',
   },
   redeemButtonDisabled: { opacity: 0.4 },
   redeemButtonText: { color: '#fffaf4', fontWeight: '700', fontSize: 13 },

@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { router } from 'expo-router';
 
 import { resolveApiAssetUrl } from '@/constants/api';
 import { locationService } from '@/services/locationService';
@@ -183,7 +182,6 @@ export default function MenuScreen() {
                         onPress={() => {
                           addItem(item, selection);
                           closeCustomizer();
-                          router.push('/cart');
                         }}>
                         <Text style={styles.primaryButtonText}>Add to cart</Text>
                       </Pressable>
@@ -202,7 +200,6 @@ export default function MenuScreen() {
                       }
 
                       addItem(item);
-                      router.push('/cart');
                     }}>
                     <Text style={styles.primaryButtonText}>
                       {customizationGroups.length > 0 ? 'Customize' : 'Add to cart'}
