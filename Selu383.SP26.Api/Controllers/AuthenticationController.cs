@@ -36,7 +36,7 @@ public class AuthenticationController : ControllerBase
     {
         if (await userManager.FindByNameAsync(dto.UserName) != null)
         {
-            return BadRequest();
+            return BadRequest("Username is already taken.");
         }
 
         var user = new User
@@ -47,7 +47,8 @@ public class AuthenticationController : ControllerBase
         var createResult = await userManager.CreateAsync(user, dto.Password);
         if (!createResult.Succeeded)
         {
-            return BadRequest();
+            var errors = string.Join(" ", createResult.Errors.Select(e => e.Description));
+            return BadRequest(errors);
         }
 
         await userManager.AddToRoleAsync(user, RoleNames.User);
@@ -63,12 +64,12 @@ public class AuthenticationController : ControllerBase
         var user = await userManager.FindByNameAsync(dto.UserName);
         if (user == null)
         {
-            return BadRequest();
+            return BadRequest("Invalid username or password.");
         }
         var result = await signInManager.CheckPasswordSignInAsync(user, dto.Password, true);
         if (!result.Succeeded)
         {
-            return BadRequest();
+            return BadRequest("Invalid username or password.");
         }
 
         await signInManager.SignInAsync(user, false);

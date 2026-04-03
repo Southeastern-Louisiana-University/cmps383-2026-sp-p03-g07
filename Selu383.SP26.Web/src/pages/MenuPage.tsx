@@ -6,7 +6,7 @@ import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 const menuDisplayCategories = [
   "Coffee",
@@ -77,7 +77,11 @@ function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
     return "Sandwiches & Bagels";
   }
 
-  return "Coffee";
+  if (item.category === "Coffee") {
+    return "Coffee";
+  }
+
+  return null;
 }
 
 function sortMenuItems(items: MenuItem[], sort: MenuSort) {
@@ -258,7 +262,7 @@ export default function MenuPage({ navigate }: PageProps) {
   return (
     <div className="commerce-page order-page order-bakery-page">
       <header className="order-bakery-topbar">
-        <StorefrontTopRail activeTab="order" navigate={navigate} />
+        <CommerceTopRail activeTab="order" navigate={navigate} />
       </header>
 
       <section className="order-bakery-shell">

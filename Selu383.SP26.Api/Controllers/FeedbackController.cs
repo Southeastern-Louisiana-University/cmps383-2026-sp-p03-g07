@@ -25,7 +25,7 @@ public class FeedbackController(DataContext dataContext) : ControllerBase
             Name = string.IsNullOrWhiteSpace(input.Name) ? "Anonymous" : input.Name.Trim(),
             Category = string.IsNullOrWhiteSpace(input.Category) ? "Overall" : input.Category.Trim(),
             Rating = input.Rating,
-            Comment = input.Comment.Trim(),
+            Comment = string.IsNullOrWhiteSpace(input.Comment) ? string.Empty : input.Comment.Trim(),
             CreatedAt = DateTime.UtcNow,
         };
 

@@ -6,7 +6,7 @@ import { useCart } from "../store/cartStore";
 import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
 import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 export default function CartPage({ navigate }: PageProps) {
   const { user } = useAuth();
@@ -47,7 +47,7 @@ export default function CartPage({ navigate }: PageProps) {
   return (
     <div className="cart-showcase">
       <header className="cart-topbar">
-        <StorefrontTopRail navigate={navigate} />
+        <CommerceTopRail navigate={navigate} />
       </header>
 
       <section className="cart-canvas">

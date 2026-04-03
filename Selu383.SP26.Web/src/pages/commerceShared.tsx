@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
@@ -90,8 +91,8 @@ const locationProfiles: Record<number, StoreProfile> = {
   3: featuredProfiles[2],
 };
 
-type StorefrontRailProps = {
-  activeTab?: "locations" | "reserve" | "order" | "rewards" | "account" | "feedback";
+type CommerceRailProps = {
+  activeTab?: "locations" | "reserve" | "order" | "rewards" | "account" | "feedback" | "admin";
   navigate: PageProps["navigate"];
   labels?: Partial<{
     locations: string;
@@ -296,8 +297,10 @@ export function StoreLocationIcon({ variant }: { variant: StoreProfile["icon"] }
   );
 }
 
-export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides }: StorefrontRailProps) {
+export function CommerceTopRail({ activeTab, navigate, labels: labelOverrides }: CommerceRailProps) {
   const { items } = useCart();
+  const { user } = useAuth();
+  const isAdmin = !!user?.roles.includes("Admin");
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const labels = {
     locations: "Locations",
@@ -317,7 +320,7 @@ export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides 
         </span>
       </button>
 
-      <nav className="store-rail-links store-rail-links-primary" aria-label="Storefront navigation">
+      <nav className="store-rail-links store-rail-links-primary" aria-label="Primary navigation">
         <button className={getLinkClass(activeTab === "order")} onClick={() => navigate("/menu")} type="button">
           {resolvedLabels.order}
         </button>
@@ -341,6 +344,11 @@ export function StorefrontTopRail({ activeTab, navigate, labels: labelOverrides 
         <button className={getLinkClass(activeTab === "account")} onClick={() => navigate("/profile")} type="button">
           {resolvedLabels.account}
         </button>
+        {isAdmin && (
+          <button className={getLinkClass(activeTab === "admin")} onClick={() => navigate("/admin")} type="button">
+            Admin
+          </button>
+        )}
       </nav>
 
       <div className="store-rail-tools">

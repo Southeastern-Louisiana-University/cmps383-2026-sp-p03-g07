@@ -2,7 +2,7 @@ import { useState } from "react";
 import { feedbackApi } from "../api/feedbackApi";
 import { useAuth } from "../store/authStore";
 import type { PageProps } from "../types/router.types";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 const CATEGORIES = ["Coffee Quality", "Food", "Service", "Atmosphere", "Cleanliness", "Overall"];
 
@@ -57,7 +57,7 @@ export default function FeedbackPage({ navigate }: PageProps) {
     return (
       <div className="commerce-page feedback-page">
         <header className="commerce-topbar">
-          <StorefrontTopRail navigate={navigate} />
+          <CommerceTopRail navigate={navigate} />
         </header>
         <section className="commerce-canvas">
           <div className="feedback-thanks">
@@ -84,7 +84,7 @@ export default function FeedbackPage({ navigate }: PageProps) {
   return (
     <div className="commerce-page feedback-page">
       <header className="commerce-topbar">
-        <StorefrontTopRail navigate={navigate} />
+        <CommerceTopRail navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">

@@ -32,6 +32,7 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
     public DbSet<RewardTier> RewardTiers { get; set; }
     public DbSet<UserReward> UserRewards { get; set; }
     public DbSet<Notification> Notifications { get; set; }
+    public DbSet<NotificationUserState> NotificationUserStates { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -89,6 +90,21 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
         modelBuilder.Entity<GiftCard>()
             .HasIndex(x => x.Code)
             .IsUnique();
+
+        modelBuilder.Entity<NotificationUserState>()
+            .HasKey(x => new { x.NotificationId, x.UserId });
+
+        modelBuilder.Entity<NotificationUserState>()
+            .HasOne<Notification>()
+            .WithMany()
+            .HasForeignKey(x => x.NotificationId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<NotificationUserState>()
+            .HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(DataContext).Assembly);
     }

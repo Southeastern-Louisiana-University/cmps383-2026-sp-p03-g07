@@ -7,7 +7,7 @@ import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
 import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 const orderTypes = [
   { value: "pickup", label: "Pickup" },
@@ -106,7 +106,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
   return (
     <div className="commerce-page reserve-page">
       <header className="commerce-topbar">
-        <StorefrontTopRail activeTab="reserve" navigate={navigate} />
+        <CommerceTopRail activeTab="reserve" navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">
@@ -116,7 +116,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
             <h1>BOOK YOUR TABLE.</h1>
             <p className="commerce-hero-description">
               Set the store, choose how you want the order handled, and keep payment details ready so the
-              checkout feels as smooth as the storefront.
+              checkout feels as smooth as the rest of the experience.
             </p>
 
             <div className="commerce-hero-pills">

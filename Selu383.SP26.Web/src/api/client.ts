@@ -12,7 +12,15 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(errorText || `HTTP ${response.status}`);
+    if (errorText) {
+      try {
+        const parsed = JSON.parse(errorText) as { title?: string; detail?: string };
+        throw new Error(parsed.detail ?? parsed.title ?? errorText);
+      } catch {
+        throw new Error(errorText);
+      }
+    }
+    throw new Error(`Request failed (${response.status})`);
   }
 
   const contentType = response.headers.get("content-type") ?? "";

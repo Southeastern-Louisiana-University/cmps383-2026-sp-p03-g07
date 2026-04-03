@@ -3,7 +3,7 @@ import { orderApi } from "../api/orderApi";
 import { useAuth } from "../store/authStore";
 import type { Order } from "../types/order.types";
 import type { PageProps } from "../types/router.types";
-import { StorefrontTopRail } from "./storefrontShared";
+import { CommerceTopRail } from "./commerceShared";
 
 const timelineSteps = ["Received", "Preparing", "Ready for pickup", "Completed"];
 
@@ -38,7 +38,7 @@ export default function OrderStatusPage({ navigate, query }: PageProps) {
     return (
       <div className="commerce-page order-track-page">
         <header className="commerce-topbar">
-          <StorefrontTopRail activeTab="order" navigate={navigate} />
+          <CommerceTopRail activeTab="order" navigate={navigate} />
         </header>
 
         <section className="commerce-canvas">
@@ -47,7 +47,7 @@ export default function OrderStatusPage({ navigate, query }: PageProps) {
               <p className="commerce-kicker">Track order</p>
               <h1>SIGN IN TO TRACK YOUR CURRENT ORDER.</h1>
               <p className="commerce-hero-description">
-                Order tracking lives inside your signed-in storefront history so you can move between
+                Order tracking lives inside your signed-in order history so you can move between
                 status updates, reorders, and rewards without losing context.
               </p>
 
@@ -67,7 +67,7 @@ export default function OrderStatusPage({ navigate, query }: PageProps) {
     return (
       <div className="commerce-page order-track-page">
         <header className="commerce-topbar">
-          <StorefrontTopRail activeTab="order" navigate={navigate} />
+          <CommerceTopRail activeTab="order" navigate={navigate} />
         </header>
 
         <section className="commerce-canvas">
@@ -88,7 +88,7 @@ export default function OrderStatusPage({ navigate, query }: PageProps) {
     return (
       <div className="commerce-page order-track-page">
         <header className="commerce-topbar">
-          <StorefrontTopRail activeTab="order" navigate={navigate} />
+          <CommerceTopRail activeTab="order" navigate={navigate} />
         </header>
 
         <section className="commerce-canvas">
@@ -105,7 +105,7 @@ export default function OrderStatusPage({ navigate, query }: PageProps) {
   return (
     <div className="commerce-page order-track-page">
       <header className="commerce-topbar">
-        <StorefrontTopRail activeTab="order" navigate={navigate} />
+        <CommerceTopRail activeTab="order" navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">
