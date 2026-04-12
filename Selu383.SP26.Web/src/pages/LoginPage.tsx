@@ -5,22 +5,36 @@ import { CommerceTopRail } from "./commerceShared";
 
 export default function LoginPage({ navigate, query }: PageProps) {
   const { login, register } = useAuth();
-  const requestedMode = query.get("mode") === "register" ? "register" : "login";
+  const currentHashPath = window.location.hash.slice(1).split("?")[0];
+  const requestedMode = query.get("mode") === "register" || currentHashPath === "/signup" ? "register" : "login";
   const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [mode, setMode] = useState<"login" | "register">(requestedMode);
   const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
     setMode(requestedMode);
+    setStatusMessage("");
   }, [requestedMode]);
 
   async function submitForm() {
+    setStatusMessage("");
+
     try {
       if (mode === "login") {
         await login(userName, password);
       } else {
-        await register(userName, password);
+        const trimmedEmail = email.trim();
+        const trimmedPhone = phone.trim();
+
+        if (!trimmedEmail || !trimmedPhone) {
+          setStatusMessage("Email and phone number are required to register.");
+          return;
+        }
+
+        await register(userName, password, trimmedEmail, trimmedPhone);
       }
 
       navigate("/profile");
@@ -41,7 +55,7 @@ export default function LoginPage({ navigate, query }: PageProps) {
             <p className="commerce-kicker">Account access</p>
             <h1>{mode === "login" ? "SIGN IN TO YOUR ACCOUNT." : "CREATE YOUR ACCOUNT."}</h1>
             <p className="commerce-hero-description">
-              Use the same account to connect rewards, orders, reservations, gift cards, and account
+              Use the same account to connect rewards, orders, reservations, and account
               notifications across the whole Lions experience.
             </p>
 
@@ -81,15 +95,43 @@ export default function LoginPage({ navigate, query }: PageProps) {
               <label className="commerce-field">
                 <span>Username</span>
                 <input
+                  autoComplete="username"
                   className="commerce-input"
                   value={userName}
                   onChange={(event) => setUserName(event.target.value)}
                 />
               </label>
 
+              {mode === "register" ? (
+                <label className="commerce-field">
+                  <span>Email</span>
+                  <input
+                    autoComplete="email"
+                    className="commerce-input"
+                    type="email"
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
+                  />
+                </label>
+              ) : null}
+
+              {mode === "register" ? (
+                <label className="commerce-field">
+                  <span>Phone number</span>
+                  <input
+                    autoComplete="tel"
+                    className="commerce-input"
+                    type="tel"
+                    value={phone}
+                    onChange={(event) => setPhone(event.target.value)}
+                  />
+                </label>
+              ) : null}
+
               <label className="commerce-field">
                 <span>Password</span>
                 <input
+                  autoComplete={mode === "login" ? "current-password" : "new-password"}
                   className="commerce-input"
                   type="password"
                   value={password}

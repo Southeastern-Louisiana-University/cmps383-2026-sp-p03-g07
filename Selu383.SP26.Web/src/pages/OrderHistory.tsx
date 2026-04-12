@@ -65,7 +65,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
                 </button>
                 <button
                   className="commerce-secondary-button"
-                  onClick={() => navigate("/login?mode=register")}
+                  onClick={() => navigate("/signup")}
                   type="button"
                 >
                   Register
@@ -84,7 +84,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
               </article>
               <article className="orders-feature-card">
                 <strong>Keep receipts together</strong>
-                <p>Orders, rewards, and gift cards stay connected to the same account session.</p>
+                <p>Orders, rewards, and receipts stay connected to the same account session.</p>
               </article>
             </div>
           </section>

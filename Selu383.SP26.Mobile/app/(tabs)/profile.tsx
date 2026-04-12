@@ -52,11 +52,6 @@ export default function ProfileScreen() {
           <Text style={styles.actionTitle}>Store finder</Text>
           <Text style={styles.copy}>Map, hours, and directions</Text>
         </Pressable>
-
-        <Pressable style={styles.actionCard} onPress={() => router.push('/gift-card')}>
-          <Text style={styles.actionTitle}>Gift cards</Text>
-          <Text style={styles.copy}>Buy, redeem, and check balance</Text>
-        </Pressable>
       </ScrollView>
     );
   }
@@ -156,12 +151,6 @@ export default function ProfileScreen() {
         <Text style={styles.actionTitle}>Store finder</Text>
         <Text style={styles.copy}>Map, hours, and directions</Text>
       </Pressable>
-
-      <Pressable style={styles.actionCard} onPress={() => router.push('/gift-card')}>
-        <Text style={styles.actionTitle}>Gift cards</Text>
-        <Text style={styles.copy}>Buy, redeem, and check balance</Text>
-      </Pressable>
-
       {user.roles.includes('Admin') || user.roles.includes('Manager') ? (
         <Pressable style={styles.actionCard} onPress={() => router.push('/admin/dashboard')}>
           <Text style={styles.actionTitle}>Admin dashboard</Text>

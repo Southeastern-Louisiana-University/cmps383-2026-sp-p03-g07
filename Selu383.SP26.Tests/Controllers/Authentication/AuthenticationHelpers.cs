@@ -20,7 +20,9 @@ internal static class AuthenticationHelpers
             var responseMessage = await webClient.PostAsJsonAsync("/api/authentication/register", new LoginDto
             {
                 UserName = userName,
-                Password = password
+                Password = password,
+                Email = $"{userName}@example.com",
+                Phone = "9855550100"
             });
             return await AssertLoginFunctions(responseMessage);
         }

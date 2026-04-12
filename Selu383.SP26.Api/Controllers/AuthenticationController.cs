@@ -32,7 +32,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register(LoginDto dto)
+    public async Task<ActionResult<UserDto>> Register(RegisterDto dto)
     {
         if (await userManager.FindByNameAsync(dto.UserName) != null)
         {
@@ -41,7 +41,9 @@ public class AuthenticationController : ControllerBase
 
         var user = new User
         {
-            UserName = dto.UserName
+            UserName = dto.UserName,
+            Email = dto.Email,
+            PhoneNumber = dto.Phone
         };
 
         var createResult = await userManager.CreateAsync(user, dto.Password);

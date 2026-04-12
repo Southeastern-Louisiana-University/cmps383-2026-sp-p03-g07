@@ -132,24 +132,6 @@ namespace Selu383.SP26.Api.Migrations
                 defaultValue: "");
 
             migrationBuilder.CreateTable(
-                name: "GiftCards",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Code = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    InitialBalance = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    PurchasedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PurchasedByUserId = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_GiftCards", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "MenuCustomizations",
                 columns: table => new
                 {
@@ -225,7 +207,6 @@ namespace Selu383.SP26.Api.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<int>(type: "int", nullable: false),
                     OrderId = table.Column<int>(type: "int", nullable: true),
-                    GiftCardId = table.Column<int>(type: "int", nullable: true),
                     Amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
                     Method = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -256,12 +237,6 @@ namespace Selu383.SP26.Api.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_GiftCards_Code",
-                table: "GiftCards",
-                column: "Code",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
                 name: "IX_MenuCustomizations_MenuItemId",
                 table: "MenuCustomizations",
                 column: "MenuItemId");
@@ -275,9 +250,6 @@ namespace Selu383.SP26.Api.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "GiftCards");
-
             migrationBuilder.DropTable(
                 name: "MenuCustomizations");
 

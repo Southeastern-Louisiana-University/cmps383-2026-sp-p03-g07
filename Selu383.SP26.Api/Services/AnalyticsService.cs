@@ -18,9 +18,6 @@ public class AnalyticsService(DataContext dataContext)
 
         var activeMenuItems = await dataContext.MenuItems.CountAsync(x => x.IsAvailable);
         var rewardsRedeemed = await dataContext.UserRewards.CountAsync();
-        var giftCardBalance = await dataContext.GiftCards
-            .Where(x => x.IsActive)
-            .SumAsync(x => (decimal?)x.Balance) ?? 0m;
 
         var topProducts = await dataContext.OrderItems
             .GroupBy(x => x.ItemName)
@@ -68,7 +65,6 @@ public class AnalyticsService(DataContext dataContext)
             PendingOrders = pendingOrders,
             ActiveMenuItems = activeMenuItems,
             RewardsRedeemed = rewardsRedeemed,
-            OutstandingGiftCardBalance = giftCardBalance,
             TopProducts = topProducts,
             RecentOrders = recentOrders,
             LowInventoryItems = lowInventory

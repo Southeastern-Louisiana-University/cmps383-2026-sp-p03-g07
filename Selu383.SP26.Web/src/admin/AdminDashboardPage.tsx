@@ -66,9 +66,9 @@ export default function AdminDashboardPage({ navigate }: PageProps) {
           <p>Orders still being prepared or handed off.</p>
         </article>
         <article className="stat-card">
-          <span>Gift card float</span>
-          <strong>${dashboard.outstandingGiftCardBalance.toFixed(2)}</strong>
-          <p>Outstanding balance across active cards.</p>
+          <span>Rewards redeemed</span>
+          <strong>{dashboard.rewardsRedeemed}</strong>
+          <p>Total reward claims redeemed by members.</p>
         </article>
       </section>
 

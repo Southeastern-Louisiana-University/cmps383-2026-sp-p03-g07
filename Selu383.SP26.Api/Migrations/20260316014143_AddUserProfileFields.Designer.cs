@@ -488,43 +488,6 @@ namespace Selu383.SP26.Api.Migrations
                     b.ToTable("OrderItems");
                 });
 
-            modelBuilder.Entity("Selu383.SP26.Api.Features.Payments.GiftCard", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Balance")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<decimal>("InitialBalance")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("PurchasedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int?>("PurchasedByUserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Code")
-                        .IsUnique();
-
-                    b.ToTable("GiftCards");
-                });
-
             modelBuilder.Entity("Selu383.SP26.Api.Features.Payments.Payment", b =>
                 {
                     b.Property<int>("Id")
@@ -547,9 +510,6 @@ namespace Selu383.SP26.Api.Migrations
                     b.Property<string>("ExternalIntentId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("GiftCardId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Method")
                         .IsRequired()

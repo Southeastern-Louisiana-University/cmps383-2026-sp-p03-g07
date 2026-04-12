@@ -8,7 +8,7 @@ import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
 import type { Location } from '@/types/app';
 
-const ORDER_TYPES = ['pickup', 'drive-thru', 'dine-in'] as const;
+const ORDER_TYPES = ['pickup', 'drive-thru'] as const;
 type OrderType = (typeof ORDER_TYPES)[number];
 
 export default function CheckoutScreen() {

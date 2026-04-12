@@ -26,7 +26,6 @@ public static class SeedHelper
         await AddRewards(dataContext);
         await AddRewardTiers(dataContext);
         await AddSampleOrders(dataContext);
-        await AddGiftCards(dataContext);
         await AddNotifications(dataContext);
     }
 
@@ -109,20 +108,20 @@ public static class SeedHelper
             new Location
             {
                 Name = "Hammond",
-                Address = "123 Main St, Hammond, LA",
-                TableCount = 10
-            },
-            new Location
-            {
-                Name = "Covington",
-                Address = "456 Oak Ave, Covington, LA",
-                TableCount = 20,
+                Address = "110 N Cate St, Hammond, LA",
+                TableCount = 10,
                 ManagerId = sueManagerId
             },
             new Location
             {
-                Name = "Baton Rouge",
-                Address = "789 Pine Ln, Baton Rouge, LA",
+                Name = "New York",
+                Address = "72 E 1st St, New York, NY",
+                TableCount = 20
+            },
+            new Location
+            {
+                Name = "New Orleans",
+                Address = "1140 S Carrollton Ave, New Orleans, LA",
                 TableCount = 15
             }
         };
@@ -757,7 +756,7 @@ public static class SeedHelper
             .FirstAsync();
 
         var locationId = await dataContext.Locations
-            .Where(x => x.Name.Contains("Covington"))
+            .Where(x => x.Name.Contains("Hammond"))
             .Select(x => x.Id)
             .FirstAsync();
 
@@ -856,46 +855,11 @@ public static class SeedHelper
                 UserId = sueId,
                 OrderId = orders[1].Id,
                 Amount = orders[1].Total,
-                Method = "GiftCard",
+                Method = "Card",
                 Status = "Approved",
-                ProviderReference = "LION-SEED-1001",
+                ProviderReference = "seed-payment-2",
+                CardLastFour = "1881",
                 CreatedAt = orders[1].CreatedAt
-            }
-        );
-
-        await dataContext.SaveChangesAsync();
-    }
-
-    private static async Task AddGiftCards(DataContext dataContext)
-    {
-        if (await dataContext.GiftCards.AnyAsync())
-        {
-            return;
-        }
-
-        var sueId = await dataContext.Users
-            .Where(x => x.UserName == "sue")
-            .Select(x => x.Id)
-            .FirstAsync();
-
-        dataContext.GiftCards.AddRange(
-            new GiftCard
-            {
-                Code = "LION-SEED-1001",
-                InitialBalance = 50m,
-                Balance = 18.50m,
-                IsActive = true,
-                PurchasedByUserId = sueId,
-                PurchasedAt = DateTime.UtcNow.AddDays(-10)
-            },
-            new GiftCard
-            {
-                Code = "LION-SEED-2002",
-                InitialBalance = 25m,
-                Balance = 25m,
-                IsActive = true,
-                PurchasedByUserId = sueId,
-                PurchasedAt = DateTime.UtcNow.AddDays(-2)
             }
         );
 
