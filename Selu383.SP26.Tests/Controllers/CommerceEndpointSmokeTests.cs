@@ -170,33 +170,6 @@ public class CommerceEndpointSmokeTests
         var reservationByIdResponse = await webClient.GetAsync($"/api/reservations/{reservation!.Id}");
         reservationByIdResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var giftCardPurchaseResponse = await webClient.PostAsJsonAsync("/api/payments/gift-cards/purchase", new
-        {
-            amount = 25m,
-            recipientName = "Gift Recipient",
-            recipientEmail = "gift@example.com",
-            message = "Enjoy"
-        });
-
-        giftCardPurchaseResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var giftCard = await giftCardPurchaseResponse.Content.ReadAsJsonAsync<GiftCardDto>();
-        giftCard.Should().NotBeNull();
-
-        var giftCardLookupResponse = await webClient.GetAsync($"/api/payments/gift-cards/{giftCard!.Code}");
-        giftCardLookupResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-
-        var giftCardRedeemResponse = await webClient.PostAsJsonAsync("/api/payments/gift-cards/redeem", new
-        {
-            code = giftCard.Code,
-            amount = 5m,
-            orderId = createdOrder.Id
-        });
-
-        giftCardRedeemResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var redeemedGiftCard = await giftCardRedeemResponse.Content.ReadAsJsonAsync<GiftCardDto>();
-        redeemedGiftCard.Should().NotBeNull();
-        redeemedGiftCard!.Balance.Should().Be(20m);
-
         var notificationsResponse = await webClient.GetAsync("/api/notifications");
         notificationsResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var notifications = await notificationsResponse.Content.ReadAsJsonAsync<List<NotificationDto>>();
@@ -448,12 +421,6 @@ public class CommerceEndpointSmokeTests
     {
         public int Id { get; set; }
         public int OrderId { get; set; }
-    }
-
-    private sealed class GiftCardDto
-    {
-        public string Code { get; set; } = string.Empty;
-        public decimal Balance { get; set; }
     }
 
     private sealed class NotificationDto

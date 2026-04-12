@@ -22,7 +22,6 @@ export default function CheckoutPage({ navigate }: PageProps) {
   const [orderType, setOrderType] = useState("pickup");
   const [pickupName, setPickupName] = useState(user?.userName ?? "");
   const [specialInstructions, setSpecialInstructions] = useState("");
-  const [giftCardCode, setGiftCardCode] = useState("");
   const [cardLastFour, setCardLastFour] = useState("4242");
   const [statusMessage, setStatusMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -89,7 +88,6 @@ export default function CheckoutPage({ navigate }: PageProps) {
         orderId: order.id,
         paymentMethod: "Card",
         amount: visibleSubtotal,
-        giftCardCode,
         cardLastFour,
       });
 
@@ -208,17 +206,6 @@ export default function CheckoutPage({ navigate }: PageProps) {
                   onChange={(event) => setPickupName(event.target.value)}
                 />
               </label>
-
-              <label className="commerce-field">
-                <span>Gift card code</span>
-                <input
-                  className="commerce-input"
-                  placeholder="Optional"
-                  value={giftCardCode}
-                  onChange={(event) => setGiftCardCode(event.target.value)}
-                />
-              </label>
-
               <label className="commerce-field">
                 <span>Card last four</span>
                 <input

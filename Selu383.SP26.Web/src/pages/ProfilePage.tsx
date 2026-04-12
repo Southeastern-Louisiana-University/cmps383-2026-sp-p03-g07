@@ -265,13 +265,8 @@ export default function ProfilePage({ navigate }: PageProps) {
               <span>Unread alerts</span>
               <strong>{unreadCount}</strong>
             </div>
-
-            <button
-              className="commerce-primary-button commerce-primary-button-block"
-              onClick={() => navigate("/gift-cards")}
-              type="button"
-            >
-              Gift cards
+            <button className="commerce-primary-button commerce-primary-button-block" onClick={() => navigate("/orders")} type="button">
+              Order history
             </button>
           </aside>
         </section>

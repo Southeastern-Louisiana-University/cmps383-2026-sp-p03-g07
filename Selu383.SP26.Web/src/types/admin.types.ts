@@ -25,7 +25,6 @@ export type AdminDashboard = {
   pendingOrders: number;
   activeMenuItems: number;
   rewardsRedeemed: number;
-  outstandingGiftCardBalance: number;
   topProducts: DashboardProductStat[];
   recentOrders: DashboardOrderSummary[];
   lowInventoryItems: LowInventoryItem[];

@@ -3023,8 +3023,6 @@
 }
 
 .auth-hero,
-.gift-card-hero,
-.gift-card-guest-hero,
 .orders-hero,
 .orders-guest-hero {
   position: relative;
@@ -3039,8 +3037,6 @@
 }
 
 .auth-hero::after,
-.gift-card-hero::after,
-.gift-card-guest-hero::after,
 .orders-hero::after,
 .orders-guest-hero::after {
   content: "";
@@ -3054,7 +3050,6 @@
 }
 
 .auth-form-panel,
-.gift-card-summary-card,
 .orders-summary-card {
   display: grid;
   gap: 1rem;
@@ -3102,7 +3097,6 @@
   gap: 1rem;
 }
 
-.gift-card-feature-card,
 .orders-feature-card,
 .track-step {
   padding: 1.35rem;
@@ -3112,7 +3106,6 @@
   box-shadow: 0 14px 28px rgba(66, 54, 32, 0.07);
 }
 
-.gift-card-feature-card p,
 .orders-feature-card p,
 .track-step p {
   margin: 0;
@@ -3120,13 +3113,11 @@
   line-height: 1.58;
 }
 
-.gift-card-page .commerce-hero-copy h1,
 .orders-page .commerce-hero-copy h1,
 .order-track-page .commerce-hero-copy h1 {
   max-width: 11ch;
 }
 
-.gift-card-feature-grid,
 .orders-feature-grid {
   position: relative;
   z-index: 1;
@@ -3134,42 +3125,16 @@
   gap: 1rem;
 }
 
-.gift-card-feature-card,
 .orders-feature-card {
   display: grid;
   gap: 0.45rem;
 }
 
-.gift-card-feature-card strong,
 .orders-feature-card strong {
   color: #5f6a1a;
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-}
-
-.gift-card-content-grid {
-  display: grid;
-  gap: 1.5rem;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.85fr);
-}
-
-.gift-card-form-grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-bottom: 1.25rem;
-}
-
-.gift-card-lookup-row {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-}
-
-.gift-card-lookup-field {
-  min-width: 0;
 }
 
 .orders-list {
@@ -3343,7 +3308,6 @@
   .commerce-hero,
   .reserve-content-grid,
   .account-content-grid,
-  .gift-card-content-grid,
   .order-filter-grid,
   .reserve-form-grid {
     grid-template-columns: 1fr;
@@ -3541,13 +3505,8 @@
   }
 
   .auth-mode-toggle,
-  .gift-card-lookup-row,
   .orders-card,
   .track-timeline {
-    grid-template-columns: 1fr;
-  }
-
-  .gift-card-form-grid {
     grid-template-columns: 1fr;
   }
 
@@ -4579,7 +4538,6 @@ html {
 .account-stat-card span,
 .account-notification-meta span,
 .auth-mode-pill,
-.gift-card-feature-card strong,
 .orders-feature-card strong,
 .orders-card-meta span,
 .track-step > span,

@@ -26,7 +26,6 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Payment> Payments { get; set; }
-    public DbSet<GiftCard> GiftCards { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
     public DbSet<Reward> Rewards { get; set; }
     public DbSet<RewardTier> RewardTiers { get; set; }
@@ -62,14 +61,6 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
             .Property(x => x.Amount)
             .HasPrecision(18, 2);
 
-        modelBuilder.Entity<GiftCard>()
-            .Property(x => x.InitialBalance)
-            .HasPrecision(18, 2);
-
-        modelBuilder.Entity<GiftCard>()
-            .Property(x => x.Balance)
-            .HasPrecision(18, 2);
-
         modelBuilder.Entity<Reward>()
             .Property(x => x.DiscountAmount)
             .HasPrecision(18, 2);
@@ -85,12 +76,6 @@ public class DataContext : IdentityDbContext<User, Role, int, IdentityUserClaim<
             .WithMany(x => x.Items)
             .HasForeignKey(x => x.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
-
-
-        modelBuilder.Entity<GiftCard>()
-            .HasIndex(x => x.Code)
-            .IsUnique();
-
         modelBuilder.Entity<NotificationUserState>()
             .HasKey(x => new { x.NotificationId, x.UserId });
 

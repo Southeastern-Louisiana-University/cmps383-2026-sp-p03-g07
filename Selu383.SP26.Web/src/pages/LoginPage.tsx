@@ -55,7 +55,7 @@ export default function LoginPage({ navigate, query }: PageProps) {
             <p className="commerce-kicker">Account access</p>
             <h1>{mode === "login" ? "SIGN IN TO YOUR ACCOUNT." : "CREATE YOUR ACCOUNT."}</h1>
             <p className="commerce-hero-description">
-              Use the same account to connect rewards, orders, reservations, gift cards, and account
+              Use the same account to connect rewards, orders, reservations, and account
               notifications across the whole Lions experience.
             </p>
 

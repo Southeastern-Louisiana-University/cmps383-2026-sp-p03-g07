@@ -11,7 +11,5 @@ public class CheckoutPaymentDto
 
     public decimal? Amount { get; set; }
 
-    public string GiftCardCode { get; set; } = string.Empty;
-
     public string CardLastFour { get; set; } = string.Empty;
 }
