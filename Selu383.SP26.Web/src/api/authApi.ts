@@ -16,7 +16,7 @@ export const authApi = {
   me() {
     return apiRequest<UserSession>("/api/authentication/me");
   },
-  register(userName: string, password: string, email?: string, phone?: string) {
+  register(userName: string, password: string, email: string, phone: string) {
     return apiRequest<UserSession>("/api/authentication/register", {
       method: "POST",
       body: JSON.stringify({ userName, password, email, phone }),

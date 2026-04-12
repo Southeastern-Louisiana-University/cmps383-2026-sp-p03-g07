@@ -15,7 +15,7 @@ type AuthContextValue = {
   loading: boolean;
   error: string;
   login: (userName: string, password: string) => Promise<void>;
-  register: (userName: string, password: string, email?: string, phone?: string) => Promise<void>;
+  register: (userName: string, password: string, email: string, phone: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   updateProfile: (data: { displayName?: string; birthday?: string | null; profilePictureUrl?: string }) => Promise<void>;

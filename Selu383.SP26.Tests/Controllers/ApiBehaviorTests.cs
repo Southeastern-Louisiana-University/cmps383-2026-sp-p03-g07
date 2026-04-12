@@ -45,6 +45,20 @@ public class ApiBehaviorTests
     }
 
     [TestMethod]
+    public async Task Register_RequiresEmailAndPhone()
+    {
+        using var webClient = context.GetStandardWebClient();
+
+        var response = await webClient.PostAsJsonAsync("/api/authentication/register", new
+        {
+            userName = $"registermissing{Guid.NewGuid():N}",
+            password = AuthenticationHelpers.DefaultUserPassword
+        });
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+    }
+
+    [TestMethod]
     public async Task MenuCreate_RequiresAuthorizedLocationManagerOrAdmin()
     {
         using var webClient = context.GetStandardWebClient();

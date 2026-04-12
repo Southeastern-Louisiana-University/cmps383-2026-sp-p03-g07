@@ -109,20 +109,20 @@ public static class SeedHelper
             new Location
             {
                 Name = "Hammond",
-                Address = "123 Main St, Hammond, LA",
-                TableCount = 10
-            },
-            new Location
-            {
-                Name = "Covington",
-                Address = "456 Oak Ave, Covington, LA",
-                TableCount = 20,
+                Address = "110 N Cate St, Hammond, LA",
+                TableCount = 10,
                 ManagerId = sueManagerId
             },
             new Location
             {
-                Name = "Baton Rouge",
-                Address = "789 Pine Ln, Baton Rouge, LA",
+                Name = "New York",
+                Address = "72 E 1st St, New York, NY",
+                TableCount = 20
+            },
+            new Location
+            {
+                Name = "New Orleans",
+                Address = "1140 S Carrollton Ave, New Orleans, LA",
                 TableCount = 15
             }
         };
@@ -757,7 +757,7 @@ public static class SeedHelper
             .FirstAsync();
 
         var locationId = await dataContext.Locations
-            .Where(x => x.Name.Contains("Covington"))
+            .Where(x => x.Name.Contains("Hammond"))
             .Select(x => x.Id)
             .FirstAsync();
 

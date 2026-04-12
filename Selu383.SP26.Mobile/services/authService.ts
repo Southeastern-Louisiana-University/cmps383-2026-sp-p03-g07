@@ -11,7 +11,7 @@ export const authService = {
       body: JSON.stringify({ userName, password }),
     });
   },
-  register(userName: string, password: string, email?: string, phone?: string) {
+  register(userName: string, password: string, email: string, phone: string) {
     return apiRequest<UserSession>('/api/authentication/register', {
       method: 'POST',
       body: JSON.stringify({ userName, password, email, phone }),

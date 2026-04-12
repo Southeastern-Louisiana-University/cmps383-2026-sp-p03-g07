@@ -32,7 +32,7 @@ public class AuthenticationController : ControllerBase
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register(LoginDto dto)
+    public async Task<ActionResult<UserDto>> Register(RegisterDto dto)
     {
         if (await userManager.FindByNameAsync(dto.UserName) != null)
         {
