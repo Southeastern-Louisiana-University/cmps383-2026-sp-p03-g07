@@ -1,6 +1,7 @@
 import {
   createContext,
   createElement,
+  useEffect,
   useContext,
   useMemo,
   useState,
@@ -29,6 +30,8 @@ type CartContextValue = {
   updateQuantity: (id: string, quantity: number) => void;
   clear: () => void;
   subtotal: number;
+  cartNotice: { id: number; message: string } | null;
+  clearCartNotice: () => void;
 };
 
 const CartContext = createContext<CartContextValue | null>(null);
@@ -60,6 +63,19 @@ function writeStoredCart(items: CartItem[]) {
 
 export function CartProvider({ children }: PropsWithChildren) {
   const [items, setItems] = useState<CartItem[]>(() => readStoredCart());
+  const [cartNotice, setCartNotice] = useState<{ id: number; message: string } | null>(null);
+
+  useEffect(() => {
+    if (!cartNotice) {
+      return;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setCartNotice(null);
+    }, 2400);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [cartNotice]);
 
   const value = useMemo<CartContextValue>(() => {
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -67,6 +83,10 @@ export function CartProvider({ children }: PropsWithChildren) {
     return {
       items,
       subtotal,
+      cartNotice,
+      clearCartNotice() {
+        setCartNotice(null);
+      },
       addItem(menuItem) {
         if (isRewardsExclusiveItemName(menuItem.name)) {
           return;
@@ -106,6 +126,10 @@ export function CartProvider({ children }: PropsWithChildren) {
           writeStoredCart(nextItems);
           return nextItems;
         });
+        setCartNotice({
+          id: Date.now(),
+          message: "Item has been added to the cart",
+        });
       },
       removeItem(id) {
         setItems((currentItems) => {
@@ -129,7 +153,7 @@ export function CartProvider({ children }: PropsWithChildren) {
         setItems([]);
       },
     };
-  }, [items]);
+  }, [cartNotice, items]);
 
   return createElement(CartContext.Provider, { value }, children);
 }
