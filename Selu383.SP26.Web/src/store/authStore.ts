@@ -15,7 +15,7 @@ type AuthContextValue = {
   loading: boolean;
   error: string;
   login: (userName: string, password: string) => Promise<void>;
-  register: (userName: string, password: string) => Promise<void>;
+  register: (userName: string, password: string, email?: string, phone?: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   updateProfile: (data: { displayName?: string; birthday?: string | null; profilePictureUrl?: string }) => Promise<void>;
@@ -71,8 +71,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setError("");
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
       },
-      async register(userName, password) {
-        const nextUser = await authApi.register(userName, password);
+      async register(userName, password, email, phone) {
+        const nextUser = await authApi.register(userName, password, email, phone);
         setUser(nextUser);
         setError("");
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));

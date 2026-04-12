@@ -41,7 +41,9 @@ public class AuthenticationController : ControllerBase
 
         var user = new User
         {
-            UserName = dto.UserName
+            UserName = dto.UserName,
+            Email = dto.Email,
+            PhoneNumber = dto.Phone
         };
 
         var createResult = await userManager.CreateAsync(user, dto.Password);
