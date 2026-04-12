@@ -1102,17 +1102,17 @@
 
 .home-hero-product-card-main:hover {
   transform: scale(1.08);
-  z-index: 1;
+  z-index: 6;
 }
 
 .home-hero-product-card-left:hover {
   transform: rotate(-11deg) scale(1.12) translate(0.35rem, -0.2rem);
-  z-index: 1;
+  z-index: 6;
 }
 
 .home-hero-product-card-right:hover {
   transform: rotate(11deg) scale(1.12) translate(-0.35rem, -0.2rem);
-  z-index: 1;
+  z-index: 6;
 }
 
 .home-hero-product-media {
