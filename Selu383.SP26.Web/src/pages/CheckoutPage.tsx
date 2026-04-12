@@ -142,14 +142,16 @@ export default function CheckoutPage({ navigate }: PageProps) {
               <strong>{starsEarned}</strong>
             </div>
 
-            <button
-              className="commerce-primary-button commerce-primary-button-block"
-              disabled={submitting || !isReady}
-              onClick={submitCheckout}
-              type="button"
-            >
-              {submitting ? "Processing..." : "Place order"}
-            </button>
+            <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+              <button
+                className="commerce-primary-button commerce-primary-button-block"
+                disabled={submitting || !isReady}
+                onClick={submitCheckout}
+                type="button"
+              >
+                {submitting ? "Processing..." : "Place order"}
+              </button>
+            </div>
           </aside>
         </section>
 
@@ -164,14 +166,15 @@ export default function CheckoutPage({ navigate }: PageProps) {
 
             <div className="reserve-order-type-row">
               {orderTypes.map((option) => (
-                <button
-                  className={option.value === orderType ? "reserve-type-pill active" : "reserve-type-pill"}
-                  key={option.value}
-                  onClick={() => setOrderType(option.value)}
-                  type="button"
-                >
-                  {option.label}
-                </button>
+                <div style={{ display: "flex", justifyContent: "center", width: "100%" }} key={option.value}>
+                  <button
+                    className={option.value === orderType ? "reserve-type-pill active" : "reserve-type-pill"}
+                    onClick={() => setOrderType(option.value)}
+                    type="button"
+                  >
+                    {option.label}
+                  </button>
+                </div>
               ))}
             </div>
 
@@ -246,18 +249,22 @@ export default function CheckoutPage({ navigate }: PageProps) {
                 <p className="commerce-panel-kicker">Current cart</p>
                 <h2>Your order</h2>
               </div>
-              <button className="commerce-secondary-button" onClick={() => navigate("/cart")} type="button">
-                Edit cart
-              </button>
+              <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                <button className="commerce-secondary-button" onClick={() => navigate("/cart")} type="button">
+                  Edit cart
+                </button>
+              </div>
             </div>
 
             {visibleItems.length === 0 ? (
               <div className="commerce-empty-state">
                 <h3>Your cart is still empty.</h3>
                 <p>Add menu items first, then come back here to finalize the reservation.</p>
-                <button className="commerce-primary-button" onClick={() => navigate("/menu")} type="button">
-                  Browse menu
-                </button>
+                <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
+                  <button className="commerce-primary-button" onClick={() => navigate("/menu")} type="button">
+                    Browse menu
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="reserve-lineup">
