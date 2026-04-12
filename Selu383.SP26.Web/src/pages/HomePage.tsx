@@ -402,7 +402,7 @@ export default function HomePage({ navigate }: PageProps) {
             <button className="commerce-primary-button" onClick={() => navigate("/menu")} type="button">
               Order now
             </button>
-            <button className="commerce-secondary-button" onClick={() => navigate("/login?mode=register")} type="button">
+            <button className="commerce-secondary-button" onClick={() => navigate("/signup")} type="button">
               Create account
             </button>
           </div>

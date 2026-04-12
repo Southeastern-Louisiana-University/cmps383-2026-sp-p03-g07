@@ -160,7 +160,7 @@ export default function ProfilePage({ navigate }: PageProps) {
                 </button>
                 <button
                   className="commerce-secondary-button"
-                  onClick={() => navigate("/login?mode=register")}
+                  onClick={() => navigate("/signup")}
                   type="button"
                 >
                   Register

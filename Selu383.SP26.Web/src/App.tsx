@@ -40,6 +40,7 @@ const routes: RouteDefinition[] = [
   { path: "/rewards", label: "Rewards", element: RewardsPage, showInPrimaryNav: true },
   { path: "/stores", label: "Stores", element: StoreMapPage, showInPrimaryNav: true },
   { path: "/login", label: "Login", element: LoginPage },
+  { path: "/signup", label: "Register", element: LoginPage },
   { path: "/orders", label: "Orders", element: OrderHistory, protected: true, showInPrimaryNav: true },
   { path: "/order-status", label: "Track", element: OrderStatusPage, protected: true },
   { path: "/gift-cards", label: "Gift Cards", element: GiftCardPage, protected: true, showInPrimaryNav: true },

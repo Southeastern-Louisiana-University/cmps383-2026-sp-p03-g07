@@ -69,7 +69,7 @@ export default function GiftCardPage({ navigate }: PageProps) {
                 </button>
                 <button
                   className="commerce-secondary-button"
-                  onClick={() => navigate("/login?mode=register")}
+                  onClick={() => navigate("/signup")}
                   type="button"
                 >
                   Register

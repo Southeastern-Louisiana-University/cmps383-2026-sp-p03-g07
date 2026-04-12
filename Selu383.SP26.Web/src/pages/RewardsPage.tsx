@@ -312,7 +312,7 @@ export default function RewardsPage({ navigate }: PageProps) {
                   </button>
                   <button
                     className="rewards-pill-button rewards-pill-button-secondary"
-                    onClick={() => navigate("/login?mode=register")}
+                    onClick={() => navigate("/signup")}
                     type="button"
                   >
                     Register

@@ -65,7 +65,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
                 </button>
                 <button
                   className="commerce-secondary-button"
-                  onClick={() => navigate("/login?mode=register")}
+                  onClick={() => navigate("/signup")}
                   type="button"
                 >
                   Register

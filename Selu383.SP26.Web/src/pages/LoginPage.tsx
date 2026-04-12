@@ -5,7 +5,8 @@ import { CommerceTopRail } from "./commerceShared";
 
 export default function LoginPage({ navigate, query }: PageProps) {
   const { login, register } = useAuth();
-  const requestedMode = query.get("mode") === "register" ? "register" : "login";
+  const currentHashPath = window.location.hash.slice(1).split("?")[0];
+  const requestedMode = query.get("mode") === "register" || currentHashPath === "/signup" ? "register" : "login";
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
