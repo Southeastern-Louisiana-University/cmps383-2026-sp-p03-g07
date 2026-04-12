@@ -12,7 +12,6 @@ import { CommerceTopRail } from "./commerceShared";
 const orderTypes = [
   { value: "pickup", label: "Pickup" },
   { value: "drive-thru", label: "Drive-thru" },
-  { value: "dine-in", label: "Dine-in" },
 ];
 
 export default function CheckoutPage({ navigate }: PageProps) {
