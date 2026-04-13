@@ -13,17 +13,19 @@ export default function SignupScreen() {
   const [message, setMessage] = useState('');
 
   async function submitSignup() {
+    const trimmedUserName = userName.trim();
+    const trimmedPassword = password.trim();
     const trimmedEmail = email.trim();
     const trimmedPhone = phone.trim();
 
-    if (!trimmedEmail || !trimmedPhone) {
-      setMessage('Email and phone number are required to register.');
+    if (!trimmedUserName || !trimmedPassword || !trimmedEmail || !trimmedPhone) {
+      setMessage('Username, password, email, and phone number are required to register.');
       return;
     }
 
     try {
       setMessage('');
-      await register(userName, password, trimmedEmail, trimmedPhone);
+      await register(trimmedUserName, trimmedPassword, trimmedEmail, trimmedPhone);
       router.replace('/(tabs)/profile');
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to register.');
