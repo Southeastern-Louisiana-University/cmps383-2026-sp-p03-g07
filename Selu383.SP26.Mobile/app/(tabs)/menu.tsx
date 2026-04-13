@@ -425,23 +425,17 @@ export default function MenuScreen() {
                 <Text style={styles.price}>${item.price.toFixed(2)}</Text>
               </View>
 
-              {item.customizations?.length ? (
-                <View style={styles.actionRow}>
-                  <Pressable style={[styles.primaryButton, styles.actionButton]} onPress={() => addItem(item)}>
-                    <Text style={styles.primaryButtonText}>Add</Text>
-                  </Pressable>
-                  <Pressable
-                    style={[styles.secondaryButton, styles.actionButton]}
-                    onPress={() => setCustomizingItem(item)}
-                  >
-                    <Text style={styles.secondaryButtonText}>Customize</Text>
-                  </Pressable>
-                </View>
-              ) : (
-                <Pressable style={styles.primaryButton} onPress={() => addItem(item)}>
-                  <Text style={styles.primaryButtonText}>Add to cart</Text>
+              <View style={styles.actionRow}>
+                <Pressable style={[styles.primaryButton, styles.actionButton]} onPress={() => addItem(item)}>
+                  <Text style={styles.primaryButtonText}>Add</Text>
                 </Pressable>
-              )}
+                <Pressable
+                  style={[styles.secondaryButton, styles.actionButton]}
+                  onPress={() => setCustomizingItem(item)}
+                >
+                  <Text style={styles.secondaryButtonText}>Customize</Text>
+                </Pressable>
+              </View>
             </View>
           </View>
         ))
