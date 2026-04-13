@@ -32,6 +32,8 @@ public class RewardsController : ControllerBase
     {
         var rewards = await _context.Rewards
             .Where(r => r.IsActive)
+            .OrderBy(r => r.PointsCost)
+            .ThenBy(r => r.Name)
             .Select(r => new RewardDto
             {
                 Id = r.Id,

@@ -87,8 +87,13 @@ public static class SeedHelper
         var sue = await userManager.FindByNameAsync("sue");
         if (sue == null)
         {
-            sue = new User { UserName = "sue", Points = 80 };
+            sue = new User { UserName = "sue", Points = 1000 };
             await userManager.CreateAsync(sue, defaultPassword);
+        }
+        else if (sue.Points < 1000)
+        {
+            sue.Points = 1000;
+            await userManager.UpdateAsync(sue);
         }
         if (!await userManager.IsInRoleAsync(sue, RoleNames.User))
         {
@@ -651,94 +656,141 @@ public static class SeedHelper
 
     private static async Task AddRewards(DataContext dataContext)
     {
-        if (await dataContext.Rewards.AnyAsync())
+        // Simplified program:
+        // - Earn 10 points per $1
+        // - Redeem at 1000 points
+        var seededRewards = new[]
         {
-            return;
-        }
-
-        dataContext.Set<Reward>().AddRange(
             new Reward
             {
                 Name = "Free Coffee",
-                Description = "Get any size coffee for free",
-                PointsCost = 100,
+                Description = "Redeem 1000 points for any size coffee.",
+                PointsCost = 1000,
                 IsActive = true,
-                TierName = "Bronze",
-                OfferType = "Drink"
+                TierName = "Member",
+                OfferType = "Drink",
+                DiscountAmount = null,
+                BonusStars = 0
             },
             new Reward
             {
-                Name = "Free Pastry",
-                Description = "Get any pastry item for free",
-                PointsCost = 75,
+                Name = "Free Matcha",
+                Description = "Redeem 1250 points for any matcha drink (up to $7.25).",
+                PointsCost = 1250,
                 IsActive = true,
-                TierName = "Bronze",
-                OfferType = "Food"
+                TierName = "Member",
+                OfferType = "Drink",
+                DiscountAmount = null,
+                BonusStars = 0
             },
             new Reward
             {
-                Name = "$5 Off Purchase",
-                Description = "$5 discount on your next order",
-                PointsCost = 150,
+                Name = "Free Sandwich",
+                Description = "Redeem 1500 points for any sandwich or bagel item (up to $8.50).",
+                PointsCost = 1500,
                 IsActive = true,
-                TierName = "Silver",
-                OfferType = "Discount",
-                DiscountAmount = 5m
+                TierName = "Member",
+                OfferType = "Food",
+                DiscountAmount = null,
+                BonusStars = 0
             },
             new Reward
             {
-                Name = "Free Drink Upgrade",
-                Description = "Upgrade any drink to large size",
-                PointsCost = 50,
+                Name = "Free Salad",
+                Description = "Redeem 1750 points for a salad or quiche (up to $11.50).",
+                PointsCost = 1750,
                 IsActive = true,
-                TierName = "Bronze",
-                OfferType = "Upgrade"
+                TierName = "Member",
+                OfferType = "Food",
+                DiscountAmount = null,
+                BonusStars = 0
             },
             new Reward
             {
-                Name = "Double Lions Weekend",
-                Description = "Bank bonus Lions on your next mobile order",
-                PointsCost = 180,
+                Name = "Caffeinated Lions Mug",
+                Description = "Redeem 2000 points for a Caffeinated Lions Mug ($16.00 value).",
+                PointsCost = 2000,
                 IsActive = true,
-                TierName = "Gold",
-                OfferType = "Lions",
-                BonusStars = 50
+                TierName = "Member",
+                OfferType = "Merch",
+                DiscountAmount = null,
+                BonusStars = 0
             }
-        );
+        };
+
+        var existingRewards = await dataContext.Rewards.ToListAsync();
+        var seededNames = new HashSet<string>(seededRewards.Select(x => x.Name), StringComparer.OrdinalIgnoreCase);
+
+        foreach (var seededReward in seededRewards)
+        {
+            var existingReward = existingRewards.FirstOrDefault(x =>
+                string.Equals(x.Name, seededReward.Name, StringComparison.OrdinalIgnoreCase));
+
+            if (existingReward == null)
+            {
+                dataContext.Rewards.Add(seededReward);
+                existingRewards.Add(seededReward);
+                continue;
+            }
+
+            existingReward.Description = seededReward.Description;
+            existingReward.PointsCost = seededReward.PointsCost;
+            existingReward.IsActive = seededReward.IsActive;
+            existingReward.TierName = seededReward.TierName;
+            existingReward.OfferType = seededReward.OfferType;
+            existingReward.DiscountAmount = seededReward.DiscountAmount;
+            existingReward.BonusStars = seededReward.BonusStars;
+        }
+
+        foreach (var existingReward in existingRewards)
+        {
+            if (!seededNames.Contains(existingReward.Name))
+            {
+                existingReward.IsActive = false;
+            }
+        }
 
         await dataContext.SaveChangesAsync();
     }
 
     private static async Task AddRewardTiers(DataContext dataContext)
     {
-        if (await dataContext.RewardTiers.AnyAsync())
+        var seededTiers = new[]
         {
-            return;
-        }
-
-        dataContext.RewardTiers.AddRange(
             new RewardTier
             {
-                Name = "Bronze",
+                Name = "Member",
                 MinPoints = 0,
-                Benefits = "Birthday treat and basic earn rate",
-                AccentColor = "#9a6b3a"
+                Benefits = "Earn 10 points per $1 spent.",
+                AccentColor = "#65711d"
             },
             new RewardTier
             {
-                Name = "Silver",
-                MinPoints = 150,
-                Benefits = "1.5x Lions, early seasonal access",
-                AccentColor = "#7c8a99"
-            },
-            new RewardTier
-            {
-                Name = "Gold",
-                MinPoints = 300,
-                Benefits = "2x Lions, premium offers, surprise drops",
+                Name = "Reward",
+                MinPoints = 1000,
+                Benefits = "Redeem a free coffee once you hit 1000 points.",
                 AccentColor = "#d7a526"
             }
-        );
+        };
+
+        var existingTiers = await dataContext.RewardTiers.ToListAsync();
+
+        foreach (var seededTier in seededTiers)
+        {
+            var existingTier = existingTiers.FirstOrDefault(x =>
+                string.Equals(x.Name, seededTier.Name, StringComparison.OrdinalIgnoreCase));
+
+            if (existingTier == null)
+            {
+                dataContext.RewardTiers.Add(seededTier);
+                existingTiers.Add(seededTier);
+                continue;
+            }
+
+            existingTier.MinPoints = seededTier.MinPoints;
+            existingTier.Benefits = seededTier.Benefits;
+            existingTier.AccentColor = seededTier.AccentColor;
+        }
 
         await dataContext.SaveChangesAsync();
     }

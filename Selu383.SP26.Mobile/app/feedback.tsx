@@ -49,6 +49,10 @@ export default function FeedbackScreen() {
   }
 
   async function submitFeedback() {
+    if (!user) {
+      setErrorMessage('Please sign in to leave feedback.');
+      return;
+    }
     if (rating === 0) {
       setErrorMessage('Please select a rating.');
       return;

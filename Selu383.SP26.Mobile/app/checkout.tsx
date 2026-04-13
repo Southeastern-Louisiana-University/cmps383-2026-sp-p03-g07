@@ -7,6 +7,7 @@ import { orderService } from '@/services/orderService';
 import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
 import type { Location } from '@/types/app';
+import { calculatePointsEarned } from '@/utils/rewardsProgram';
 
 const ORDER_TYPES = ['pickup', 'drive-thru'] as const;
 type OrderType = (typeof ORDER_TYPES)[number];
@@ -92,9 +93,9 @@ export default function CheckoutScreen() {
 
       {!user && (
         <View style={styles.guestBanner}>
-          <Text style={styles.guestBannerText}>Checking out as guest - no Lions earned.</Text>
+          <Text style={styles.guestBannerText}>Checking out as guest - no points earned.</Text>
           <Pressable onPress={() => router.push('/Auth/login')}>
-            <Text style={styles.guestBannerLink}>Sign in to earn Lions</Text>
+            <Text style={styles.guestBannerLink}>Sign in to earn points</Text>
           </Pressable>
         </View>
       )}
@@ -176,7 +177,7 @@ export default function CheckoutScreen() {
         ))}
         <Text style={[styles.cardCopy, styles.total]}>Total: ${subtotal.toFixed(2)}</Text>
         <Text style={styles.cardCopy}>
-          Estimated Lions: {Math.max(Math.floor(subtotal), 1)}
+          Estimated points: {calculatePointsEarned(subtotal)}
         </Text>
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
         <Pressable

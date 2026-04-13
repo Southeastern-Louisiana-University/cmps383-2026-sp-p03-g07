@@ -4,64 +4,35 @@ namespace Selu383.SP26.Api.Services;
 
 public class StarEarningService
 {
-    private static readonly RewardTierInfo[] Tiers =
-    [
-        new("Bronze", 0),
-        new("Silver", 150),
-        new("Gold", 300)
-    ];
+    public const int PointsPerDollar = 10;
+    public const int RewardThreshold = 1000;
 
-    public int CalculateStars(decimal total, int currentPoints)
+    public int CalculateStars(decimal total)
     {
-        var multiplier = GetTier(currentPoints) switch
+        if (total <= 0)
         {
-            "Gold" => 2.0m,
-            "Silver" => 1.5m,
-            _ => 1.0m
-        };
+            return 0;
+        }
 
-        var stars = (int)Math.Floor(total * multiplier);
-        return Math.Max(stars, 1);
+        return (int)Math.Floor(total * PointsPerDollar);
     }
 
-    public string GetTier(int points)
+    public int GetPointsToNextReward(int points)
     {
-        return Tiers
-            .Where(x => points >= x.MinPoints)
-            .OrderByDescending(x => x.MinPoints)
-            .Select(x => x.Name)
-            .First();
-    }
-
-    public string GetNextTier(int points)
-    {
-        return Tiers
-            .Where(x => x.MinPoints > points)
-            .OrderBy(x => x.MinPoints)
-            .Select(x => x.Name)
-            .FirstOrDefault() ?? GetTier(points);
-    }
-
-    public int GetPointsToNextTier(int points)
-    {
-        var nextTier = Tiers
-            .Where(x => x.MinPoints > points)
-            .OrderBy(x => x.MinPoints)
-            .FirstOrDefault();
-
-        return nextTier == null ? 0 : nextTier.MinPoints - points;
+        return points >= RewardThreshold ? 0 : RewardThreshold - Math.Max(points, 0);
     }
 
     public PointsBalanceDto BuildBalance(int points)
     {
+        var pointsToNextReward = GetPointsToNextReward(points);
+        var isRewardReady = pointsToNextReward == 0 && points >= RewardThreshold;
+
         return new PointsBalanceDto
         {
             Points = points,
-            CurrentTier = GetTier(points),
-            NextTier = GetNextTier(points),
-            PointsToNextTier = GetPointsToNextTier(points)
+            CurrentTier = isRewardReady ? "Reward ready" : "Member",
+            NextTier = "Reward",
+            PointsToNextTier = pointsToNextReward
         };
     }
-
-    private sealed record RewardTierInfo(string Name, int MinPoints);
 }

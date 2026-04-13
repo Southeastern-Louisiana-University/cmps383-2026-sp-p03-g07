@@ -6,6 +6,7 @@ import { useCart } from "../store/cartStore";
 import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
 import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems";
+import { calculatePointsEarned } from "../utils/rewardsProgram";
 import { CommerceTopRail } from "./commerceShared";
 
 export default function CartPage({ navigate }: PageProps) {
@@ -136,8 +137,8 @@ export default function CartPage({ navigate }: PageProps) {
                 <strong>${visibleSubtotal.toFixed(2)}</strong>
               </div>
               <div className="cart-summary-row">
-                <span>Lions earned</span>
-                <strong>{Math.max(Math.floor(visibleSubtotal), 1)}</strong>
+                <span>Points earned</span>
+                <strong>{calculatePointsEarned(visibleSubtotal)}</strong>
               </div>
               <button className="cart-primary-pill" onClick={() => navigate("/checkout")} type="button">
                 CHECKOUT

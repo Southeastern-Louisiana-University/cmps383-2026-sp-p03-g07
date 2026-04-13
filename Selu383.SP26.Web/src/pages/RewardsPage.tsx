@@ -1,275 +1,87 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { menuApi } from "../api/menuApi";
+import { useEffect, useMemo, useState } from "react";
 import { rewardsApi } from "../api/rewardsApi";
-import { resolveApiAssetUrl } from "../services/api";
 import { useAuth } from "../store/authStore";
-import type { MenuItem } from "../types/menu.types";
 import type { PageProps } from "../types/router.types";
-import type { PointsBalance, Reward, RewardHistoryItem, RewardTier } from "../types/reward.types";
+import type { Reward } from "../types/reward.types";
+import { getRewardProgress, POINTS_PER_DOLLAR, REWARD_THRESHOLD } from "../utils/rewardsProgram";
 import { CommerceTopRail } from "./commerceShared";
-
-const fallbackTiers: RewardTier[] = [
-  {
-    id: 1,
-    name: "Bronze",
-    minPoints: 0,
-    benefits: "Birthday treat and basic earn rate",
-    accentColor: "#9a6b3a",
-  },
-  {
-    id: 2,
-    name: "Silver",
-    minPoints: 150,
-    benefits: "1.5x Lions, early seasonal access",
-    accentColor: "#7c8a99",
-  },
-  {
-    id: 3,
-    name: "Gold",
-    minPoints: 300,
-    benefits: "2x Lions, premium offers, surprise drops",
-    accentColor: "#d7a526",
-  },
-];
-
-const tierRows = [
-  {
-    title: "Welcome reward",
-    description: "10% off your first Lions order after joining the program.",
-    minTierIndex: 0,
-  },
-  {
-    title: "Birthday treat",
-    description: "A surprise pastry or drink during your birthday month.",
-    minTierIndex: 0,
-  },
-  {
-    title: "Faster Lions earning",
-    description: "Boost your earn rate on every qualifying in-store or online order.",
-    minTierIndex: 1,
-  },
-  {
-    title: "Early seasonal access",
-    description: "Unlock launch-week access to limited drinks and bakery drops.",
-    minTierIndex: 1,
-  },
-  {
-    title: "Surprise drops",
-    description: "Premium members get exclusive flash offers and special weekend perks.",
-    minTierIndex: 2,
-  },
-];
-
-function RewardGiftIcon() {
-  return (
-    <svg aria-hidden="true" className="rewards-gift-icon" viewBox="0 0 48 48">
-      <path
-        d="M10 20h28v18H10zM24 20v18M10 27h28"
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2.4"
-      />
-      <path
-        d="M24 20c-2.5-4.5-8.3-7-11-3.9-2.1 2.3-.5 5.9 3.6 5.9H24ZM24 20c2.5-4.5 8.3-7 11-3.9 2.1 2.3.5 5.9-3.6 5.9H24Z"
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2.4"
-      />
-    </svg>
-  );
-}
-
-function CarouselChevron({ direction }: { direction: "left" | "right" }) {
-  return (
-    <svg aria-hidden="true" viewBox="0 0 24 24">
-      <path
-        d={direction === "left" ? "M15 5 8 12l7 7" : "m9 5 7 7-7 7"}
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-      />
-    </svg>
-  );
-}
-
-function formatHistoryDate(redeemedAt: string) {
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  }).format(new Date(redeemedAt));
-}
-
-function isRewardsHeroItem(item?: MenuItem | null): item is MenuItem {
-  return !!item?.isAvailable && !!item.imageUrl;
-}
-
-function getRewardMenuItem(reward: Reward, menuItems: MenuItem[], index: number) {
-  const rewardText = `${reward.name} ${reward.description} ${reward.offerType}`.toLowerCase();
-
-  const exactMatch = menuItems.find((item) => rewardText.includes(item.name.toLowerCase()));
-  if (exactMatch?.imageUrl) {
-    return exactMatch;
-  }
-
-  const keywordSets = [
-    {
-      test: /coffee|drink|latte|mocha|espresso|upgrade/.test(rewardText),
-      keywords: ["coffee", "latte", "mocha", "espresso", "brew", "matcha"],
-    },
-    {
-      test: /pastry|bread|bagel|food|sandwich|croissant|toast/.test(rewardText),
-      keywords: ["croissant", "pastry", "bagel", "toast", "sandwich", "bread", "muffin"],
-    },
-    {
-      test: /discount|stars|lions/.test(rewardText),
-      keywords: ["featured", "seasonal", "special", "house"],
-    },
-  ];
-
-  const keywordMatch = keywordSets
-    .filter((entry) => entry.test)
-    .flatMap((entry) => entry.keywords)
-    .find((keyword) =>
-      menuItems.some((item) =>
-        `${item.name} ${item.category} ${item.description}`.toLowerCase().includes(keyword),
-      ),
-    );
-
-  if (keywordMatch) {
-    const match = menuItems.find((item) =>
-      `${item.name} ${item.category} ${item.description}`.toLowerCase().includes(keywordMatch),
-    );
-
-    if (match?.imageUrl) {
-      return match;
-    }
-  }
-
-  const featuredItems = menuItems
-    .filter((item) => item.isAvailable && item.imageUrl)
-    .sort((left, right) => Number(right.isFeatured) - Number(left.isFeatured));
-
-  return featuredItems[index % featuredItems.length] ?? menuItems.find((item) => item.imageUrl);
-}
 
 export default function RewardsPage({ navigate }: PageProps) {
   const { user, refresh } = useAuth();
   const [rewards, setRewards] = useState<Reward[]>([]);
-  const [tiers, setTiers] = useState<RewardTier[]>(fallbackTiers);
-  const [balance, setBalance] = useState<PointsBalance | null>(null);
-  const [history, setHistory] = useState<RewardHistoryItem[]>([]);
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
+  const [loadingRewards, setLoadingRewards] = useState(true);
+  const [redeemingRewardId, setRedeemingRewardId] = useState<number | null>(null);
   const [statusMessage, setStatusMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [heroIndex, setHeroIndex] = useState(0);
 
-  const loadRewards = useCallback(async () => {
-    const [nextRewards, nextTiers, nextMenuItems] = await Promise.all([
-      rewardsApi.getRewards(),
-      rewardsApi.getTiers(),
-      menuApi.getMenu({ includeRewardsExclusive: true }),
-    ]);
-
-    setRewards(nextRewards);
-    setTiers(nextTiers.length > 0 ? nextTiers : fallbackTiers);
-    setMenuItems(nextMenuItems);
-
-    if (user) {
-      const [nextBalance, nextHistory] = await Promise.all([
-        rewardsApi.getMyPoints(),
-        rewardsApi.getHistory(),
-      ]);
-
-      setBalance(nextBalance);
-      setHistory(nextHistory);
-      return;
+  const points = user?.points ?? 0;
+  const progress = useMemo(() => getRewardProgress(points), [points]);
+  const progressPercent = useMemo(() => {
+    if (REWARD_THRESHOLD <= 0) {
+      return 0;
     }
 
-    setBalance(null);
-    setHistory([]);
-  }, [user]);
+    return Math.min(100, Math.max(0, (progress.progressPoints / REWARD_THRESHOLD) * 100));
+  }, [progress.progressPoints]);
+  const dollarsToReward = POINTS_PER_DOLLAR <= 0 ? 0 : Math.ceil(REWARD_THRESHOLD / POINTS_PER_DOLLAR);
 
   useEffect(() => {
     let isMounted = true;
+    setLoadingRewards(true);
 
-    async function loadPage() {
-      try {
-        await loadRewards();
+    void rewardsApi
+      .getRewards()
+      .then((nextRewards) => {
         if (isMounted) {
+          setRewards(nextRewards);
           setErrorMessage("");
         }
-      } catch (error) {
-        if (!isMounted) {
-          return;
+      })
+      .catch((error) => {
+        if (isMounted) {
+          setErrorMessage(error instanceof Error ? error.message : "Unable to load rewards.");
         }
-
-        setErrorMessage(error instanceof Error ? error.message : "Unable to load rewards.");
-      }
-    }
-
-    void loadPage();
+      })
+      .finally(() => {
+        if (isMounted) {
+          setLoadingRewards(false);
+        }
+      });
 
     return () => {
       isMounted = false;
     };
-  }, [loadRewards]);
+  }, []);
 
   async function redeemReward(rewardId: number) {
-    try {
-      setErrorMessage("");
-      const result = await rewardsApi.redeem(rewardId);
-      setStatusMessage(result.message);
-      await refresh();
-      await loadRewards();
-    } catch (error) {
-      setErrorMessage(error instanceof Error ? error.message : "Unable to redeem reward.");
-    }
-  }
-
-  const featuredMenuItems = useMemo(() => {
-    return menuItems
-      .filter(isRewardsHeroItem)
-      .sort((left, right) => Number(right.isFeatured) - Number(left.isFeatured))
-      .slice(0, 5);
-  }, [menuItems]);
-
-  const rewardCards = useMemo(() => {
-    return rewards.map((reward, index) => ({
-      reward,
-      menuItem: getRewardMenuItem(reward, menuItems, index),
-    }));
-  }, [menuItems, rewards]);
-
-  const safeHeroIndex = heroIndex >= featuredMenuItems.length ? 0 : heroIndex;
-  const fallbackHeroItem = rewardCards
-    .map(({ menuItem }) => menuItem)
-    .find(isRewardsHeroItem);
-  const activeHeroItem = featuredMenuItems[safeHeroIndex] ?? fallbackHeroItem;
-  const resolvedTiers = tiers.length > 0 ? tiers : fallbackTiers;
-  const availablePoints = balance?.points ?? user?.points ?? 0;
-  const recentReward = history[0];
-
-  function cycleHero(direction: -1 | 1) {
-    if (featuredMenuItems.length <= 1) {
+    if (!user) {
+      navigate("/login");
       return;
     }
 
-    setHeroIndex((currentIndex) => {
-      const nextIndex = currentIndex + direction;
-      return (nextIndex + featuredMenuItems.length) % featuredMenuItems.length;
-    });
+    setRedeemingRewardId(rewardId);
+    setStatusMessage("");
+    setErrorMessage("");
+
+    try {
+      const result = await rewardsApi.redeem(rewardId);
+      setStatusMessage(result.message ?? "Reward redeemed successfully!");
+      await refresh();
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Unable to redeem reward.");
+    } finally {
+      setRedeemingRewardId(null);
+    }
   }
 
   function scrollToOffers() {
     document.getElementById("rewards-offers")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+
+  const pointsWord = progress.pointsToNextReward === 1 ? "point" : "points";
+  const headline = progress.availableRewards > 0
+    ? `${progress.availableRewards} reward${progress.availableRewards === 1 ? "" : "s"} ready`
+    : `${progress.pointsToNextReward} ${pointsWord} to go`;
 
   return (
     <div className="rewards-showcase">
@@ -280,72 +92,49 @@ export default function RewardsPage({ navigate }: PageProps) {
       <section className="rewards-canvas">
         <section className="rewards-hero">
           <div className="rewards-hero-copy">
-            <p className="rewards-kicker">Loyalty club</p>
-            <h1>MORE LIONS. MORE FOR YOU.</h1>
+            <p className="rewards-kicker">Rewards</p>
+            <h1>POINTS, SIMPLE.</h1>
             <p className="rewards-hero-description">
-              Collect Lions with every coffee, pastry, and pickup order. The more you earn, the faster
-              you unlock better perks, earlier drops, and redeemable house favorites.
+              Earn {POINTS_PER_DOLLAR} points for every $1 you spend. Redeem rewards starting at {REWARD_THRESHOLD} points.
             </p>
 
             <div className="rewards-hero-actions">
-              {user ? (
-                <>
-                  <button className="rewards-pill-button rewards-pill-button-primary" onClick={scrollToOffers} type="button">
-                    Redeem rewards
-                  </button>
-                  <button
-                    className="rewards-pill-button rewards-pill-button-secondary"
-                    onClick={() => navigate("/profile")}
-                    type="button"
-                  >
-                    My account
-                  </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    className="rewards-pill-button rewards-pill-button-primary"
-                    onClick={() => navigate("/login")}
-                    type="button"
-                  >
-                    Sign in
-                  </button>
-                  <button
-                    className="rewards-pill-button rewards-pill-button-secondary"
-                    onClick={() => navigate("/signup")}
-                    type="button"
-                  >
-                    Register
-                  </button>
-                </>
-              )}
+              <button className="rewards-pill-button rewards-pill-button-primary" onClick={() => navigate("/menu")} type="button">
+                Order now
+              </button>
+              <button
+                className="rewards-pill-button rewards-pill-button-secondary"
+                onClick={scrollToOffers}
+                type="button"
+              >
+                Redeem
+              </button>
+              {!user ? (
+                <button
+                  className="rewards-pill-button rewards-pill-button-secondary"
+                  onClick={() => navigate("/login")}
+                  type="button"
+                >
+                  Sign in
+                </button>
+              ) : null}
             </div>
 
             <div className="rewards-stat-strip">
               <article className="rewards-stat-card">
-                <span>Lions</span>
-                <strong>{availablePoints}</strong>
-                <p>{user ? "Ready to spend on your next treat." : "Sign in to start earning."}</p>
+                <span>Your points</span>
+                <strong>{points}</strong>
+                <p>{user ? "Points sync after payment." : "Sign in to start earning points."}</p>
               </article>
               <article className="rewards-stat-card">
-                <span>Current tier</span>
-                <strong>{balance?.currentTier ?? resolvedTiers[0]?.name ?? "Bronze"}</strong>
-                <p>
-                  {balance
-                    ? balance.pointsToNextTier > 0
-                      ? `${balance.pointsToNextTier} Lions to ${balance.nextTier}.`
-                      : "Top tier unlocked."
-                    : "Each order moves you up the ladder."}
-                </p>
+                <span>Earn rate</span>
+                <strong>{POINTS_PER_DOLLAR} / $1</strong>
+                <p>Spend about ${dollarsToReward} to earn {REWARD_THRESHOLD} points.</p>
               </article>
               <article className="rewards-stat-card">
-                <span>Latest reward</span>
-                <strong>{recentReward?.rewardName ?? "Keep collecting"}</strong>
-                <p>
-                  {recentReward
-                    ? `Redeemed ${formatHistoryDate(recentReward.redeemedAt)}.`
-                    : "Redeem Lions for drinks, pastries, and premium extras."}
-                </p>
+                <span>Next reward</span>
+                <strong>{headline}</strong>
+                <p>Progress: {progress.progressPoints} / {REWARD_THRESHOLD}</p>
               </article>
             </div>
 
@@ -353,97 +142,37 @@ export default function RewardsPage({ navigate }: PageProps) {
             {errorMessage ? <p className="rewards-inline-status rewards-inline-status-error">{errorMessage}</p> : null}
           </div>
 
-          <div className="rewards-hero-media">
-            <div className="rewards-hero-frame">
-              {activeHeroItem?.imageUrl ? (
-                <img
-                  alt={activeHeroItem.name}
-                  className="rewards-hero-image"
-                  src={resolveApiAssetUrl(activeHeroItem.imageUrl)}
-                />
-              ) : (
-                <div className="rewards-hero-placeholder">
-                  <RewardGiftIcon />
-                  <span>House perks rotate here</span>
-                </div>
-              )}
-
-              {featuredMenuItems.length > 1 ? (
-                <>
-                  <button
-                    aria-label="Show previous feature"
-                    className="rewards-carousel-arrow rewards-carousel-arrow-left"
-                    onClick={() => cycleHero(-1)}
-                    type="button"
-                  >
-                    <CarouselChevron direction="left" />
-                  </button>
-                  <button
-                    aria-label="Show next feature"
-                    className="rewards-carousel-arrow rewards-carousel-arrow-right"
-                    onClick={() => cycleHero(1)}
-                    type="button"
-                  >
-                    <CarouselChevron direction="right" />
-                  </button>
-                </>
-              ) : null}
-
-              <div className="rewards-hero-caption">
-                <span className="rewards-offer-pill">Featured favorite</span>
-                <strong>{activeHeroItem?.name ?? "Bakery case perks"}</strong>
-                <p>{activeHeroItem?.description ?? "New drops and rotating rewards land here first."}</p>
+          <aside className="rewards-hero-media">
+            <div className="rewards-simple-card">
+              <div className="rewards-simple-row">
+                <span className="rewards-simple-chip">{POINTS_PER_DOLLAR} pts / $1</span>
+                <span className="rewards-simple-chip">{REWARD_THRESHOLD} pts reward</span>
               </div>
-            </div>
-          </div>
-        </section>
 
-        <section className="rewards-tier-section">
-          <div className="rewards-section-heading">
-            <span />
-            <h2>Tiers</h2>
-            <span />
-          </div>
+              <div className="rewards-simple-balance">
+                <span>Points balance</span>
+                <strong>{points}</strong>
+              </div>
 
-          <div className="rewards-tier-table-shell">
-            <div className="rewards-tier-table">
-              <div
-                className="rewards-tier-row rewards-tier-row-header"
-                style={{ gridTemplateColumns: `minmax(18rem, 1.8fr) repeat(${resolvedTiers.length}, minmax(9rem, 1fr))` }}
+              <div className="rewards-simple-progress" aria-label="Reward progress">
+                <div className="rewards-simple-progress-bar" style={{ width: `${progressPercent}%` }} />
+              </div>
+
+              <div className="rewards-simple-row rewards-simple-row-meta">
+                <span>{progress.progressPoints} / {REWARD_THRESHOLD}</span>
+                <strong>{headline}</strong>
+              </div>
+
+              <button
+                className="rewards-redeem-button rewards-redeem-button-simple"
+                disabled={loadingRewards || rewards.length === 0}
+                onClick={scrollToOffers}
+                type="button"
               >
-                <div className="rewards-tier-cell rewards-tier-cell-heading">Tier rewards</div>
-                {resolvedTiers.map((tier) => (
-                  <div className="rewards-tier-cell rewards-tier-cell-header" key={tier.id}>
-                    <strong>{tier.name}</strong>
-                    <span>from {tier.minPoints} Lions</span>
-                  </div>
-                ))}
-              </div>
-
-              {tierRows.map((row) => (
-                <div
-                  className="rewards-tier-row"
-                  key={row.title}
-                  style={{ gridTemplateColumns: `minmax(18rem, 1.8fr) repeat(${resolvedTiers.length}, minmax(9rem, 1fr))` }}
-                >
-                  <div className="rewards-tier-cell rewards-tier-benefit-cell">
-                    <strong>{row.title}</strong>
-                    <p>{row.description}</p>
-                  </div>
-                  {resolvedTiers.map((tier, index) => (
-                    <div className="rewards-tier-cell rewards-tier-check-cell" key={`${row.title}-${tier.id}`}>
-                      {index >= row.minTierIndex ? <RewardGiftIcon /> : <span className="rewards-tier-empty">-</span>}
-                    </div>
-                  ))}
-                </div>
-              ))}
+                {loadingRewards ? "Loading rewards..." : "View rewards"}
+              </button>
             </div>
-          </div>
-
-          <p className="rewards-tier-footnote">
-            Join the Lions loyalty program and turn everyday orders into faster upgrades, seasonal access,
-            and premium rewards.
-          </p>
+          </aside>
         </section>
 
         <section className="rewards-offers-section" id="rewards-offers">
@@ -453,56 +182,42 @@ export default function RewardsPage({ navigate }: PageProps) {
             <span />
           </div>
 
-          <div className="rewards-offer-grid">
-            {rewardCards.map(({ reward, menuItem }) => {
-              const isLocked = !!user && availablePoints < reward.pointsCost;
+          {loadingRewards ? (
+            <p className="rewards-inline-status">Loading rewards...</p>
+          ) : rewards.length === 0 ? (
+            <p className="rewards-inline-status">No rewards available right now.</p>
+          ) : (
+            <div className="rewards-offer-grid">
+              {rewards.map((reward) => {
+                const isLocked = !!user && points < reward.pointsCost;
 
-              return (
-                <article className="rewards-offer-card" key={reward.id}>
-                  <div className="rewards-offer-media-shell">
-                    {menuItem?.imageUrl ? (
-                      <img alt={reward.name} className="rewards-offer-image" src={resolveApiAssetUrl(menuItem.imageUrl)} />
-                    ) : (
-                      <div className="rewards-offer-image-fallback">
-                        <RewardGiftIcon />
-                      </div>
-                    )}
-                  </div>
+                return (
+                  <article className="rewards-offer-card" key={reward.id}>
+                    <div className="rewards-offer-copy">
+                      <span className="rewards-points-chip">{reward.pointsCost} points</span>
+                      <h3>{reward.name}</h3>
+                      <p>{reward.description}</p>
 
-                  <div className="rewards-offer-copy">
-                    <span className="rewards-points-chip">{reward.pointsCost} Lions</span>
-                    <h3>{reward.name}</h3>
-                    <p>{reward.description}</p>
-
-                    <div className="rewards-offer-meta">
-                      <span>{reward.tierName || "Any tier"}</span>
-                      <span>{reward.offerType}</span>
+                      <button
+                        className="rewards-redeem-button"
+                        disabled={redeemingRewardId === reward.id || isLocked}
+                        onClick={() => void redeemReward(reward.id)}
+                        type="button"
+                      >
+                        {!user
+                          ? "Sign in to redeem"
+                          : redeemingRewardId === reward.id
+                            ? "Redeeming..."
+                            : isLocked
+                              ? `${reward.pointsCost - points} more points`
+                              : "Redeem"}
+                      </button>
                     </div>
-
-                    <button
-                      className="rewards-redeem-button"
-                      disabled={isLocked}
-                      onClick={() => {
-                        if (!user) {
-                          navigate("/login");
-                          return;
-                        }
-
-                        void redeemReward(reward.id);
-                      }}
-                      type="button"
-                    >
-                      {!user
-                        ? "Sign in to redeem"
-                        : isLocked
-                          ? `${reward.pointsCost - availablePoints} more Lions`
-                          : "Redeem"}
-                    </button>
-                  </div>
-                </article>
-              );
-            })}
-          </div>
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </section>
       </section>
     </div>

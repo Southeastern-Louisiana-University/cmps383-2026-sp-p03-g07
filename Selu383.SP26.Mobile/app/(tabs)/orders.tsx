@@ -79,7 +79,7 @@ export default function OrdersScreen() {
               ${order.total.toFixed(2)} • {order.paymentStatus}
             </Text>
             {order.starsEarned > 0 && (
-              <Text style={styles.starsText}>+{order.starsEarned} Lions earned</Text>
+              <Text style={styles.starsText}>+{order.starsEarned} points earned</Text>
             )}
             <View style={styles.buttonRow}>
               {['received', 'preparing', 'ready'].includes(order.status.toLowerCase()) && (

@@ -318,7 +318,7 @@ export default function HomePage({ navigate }: PageProps) {
               className="home-feature-img"
             />
             <h3>Lions Rewards</h3>
-            <p>Earn Lions on every order. Redeem them for free drinks, pastries, and exclusive member perks.</p>
+            <p>Earn 10 points per $1 spent. Redeem rewards starting at 1000 points.</p>
           </div>
           <div className="home-feature-card">
             <img

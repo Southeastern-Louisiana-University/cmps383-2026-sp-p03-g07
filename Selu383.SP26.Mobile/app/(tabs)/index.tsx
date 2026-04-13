@@ -11,6 +11,7 @@ import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
 import { useRewards } from '@/store/rewardsStore';
 import type { Location, MenuItem, Order } from '@/types/app';
+import { getRewardProgress, POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
 
 const PRIMARY_ACTIONS = [
   {
@@ -50,6 +51,11 @@ export default function HomeScreen() {
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [reorderingOrderId, setReorderingOrderId] = useState<number | null>(null);
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const points = balance?.points ?? user?.points ?? 0;
+  const rewardProgress = useMemo(() => getRewardProgress(points), [points]);
+  const pointsHeadline = rewardProgress.availableRewards > 0
+    ? `${rewardProgress.availableRewards} reward${rewardProgress.availableRewards === 1 ? '' : 's'} ready`
+    : `${rewardProgress.pointsToNextReward} pts to ${REWARD_THRESHOLD}`;
 
   useEffect(() => {
     let isMounted = true;
@@ -225,7 +231,7 @@ export default function HomeScreen() {
                       {label}
                     </Text>
                     <Text style={styles.spotlightMeta}>
-                      ${order.total.toFixed(2)} • {order.items.length} items • +{order.starsEarned} Lions
+                      ${order.total.toFixed(2)} • {order.items.length} items • +{order.starsEarned} pts
                     </Text>
                     <Pressable
                       style={[styles.spotlightButton, reorderingOrderId === order.id && styles.buttonDisabled]}
@@ -308,7 +314,7 @@ export default function HomeScreen() {
           <Text style={styles.earnBannerKicker}>Lions Rewards</Text>
           <Text style={styles.earnBannerTitle}>Earn Lions{'\n'}Every Visit.</Text>
           <Text style={styles.earnBannerSub}>
-            {balance?.points ?? user?.points ?? 0} Lions - {(balance?.currentTier ?? 'member').toUpperCase()}
+            Earn {POINTS_PER_DOLLAR} pts/$1 • {points} pts • {pointsHeadline}
           </Text>
           <Pressable style={styles.earnBannerBtn} onPress={() => router.push('/(tabs)/rewards')}>
             <Text style={styles.earnBannerBtnText}>View Rewards</Text>

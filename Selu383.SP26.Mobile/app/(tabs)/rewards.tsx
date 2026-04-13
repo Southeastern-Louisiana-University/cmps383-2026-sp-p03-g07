@@ -5,12 +5,16 @@ import { router } from 'expo-router';
 import { rewardsService } from '@/services/rewardsService';
 import { useAuth } from '@/store/authStore';
 import { useRewards } from '@/store/rewardsStore';
+import { getRewardProgress, POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
 
 export default function RewardsScreen() {
   const { user } = useAuth();
   const { balance, refresh, rewards } = useRewards();
   const [redeeming, setRedeeming] = useState<number | null>(null);
   const [message, setMessage] = useState('');
+  const points = balance?.points ?? user?.points ?? 0;
+  const progress = getRewardProgress(points);
+  const pointsWord = progress.pointsToNextReward === 1 ? 'pt' : 'pts';
 
   async function handleRedeem(rewardId: number, pointsCost: number) {
     if (!user) {
@@ -18,7 +22,7 @@ export default function RewardsScreen() {
       return;
     }
     if ((balance?.points ?? 0) < pointsCost) {
-      setMessage('Not enough Lions to redeem this reward.');
+      setMessage('Not enough points to redeem this reward.');
       return;
     }
     setRedeeming(rewardId);
@@ -37,16 +41,25 @@ export default function RewardsScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.heroCard}>
-        <Text style={styles.eyebrow}>Lions and offers</Text>
-        <Text style={styles.balanceValue}>{balance?.points ?? 0}</Text>
+        <Text style={styles.eyebrow}>Rewards</Text>
+        <Text style={styles.balanceValue}>{points}</Text>
         <Text style={styles.balanceLabel}>
-          {balance
-            ? `${balance.currentTier} tier • ${balance.pointsToNextTier} Lions to ${balance.nextTier}`
-            : 'Login to unlock tiers and earn Lions'}
+          Earn {POINTS_PER_DOLLAR} pts / $1 •{' '}
+          {progress.availableRewards > 0
+            ? `${progress.availableRewards} reward${progress.availableRewards === 1 ? '' : 's'} ready`
+            : `${progress.pointsToNextReward} ${pointsWord} to ${REWARD_THRESHOLD}`}
         </Text>
+        <View style={styles.progressTrack}>
+          <View
+            style={[
+              styles.progressFill,
+              { width: `${Math.min(100, (progress.progressPoints / REWARD_THRESHOLD) * 100)}%` },
+            ]}
+          />
+        </View>
         {!user && (
           <Pressable style={styles.loginButton} onPress={() => router.push('/Auth/login')}>
-            <Text style={styles.loginButtonText}>Login to earn Lions</Text>
+            <Text style={styles.loginButtonText}>Login to earn points</Text>
           </Pressable>
         )}
       </View>
@@ -65,7 +78,7 @@ export default function RewardsScreen() {
               <Text style={styles.rewardTitle}>{reward.name}</Text>
               <Text style={styles.rewardCopy}>{reward.description}</Text>
               <Text style={styles.rewardMeta}>
-                {reward.pointsCost} Lions • {reward.tierName} • {reward.offerType}
+                {reward.pointsCost} points
               </Text>
             </View>
             <Pressable
@@ -105,6 +118,18 @@ const styles = StyleSheet.create({
   eyebrow: { color: '#f2c57d', textTransform: 'uppercase', letterSpacing: 2, fontSize: 12 },
   balanceValue: { color: '#fffaf4', fontSize: 42, fontWeight: '700', marginTop: 10 },
   balanceLabel: { color: '#eadcd1', marginTop: 6 },
+  progressTrack: {
+    height: 10,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,250,244,0.18)',
+    overflow: 'hidden',
+    marginTop: 10,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 999,
+    backgroundColor: '#f2c57d',
+  },
   loginButton: {
     alignSelf: 'flex-start',
     borderRadius: 999,
