@@ -12,7 +12,7 @@ import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
 import { useRewards } from '@/store/rewardsStore';
 import type { Location, MenuItem, Order } from '@/types/app';
-import { getRewardProgress, POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
+import { POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
 
 const PRIMARY_ACTIONS = [
   {
@@ -46,17 +46,33 @@ const SECONDARY_ACTIONS = [
 export default function HomeScreen() {
   const { user } = useAuth();
   const { addItem, items } = useCart();
-  const { balance } = useRewards();
+  const { balance, rewards } = useRewards();
   const [locations, setLocations] = useState<Location[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [reorderingOrderId, setReorderingOrderId] = useState<number | null>(null);
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const points = balance?.points ?? user?.points ?? 0;
-  const rewardProgress = useMemo(() => getRewardProgress(points), [points]);
-  const pointsHeadline = rewardProgress.availableRewards > 0
-    ? `${rewardProgress.availableRewards} reward${rewardProgress.availableRewards === 1 ? '' : 's'} ready`
-    : `${rewardProgress.pointsToNextReward} pts to ${REWARD_THRESHOLD}`;
+
+  const sortedRewards = useMemo(() => {
+    return [...rewards].sort((left, right) => left.pointsCost - right.pointsCost || left.name.localeCompare(right.name));
+  }, [rewards]);
+
+  const goalPoints = useMemo(() => {
+    const nextReward = sortedRewards.find((reward) => reward.pointsCost > points);
+    if (nextReward) return nextReward.pointsCost;
+
+    const highest = sortedRewards[sortedRewards.length - 1]?.pointsCost;
+    return highest ?? REWARD_THRESHOLD;
+  }, [points, sortedRewards]);
+
+  const redeemableCount = useMemo(() => {
+    return sortedRewards.filter((reward) => points >= reward.pointsCost).length;
+  }, [points, sortedRewards]);
+
+  const pointsHeadline = redeemableCount > 0
+    ? `${redeemableCount} reward${redeemableCount === 1 ? '' : 's'} ready`
+    : `${Math.max(0, goalPoints - points)} pts to ${goalPoints}`;
 
   useEffect(() => {
     let isMounted = true;

@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { rewardsService } from '@/services/rewardsService';
 import { useAuth } from '@/store/authStore';
 import { useRewards } from '@/store/rewardsStore';
-import { getRewardProgress, POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
+import { POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
 
 export default function RewardsScreen() {
   const { user } = useAuth();
@@ -13,8 +13,33 @@ export default function RewardsScreen() {
   const [redeeming, setRedeeming] = useState<number | null>(null);
   const [message, setMessage] = useState('');
   const points = balance?.points ?? user?.points ?? 0;
-  const progress = getRewardProgress(points);
-  const pointsWord = progress.pointsToNextReward === 1 ? 'pt' : 'pts';
+
+  const sortedRewards = useMemo(() => {
+    return [...rewards].sort((left, right) => left.pointsCost - right.pointsCost || left.name.localeCompare(right.name));
+  }, [rewards]);
+
+  const goalPoints = useMemo(() => {
+    const nextReward = sortedRewards.find((reward) => reward.pointsCost > points);
+    if (nextReward) return nextReward.pointsCost;
+
+    const highest = sortedRewards[sortedRewards.length - 1]?.pointsCost;
+    return highest ?? REWARD_THRESHOLD;
+  }, [points, sortedRewards]);
+
+  const redeemableRewards = useMemo(() => {
+    return sortedRewards.filter((reward) => points >= reward.pointsCost);
+  }, [points, sortedRewards]);
+
+  const pointsToGoal = Math.max(0, goalPoints - points);
+  const pointsWord = pointsToGoal === 1 ? 'pt' : 'pts';
+  const headline = redeemableRewards.length > 0
+    ? `${redeemableRewards.length} reward${redeemableRewards.length === 1 ? '' : 's'} ready`
+    : `${pointsToGoal} ${pointsWord} to ${goalPoints}`;
+
+  const progressPercent = useMemo(() => {
+    if (goalPoints <= 0) return 0;
+    return Math.min(100, Math.max(0, (points / goalPoints) * 100));
+  }, [goalPoints, points]);
 
   async function handleRedeem(rewardId: number, pointsCost: number) {
     if (!user) {
@@ -44,16 +69,13 @@ export default function RewardsScreen() {
         <Text style={styles.eyebrow}>Rewards</Text>
         <Text style={styles.balanceValue}>{points}</Text>
         <Text style={styles.balanceLabel}>
-          Earn {POINTS_PER_DOLLAR} pts / $1 •{' '}
-          {progress.availableRewards > 0
-            ? `${progress.availableRewards} reward${progress.availableRewards === 1 ? '' : 's'} ready`
-            : `${progress.pointsToNextReward} ${pointsWord} to ${REWARD_THRESHOLD}`}
+          Earn {POINTS_PER_DOLLAR} pts / $1 • {headline}
         </Text>
         <View style={styles.progressTrack}>
           <View
             style={[
               styles.progressFill,
-              { width: `${Math.min(100, (progress.progressPoints / REWARD_THRESHOLD) * 100)}%` },
+              { width: `${progressPercent}%` },
             ]}
           />
         </View>
@@ -70,8 +92,17 @@ export default function RewardsScreen() {
         </View>
       ) : null}
 
-      {rewards.map((reward) => {
-        const canRedeem = user && (balance?.points ?? 0) >= reward.pointsCost;
+      {sortedRewards.map((reward) => {
+        const canRedeem = !!user && points >= reward.pointsCost;
+        const isLocked = !!user && points < reward.pointsCost;
+        const buttonLabel = !user
+          ? 'Sign in to redeem'
+          : redeeming === reward.id
+            ? 'Redeeming...'
+            : isLocked
+              ? `${reward.pointsCost - points} more pts`
+              : 'Redeem';
+
         return (
           <View key={reward.id} style={styles.rewardCard}>
             <View style={styles.rewardInfo}>
@@ -84,13 +115,13 @@ export default function RewardsScreen() {
             <Pressable
               style={[
                 styles.redeemButton,
-                !canRedeem && styles.redeemButtonDisabled,
+                (isLocked || redeeming === reward.id) && styles.redeemButtonDisabled,
                 redeeming === reward.id && styles.redeemButtonDisabled,
               ]}
               onPress={() => handleRedeem(reward.id, reward.pointsCost)}
-              disabled={redeeming === reward.id}>
+              disabled={redeeming === reward.id || (user && !canRedeem)}>
               <Text style={styles.redeemButtonText}>
-                {redeeming === reward.id ? 'Redeeming...' : 'Redeem'}
+                {buttonLabel}
               </Text>
             </Pressable>
           </View>
