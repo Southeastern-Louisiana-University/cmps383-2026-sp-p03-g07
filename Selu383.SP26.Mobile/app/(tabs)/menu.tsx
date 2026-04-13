@@ -330,9 +330,8 @@ export default function MenuScreen() {
       locationService.getLocations(),
       menuService.getCategories(),
     ]).then(([locs, cats]) => {
-      const limited = locs.slice(0, 3);
-      setLocations(limited);
-      if (limited.length > 0) setSelectedLocation(limited[0].id);
+      setLocations(locs);
+      if (locs.length > 0) setSelectedLocation(locs[0].id);
       setCategories(['All', ...cats]);
     });
   }, []);

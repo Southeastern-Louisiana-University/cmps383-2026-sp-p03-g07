@@ -89,7 +89,7 @@ export default function HomeScreen() {
           return;
         }
 
-        setLocations(nextLocations.slice(0, 3));
+        setLocations(nextLocations);
         setMenuItems(nextMenu.filter((item) => item.isAvailable));
         setRecentOrders(nextOrders.slice(0, 3));
       } catch {
@@ -359,7 +359,7 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.sectionKicker}>Three Louisiana locations</Text>
+              <Text style={styles.sectionKicker}>Pilot locations</Text>
               <Text style={styles.sectionTitle}>Find your Lions</Text>
             </View>
             <Pressable onPress={() => router.push('/locations')}>
