@@ -66,7 +66,7 @@ export default function CheckoutScreen() {
           quantity: item.quantity,
           unitPrice: item.price,
           total: item.quantity * item.price,
-          customizations: '',
+          customizations: item.customizations,
           specialInstructions: '',
         })),
       });

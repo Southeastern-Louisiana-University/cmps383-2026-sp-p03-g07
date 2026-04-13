@@ -25,7 +25,7 @@ type CartContextValue = {
   subtotal: number;
   notice: CartNotice;
   dismissNotice: () => void;
-  addItem: (item: MenuItem, customizations?: string) => void;
+  addItem: (item: MenuItem, customizations?: string, unitPriceOverride?: number) => void;
   updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
   clear: () => void;
@@ -47,7 +47,9 @@ export function CartProvider({ children }: PropsWithChildren) {
       dismissNotice() {
         setNotice(null);
       },
-      addItem(item, customizations = '') {
+      addItem(item, customizations = '', unitPriceOverride) {
+        const unitPrice = unitPriceOverride ?? item.price;
+
         setItems((currentItems) => {
           const existingItem = currentItems.find(
             (entry) => entry.menuItemId === item.id && entry.customizations === customizations,
@@ -67,7 +69,7 @@ export function CartProvider({ children }: PropsWithChildren) {
               menuItemId: item.id,
               locationId: item.locationId,
               name: item.name,
-              price: item.price,
+              price: unitPrice,
               quantity: 1,
               customizations,
             },
