@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { useAuth } from '@/store/authStore';
@@ -60,7 +61,13 @@ export default function ProfileScreen() {
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.heroCard}>
         {user.profilePictureUrl ? (
-          <Image source={{ uri: user.profilePictureUrl }} style={styles.avatar} />
+          <Image
+            source={{ uri: user.profilePictureUrl }}
+            style={styles.avatar}
+            contentFit="cover"
+            transition={180}
+            cachePolicy="memory-disk"
+          />
         ) : (
           <View style={styles.avatarPlaceholder}>
             <Text style={styles.avatarInitial}>
@@ -70,7 +77,7 @@ export default function ProfileScreen() {
         )}
         <Text style={styles.title}>{user.displayName || user.userName}</Text>
         <Text style={styles.heroCopy}>
-          {user.points} Lions • {user.roles.join(', ')}
+          {user.points} points • {user.roles.join(', ')}
         </Text>
         {user.birthday && (
           <Text style={styles.birthdayNote}>

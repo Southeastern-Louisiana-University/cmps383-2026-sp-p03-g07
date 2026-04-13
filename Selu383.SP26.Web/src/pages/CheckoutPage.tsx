@@ -7,6 +7,7 @@ import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
 import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems";
+import { calculatePointsEarned } from "../utils/rewardsProgram";
 import { CommerceTopRail } from "./commerceShared";
 
 const orderTypes = [
@@ -56,7 +57,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
   const isReady = useMemo(() => visibleItems.length > 0, [visibleItems.length]);
   const selectedLocation = locations.find((location) => location.id === locationId);
   const selectedOrderType = orderTypes.find((option) => option.value === orderType)?.label ?? "Pickup";
-  const starsEarned = Math.max(Math.floor(visibleSubtotal), 1);
+  const pointsEarned = calculatePointsEarned(visibleSubtotal);
 
   async function submitCheckout() {
     if (!isReady) {
@@ -136,8 +137,8 @@ export default function CheckoutPage({ navigate }: PageProps) {
               <strong>${visibleSubtotal.toFixed(2)}</strong>
             </div>
             <div className="commerce-summary-row">
-              <span>Lions after payment</span>
-              <strong>{starsEarned}</strong>
+              <span>Points after payment</span>
+              <strong>{pointsEarned}</strong>
             </div>
 
             <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
@@ -178,7 +179,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
 
             {!user && (
               <div style={{ padding: "12px 16px", borderRadius: 10, backgroundColor: "#fff3cd", marginBottom: 8 }}>
-                <strong>Checking out as guest.</strong> <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">Sign in</button> to earn Lions and save order history.
+                <strong>Checking out as guest.</strong> <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">Sign in</button> to earn points and save order history.
               </div>
             )}
 

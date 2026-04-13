@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { locationsApi } from "../api/locationsApi";
 import { menuApi } from "../api/menuApi";
+import MenuCustomizationModal from "../components/MenuCustomizationModal";
 import { resolveApiAssetUrl } from "../services/api";
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
@@ -113,13 +114,14 @@ function getMenuItemGroupingKey(item: MenuItem) {
 }
 
 export default function MenuPage({ navigate }: PageProps) {
-  const { addItem, items: cartItems } = useCart();
+  const { addItem, addItemWithCustomizations, items: cartItems } = useCart();
   const cartLocationId = cartItems[0]?.locationId ?? 0;
   const [items, setItems] = useState<MenuItem[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<MenuDisplayCategory>("Coffee");
   const [selectedLocationId, setSelectedLocationId] = useState<number>(cartLocationId);
   const [selectedSort, setSelectedSort] = useState<MenuSort>("selected");
+  const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [statusMessage, setStatusMessage] = useState("");
 
@@ -336,14 +338,24 @@ export default function MenuPage({ navigate }: PageProps) {
                         <strong>${item.price.toFixed(2)}</strong>
                         <span>{item.preparationTag}</span>
                       </div>
-                      <button
-                        className="order-bakery-add-button"
-                        disabled={!canAddItem}
-                        onClick={() => addItem(item)}
-                        type="button"
-                      >
-                        {canAddItem ? "Add" : "Store locked"}
-                      </button>
+                      <div className="order-bakery-card-actions">
+                        <button
+                          className="order-bakery-customize-button"
+                          disabled={!canAddItem}
+                          onClick={() => setCustomizingItem(item)}
+                          type="button"
+                        >
+                          Customize
+                        </button>
+                        <button
+                          className="order-bakery-add-button"
+                          disabled={!canAddItem}
+                          onClick={() => addItem(item)}
+                          type="button"
+                        >
+                          {canAddItem ? "Add" : "Store locked"}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </article>
@@ -352,6 +364,14 @@ export default function MenuPage({ navigate }: PageProps) {
           </div>
         )}
       </section>
+
+      {customizingItem ? (
+        <MenuCustomizationModal
+          item={customizingItem}
+          onAddToCart={(customizations, unitPrice) => addItemWithCustomizations(customizingItem, customizations, unitPrice)}
+          onClose={() => setCustomizingItem(null)}
+        />
+      ) : null}
     </div>
   );
 }

@@ -79,7 +79,7 @@ export default function OrdersScreen() {
               ${order.total.toFixed(2)} • {order.paymentStatus}
             </Text>
             {order.starsEarned > 0 && (
-              <Text style={styles.starsText}>+{order.starsEarned} Lions earned</Text>
+              <Text style={styles.starsText}>+{order.starsEarned} points earned</Text>
             )}
             <View style={styles.buttonRow}>
               {['received', 'preparing', 'ready'].includes(order.status.toLowerCase()) && (
@@ -151,12 +151,12 @@ const styles = StyleSheet.create({
   reorderButtonText: { color: '#1d2d3c', fontWeight: '600', fontSize: 13 },
   buttonDisabled: { opacity: 0.6 },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 20,
     paddingVertical: 12,
     marginTop: 4,
   },
-  primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
+  primaryButtonText: { color: '#fffaf4', fontWeight: '700', textAlign: 'center' },
 });

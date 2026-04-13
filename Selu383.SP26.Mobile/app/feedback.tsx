@@ -49,6 +49,10 @@ export default function FeedbackScreen() {
   }
 
   async function submitFeedback() {
+    if (!user) {
+      setErrorMessage('Please sign in to leave feedback.');
+      return;
+    }
     if (rating === 0) {
       setErrorMessage('Please select a rating.');
       return;
@@ -145,14 +149,14 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 20,
     paddingVertical: 12,
     marginTop: 4,
   },
-  primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
+  primaryButtonText: { color: '#fffaf4', fontWeight: '700', textAlign: 'center' },
   buttonDisabled: { opacity: 0.6 },
   errorText: { color: '#b33030' },
   successCard: {

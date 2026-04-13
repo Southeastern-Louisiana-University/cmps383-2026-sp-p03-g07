@@ -121,7 +121,7 @@ export default function OrderStatusPage({ navigate, query }: PageProps) {
             <div className="commerce-hero-pills">
               <span className="commerce-hero-pill">{order.orderType}</span>
               <span className="commerce-hero-pill">{order.paymentStatus}</span>
-              <span className="commerce-hero-pill">{order.starsEarned} Lions earned</span>
+              <span className="commerce-hero-pill">{order.starsEarned} points earned</span>
             </div>
           </div>
 

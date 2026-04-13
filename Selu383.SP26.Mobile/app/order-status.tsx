@@ -139,12 +139,12 @@ const styles = StyleSheet.create({
   totalText: { fontWeight: '700', color: '#1f1a17', marginTop: 4 },
   refreshNote: { fontSize: 12, color: '#8f7d70', textAlign: 'center' },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 20,
     paddingVertical: 12,
   },
-  primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
+  primaryButtonText: { color: '#fffaf4', fontWeight: '700', textAlign: 'center' },
   errorText: { color: '#b33030' },
 });

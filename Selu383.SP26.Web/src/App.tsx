@@ -112,7 +112,7 @@ function SunIcon() {
 
 function AppLayout() {
   const { user, loading } = useAuth();
-  const { items } = useCart();
+  const { items, cartNotice, clearCartNotice } = useCart();
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
   const [routeState, setRouteState] = useState(getCurrentHashRoute);
   const [isDark, setIsDark] = useState(() => localStorage.getItem("theme") !== "light");
@@ -247,6 +247,18 @@ function AppLayout() {
           <Page navigate={navigate} query={routeState.query} />
         )}
       </main>
+
+      {cartNotice ? (
+        <div
+          aria-live="polite"
+          className="cart-toast"
+          key={cartNotice.id}
+          onClick={clearCartNotice}
+          role="status"
+        >
+          {cartNotice.message}
+        </div>
+      ) : null}
     </div>
   );
 }

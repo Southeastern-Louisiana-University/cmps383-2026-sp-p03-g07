@@ -191,7 +191,7 @@ const styles = StyleSheet.create({
   optionTextSelected: { color: '#fffaf4' },
   optionSub: { fontSize: 13, color: '#8f7d70' },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 20,
@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   primaryButtonDisabled: { opacity: 0.6 },
-  primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
+  primaryButtonText: { color: '#fffaf4', fontWeight: '700', textAlign: 'center' },
   errorText: { color: '#b33030' },
   successText: { color: '#1a6b2a', fontWeight: '600' },
   reservationRow: {

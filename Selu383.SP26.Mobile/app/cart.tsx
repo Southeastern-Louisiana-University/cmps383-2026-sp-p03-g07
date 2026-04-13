@@ -21,7 +21,10 @@ export default function CartScreen() {
           {items.map((item) => (
             <View key={item.id} style={styles.card}>
               <View style={styles.cardHeader}>
-                <Text style={styles.cardTitle}>{item.name}</Text>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.cardTitle}>{item.name}</Text>
+                  {item.customizations ? <Text style={styles.customizations}>{item.customizations}</Text> : null}
+                </View>
                 <Pressable onPress={() => removeItem(item.id)}>
                   <Text style={styles.removeBtn}>Remove</Text>
                 </Pressable>
@@ -56,18 +59,19 @@ const styles = StyleSheet.create({
   title: { fontSize: 28, fontWeight: '700', color: '#1f1a17' },
   card: { gap: 10, borderRadius: 22, backgroundColor: '#fffaf4', padding: 16 },
   cardTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a17' },
+  customizations: { marginTop: 4, color: '#6c5b4d', fontSize: 13 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   removeBtn: { color: '#c0392b', fontSize: 13, fontWeight: '600' },
   quantityText: { fontSize: 15, fontWeight: '700', color: '#1f1a17', minWidth: 24, textAlign: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
-  primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
+  primaryButtonText: { color: '#fffaf4', fontWeight: '700', textAlign: 'center' },
   secondaryButton: {
     borderRadius: 999,
     backgroundColor: '#ead7c5',

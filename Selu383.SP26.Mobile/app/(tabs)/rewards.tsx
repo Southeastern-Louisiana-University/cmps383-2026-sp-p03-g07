@@ -1,16 +1,45 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 
 import { rewardsService } from '@/services/rewardsService';
 import { useAuth } from '@/store/authStore';
 import { useRewards } from '@/store/rewardsStore';
+import { POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
 
 export default function RewardsScreen() {
   const { user } = useAuth();
   const { balance, refresh, rewards } = useRewards();
   const [redeeming, setRedeeming] = useState<number | null>(null);
   const [message, setMessage] = useState('');
+  const points = balance?.points ?? user?.points ?? 0;
+
+  const sortedRewards = useMemo(() => {
+    return [...rewards].sort((left, right) => left.pointsCost - right.pointsCost || left.name.localeCompare(right.name));
+  }, [rewards]);
+
+  const goalPoints = useMemo(() => {
+    const nextReward = sortedRewards.find((reward) => reward.pointsCost > points);
+    if (nextReward) return nextReward.pointsCost;
+
+    const highest = sortedRewards[sortedRewards.length - 1]?.pointsCost;
+    return highest ?? REWARD_THRESHOLD;
+  }, [points, sortedRewards]);
+
+  const redeemableRewards = useMemo(() => {
+    return sortedRewards.filter((reward) => points >= reward.pointsCost);
+  }, [points, sortedRewards]);
+
+  const pointsToGoal = Math.max(0, goalPoints - points);
+  const pointsWord = pointsToGoal === 1 ? 'pt' : 'pts';
+  const headline = redeemableRewards.length > 0
+    ? `${redeemableRewards.length} reward${redeemableRewards.length === 1 ? '' : 's'} ready`
+    : `${pointsToGoal} ${pointsWord} to ${goalPoints}`;
+
+  const progressPercent = useMemo(() => {
+    if (goalPoints <= 0) return 0;
+    return Math.min(100, Math.max(0, (points / goalPoints) * 100));
+  }, [goalPoints, points]);
 
   async function handleRedeem(rewardId: number, pointsCost: number) {
     if (!user) {
@@ -18,7 +47,7 @@ export default function RewardsScreen() {
       return;
     }
     if ((balance?.points ?? 0) < pointsCost) {
-      setMessage('Not enough Lions to redeem this reward.');
+      setMessage('Not enough points to redeem this reward.');
       return;
     }
     setRedeeming(rewardId);
@@ -37,16 +66,22 @@ export default function RewardsScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.heroCard}>
-        <Text style={styles.eyebrow}>Lions and offers</Text>
-        <Text style={styles.balanceValue}>{balance?.points ?? 0}</Text>
+        <Text style={styles.eyebrow}>Rewards</Text>
+        <Text style={styles.balanceValue}>{points}</Text>
         <Text style={styles.balanceLabel}>
-          {balance
-            ? `${balance.currentTier} tier • ${balance.pointsToNextTier} Lions to ${balance.nextTier}`
-            : 'Login to unlock tiers and earn Lions'}
+          Earn {POINTS_PER_DOLLAR} pts / $1 • {headline}
         </Text>
+        <View style={styles.progressTrack}>
+          <View
+            style={[
+              styles.progressFill,
+              { width: `${progressPercent}%` },
+            ]}
+          />
+        </View>
         {!user && (
           <Pressable style={styles.loginButton} onPress={() => router.push('/Auth/login')}>
-            <Text style={styles.loginButtonText}>Login to earn Lions</Text>
+            <Text style={styles.loginButtonText}>Login to earn points</Text>
           </Pressable>
         )}
       </View>
@@ -57,27 +92,36 @@ export default function RewardsScreen() {
         </View>
       ) : null}
 
-      {rewards.map((reward) => {
-        const canRedeem = user && (balance?.points ?? 0) >= reward.pointsCost;
+      {sortedRewards.map((reward) => {
+        const canRedeem = !!user && points >= reward.pointsCost;
+        const isLocked = !!user && points < reward.pointsCost;
+        const buttonLabel = !user
+          ? 'Sign in to redeem'
+          : redeeming === reward.id
+            ? 'Redeeming...'
+            : isLocked
+              ? `${reward.pointsCost - points} more pts`
+              : 'Redeem';
+
         return (
           <View key={reward.id} style={styles.rewardCard}>
             <View style={styles.rewardInfo}>
               <Text style={styles.rewardTitle}>{reward.name}</Text>
               <Text style={styles.rewardCopy}>{reward.description}</Text>
               <Text style={styles.rewardMeta}>
-                {reward.pointsCost} Lions • {reward.tierName} • {reward.offerType}
+                {reward.pointsCost} points
               </Text>
             </View>
             <Pressable
               style={[
                 styles.redeemButton,
-                !canRedeem && styles.redeemButtonDisabled,
+                (isLocked || redeeming === reward.id) && styles.redeemButtonDisabled,
                 redeeming === reward.id && styles.redeemButtonDisabled,
               ]}
               onPress={() => handleRedeem(reward.id, reward.pointsCost)}
-              disabled={redeeming === reward.id}>
+              disabled={redeeming === reward.id || (user && !canRedeem)}>
               <Text style={styles.redeemButtonText}>
-                {redeeming === reward.id ? 'Redeeming...' : 'Redeem'}
+                {buttonLabel}
               </Text>
             </Pressable>
           </View>
@@ -105,15 +149,27 @@ const styles = StyleSheet.create({
   eyebrow: { color: '#f2c57d', textTransform: 'uppercase', letterSpacing: 2, fontSize: 12 },
   balanceValue: { color: '#fffaf4', fontSize: 42, fontWeight: '700', marginTop: 10 },
   balanceLabel: { color: '#eadcd1', marginTop: 6 },
+  progressTrack: {
+    height: 10,
+    borderRadius: 999,
+    backgroundColor: 'rgba(255,250,244,0.18)',
+    overflow: 'hidden',
+    marginTop: 10,
+  },
+  progressFill: {
+    height: '100%',
+    borderRadius: 999,
+    backgroundColor: '#f2c57d',
+  },
   loginButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#f2c57d',
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginTop: 10,
   },
-  loginButtonText: { color: '#40261a', fontWeight: '700' },
+  loginButtonText: { color: '#40261a', fontWeight: '700', textAlign: 'center' },
   messageCard: {
     borderRadius: 14,
     backgroundColor: '#fffaf4',

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
@@ -11,6 +12,7 @@ import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
 import { useRewards } from '@/store/rewardsStore';
 import type { Location, MenuItem, Order } from '@/types/app';
+import { POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
 
 const PRIMARY_ACTIONS = [
   {
@@ -44,12 +46,33 @@ const SECONDARY_ACTIONS = [
 export default function HomeScreen() {
   const { user } = useAuth();
   const { addItem, items } = useCart();
-  const { balance } = useRewards();
+  const { balance, rewards } = useRewards();
   const [locations, setLocations] = useState<Location[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [reorderingOrderId, setReorderingOrderId] = useState<number | null>(null);
   const cartCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const points = balance?.points ?? user?.points ?? 0;
+
+  const sortedRewards = useMemo(() => {
+    return [...rewards].sort((left, right) => left.pointsCost - right.pointsCost || left.name.localeCompare(right.name));
+  }, [rewards]);
+
+  const goalPoints = useMemo(() => {
+    const nextReward = sortedRewards.find((reward) => reward.pointsCost > points);
+    if (nextReward) return nextReward.pointsCost;
+
+    const highest = sortedRewards[sortedRewards.length - 1]?.pointsCost;
+    return highest ?? REWARD_THRESHOLD;
+  }, [points, sortedRewards]);
+
+  const redeemableCount = useMemo(() => {
+    return sortedRewards.filter((reward) => points >= reward.pointsCost).length;
+  }, [points, sortedRewards]);
+
+  const pointsHeadline = redeemableCount > 0
+    ? `${redeemableCount} reward${redeemableCount === 1 ? '' : 's'} ready`
+    : `${Math.max(0, goalPoints - points)} pts to ${goalPoints}`;
 
   useEffect(() => {
     let isMounted = true;
@@ -66,7 +89,7 @@ export default function HomeScreen() {
           return;
         }
 
-        setLocations(nextLocations.slice(0, 3));
+        setLocations(nextLocations);
         setMenuItems(nextMenu.filter((item) => item.isAvailable));
         setRecentOrders(nextOrders.slice(0, 3));
       } catch {
@@ -172,9 +195,14 @@ export default function HomeScreen() {
               ]}
               onPress={() => {
                 addItem(item);
-                router.push('/cart');
               }}>
-              <Image source={{ uri: resolveApiAssetUrl(item.imageUrl) }} style={styles.heroShowcaseImage} resizeMode="cover" />
+              <Image
+                source={{ uri: resolveApiAssetUrl(item.imageUrl) }}
+                style={styles.heroShowcaseImage}
+                contentFit="cover"
+                transition={180}
+                cachePolicy="memory-disk"
+              />
               <View style={styles.heroShowcaseOverlay} />
               <View style={styles.heroShowcaseCopy}>
                 <Text style={styles.heroShowcaseName} numberOfLines={2}>
@@ -215,7 +243,9 @@ export default function HomeScreen() {
                         'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=480&h=320&fit=crop',
                     }}
                     style={styles.spotlightImage}
-                    resizeMode="cover"
+                    contentFit="cover"
+                    transition={180}
+                    cachePolicy="memory-disk"
                   />
                   <View style={styles.spotlightCopy}>
                     <Text style={styles.spotlightEyebrow}>
@@ -225,7 +255,7 @@ export default function HomeScreen() {
                       {label}
                     </Text>
                     <Text style={styles.spotlightMeta}>
-                      ${order.total.toFixed(2)} • {order.items.length} items • +{order.starsEarned} Lions
+                      ${order.total.toFixed(2)} • {order.items.length} items • +{order.starsEarned} pts
                     </Text>
                     <Pressable
                       style={[styles.spotlightButton, reorderingOrderId === order.id && styles.buttonDisabled]}
@@ -240,7 +270,13 @@ export default function HomeScreen() {
               ))
             : featuredItems.map((item) => (
                 <View key={item.id} style={styles.spotlightCard}>
-                  <Image source={{ uri: resolveApiAssetUrl(item.imageUrl) }} style={styles.spotlightImage} resizeMode="cover" />
+                  <Image
+                    source={{ uri: resolveApiAssetUrl(item.imageUrl) }}
+                    style={styles.spotlightImage}
+                    contentFit="cover"
+                    transition={180}
+                    cachePolicy="memory-disk"
+                  />
                   <View style={styles.spotlightCopy}>
                     <Text style={styles.spotlightEyebrow}>{item.category}</Text>
                     <Text style={styles.spotlightTitle} numberOfLines={2}>
@@ -253,7 +289,6 @@ export default function HomeScreen() {
                       style={styles.spotlightButton}
                       onPress={() => {
                         addItem(item);
-                        router.push('/cart');
                       }}>
                       <Text style={styles.spotlightButtonText}>Add to cart</Text>
                     </Pressable>
@@ -277,7 +312,9 @@ export default function HomeScreen() {
                 <Image
                   source={{ uri: action.image }}
                   style={styles.actionImg}
-                  resizeMode="cover"
+                  contentFit="cover"
+                  transition={180}
+                  cachePolicy="memory-disk"
                 />
                 <View style={styles.actionImgOverlay} />
                 <Text style={styles.actionLabel}>{action.label}</Text>
@@ -301,14 +338,16 @@ export default function HomeScreen() {
         <Image
           source={{ uri: 'https://images.unsplash.com/photo-1497636577773-f1231844b336?w=800&h=300&fit=crop' }}
           style={styles.earnBannerImage}
-          resizeMode="cover"
+          contentFit="cover"
+          transition={180}
+          cachePolicy="memory-disk"
         />
         <View style={styles.earnBannerOverlay} />
         <View style={styles.earnBannerContent}>
           <Text style={styles.earnBannerKicker}>Lions Rewards</Text>
           <Text style={styles.earnBannerTitle}>Earn Lions{'\n'}Every Visit.</Text>
           <Text style={styles.earnBannerSub}>
-            {balance?.points ?? user?.points ?? 0} Lions - {(balance?.currentTier ?? 'member').toUpperCase()}
+            Earn {POINTS_PER_DOLLAR} pts/$1 • {points} pts • {pointsHeadline}
           </Text>
           <Pressable style={styles.earnBannerBtn} onPress={() => router.push('/(tabs)/rewards')}>
             <Text style={styles.earnBannerBtnText}>View Rewards</Text>
@@ -320,7 +359,7 @@ export default function HomeScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <View>
-              <Text style={styles.sectionKicker}>Three Louisiana locations</Text>
+              <Text style={styles.sectionKicker}>Pilot locations</Text>
               <Text style={styles.sectionTitle}>Find your Lions</Text>
             </View>
             <Pressable onPress={() => router.push('/locations')}>
@@ -337,7 +376,9 @@ export default function HomeScreen() {
                 <Image
                   source={{ uri: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=80&h=80&fit=crop' }}
                   style={styles.locationIconImg}
-                  resizeMode="cover"
+                  contentFit="cover"
+                  transition={180}
+                  cachePolicy="memory-disk"
                 />
               </View>
               <View style={styles.locationInfo}>

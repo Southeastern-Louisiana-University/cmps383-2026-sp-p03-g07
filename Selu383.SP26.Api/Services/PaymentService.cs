@@ -57,7 +57,7 @@ public class PaymentService(
             var user = await dataContext.Users.SingleOrDefaultAsync(x => x.Id == userId);
             if (user != null)
             {
-                stars = starEarningService.CalculateStars(order.Total, user.Points);
+                stars = starEarningService.CalculateStars(order.Total);
                 user.Points += stars;
                 order.StarsEarned = stars;
 

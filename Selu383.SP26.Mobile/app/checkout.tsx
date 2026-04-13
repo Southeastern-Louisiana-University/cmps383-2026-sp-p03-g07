@@ -7,6 +7,7 @@ import { orderService } from '@/services/orderService';
 import { useAuth } from '@/store/authStore';
 import { useCart } from '@/store/cartStore';
 import type { Location } from '@/types/app';
+import { calculatePointsEarned } from '@/utils/rewardsProgram';
 
 const ORDER_TYPES = ['pickup', 'drive-thru'] as const;
 type OrderType = (typeof ORDER_TYPES)[number];
@@ -65,7 +66,7 @@ export default function CheckoutScreen() {
           quantity: item.quantity,
           unitPrice: item.price,
           total: item.quantity * item.price,
-          customizations: '',
+          customizations: item.customizations,
           specialInstructions: '',
         })),
       });
@@ -92,9 +93,9 @@ export default function CheckoutScreen() {
 
       {!user && (
         <View style={styles.guestBanner}>
-          <Text style={styles.guestBannerText}>Checking out as guest - no Lions earned.</Text>
+          <Text style={styles.guestBannerText}>Checking out as guest - no points earned.</Text>
           <Pressable onPress={() => router.push('/Auth/login')}>
-            <Text style={styles.guestBannerLink}>Sign in to earn Lions</Text>
+            <Text style={styles.guestBannerLink}>Sign in to earn points</Text>
           </Pressable>
         </View>
       )}
@@ -176,7 +177,7 @@ export default function CheckoutScreen() {
         ))}
         <Text style={[styles.cardCopy, styles.total]}>Total: ${subtotal.toFixed(2)}</Text>
         <Text style={styles.cardCopy}>
-          Estimated Lions: {Math.max(Math.floor(subtotal), 1)}
+          Estimated points: {calculatePointsEarned(subtotal)}
         </Text>
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
         <Pressable
@@ -234,7 +235,7 @@ const styles = StyleSheet.create({
   pillText: { fontWeight: '600', color: '#1f1a17' },
   pillTextSelected: { color: '#fffaf4' },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 20,
@@ -242,7 +243,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   primaryButtonDisabled: { opacity: 0.6 },
-  primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
+  primaryButtonText: { color: '#fffaf4', fontWeight: '700', textAlign: 'center' },
   errorText: { color: '#b33030' },
   guestBanner: {
     borderRadius: 14,
