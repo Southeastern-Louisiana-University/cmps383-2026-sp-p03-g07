@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
-import { router } from 'expo-router';
 
 import { resolveApiAssetUrl } from '@/constants/api';
 import { menuService } from '@/services/menuService';
@@ -118,7 +117,6 @@ export default function MenuScreen() {
                 style={styles.primaryButton}
                 onPress={() => {
                   addItem(item);
-                  router.push('/cart');
                 }}>
                 <Text style={styles.primaryButtonText}>Add to cart</Text>
               </Pressable>

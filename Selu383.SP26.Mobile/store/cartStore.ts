@@ -18,9 +18,13 @@ type CartItem = {
   customizations: string;
 };
 
+type CartNotice = { id: string; message: string } | null;
+
 type CartContextValue = {
   items: CartItem[];
   subtotal: number;
+  notice: CartNotice;
+  dismissNotice: () => void;
   addItem: (item: MenuItem, customizations?: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   removeItem: (id: string) => void;
@@ -31,6 +35,7 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 export function CartProvider({ children }: PropsWithChildren) {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [notice, setNotice] = useState<CartNotice>(null);
 
   const value = useMemo<CartContextValue>(() => {
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -38,6 +43,10 @@ export function CartProvider({ children }: PropsWithChildren) {
     return {
       items,
       subtotal,
+      notice,
+      dismissNotice() {
+        setNotice(null);
+      },
       addItem(item, customizations = '') {
         setItems((currentItems) => {
           const existingItem = currentItems.find(
@@ -64,6 +73,7 @@ export function CartProvider({ children }: PropsWithChildren) {
             },
           ];
         });
+        setNotice({ id: `${Date.now()}`, message: `${item.name} added to cart.` });
       },
       updateQuantity(id, quantity) {
         setItems((currentItems) =>
@@ -77,9 +87,10 @@ export function CartProvider({ children }: PropsWithChildren) {
       },
       clear() {
         setItems([]);
+        setNotice(null);
       },
     };
-  }, [items]);
+  }, [items, notice]);
 
   return createElement(CartContext.Provider, { value }, children);
 }

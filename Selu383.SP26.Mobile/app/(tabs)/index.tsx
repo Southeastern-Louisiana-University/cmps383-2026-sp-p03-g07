@@ -178,7 +178,6 @@ export default function HomeScreen() {
               ]}
               onPress={() => {
                 addItem(item);
-                router.push('/cart');
               }}>
               <Image source={{ uri: resolveApiAssetUrl(item.imageUrl) }} style={styles.heroShowcaseImage} resizeMode="cover" />
               <View style={styles.heroShowcaseOverlay} />
@@ -259,7 +258,6 @@ export default function HomeScreen() {
                       style={styles.spotlightButton}
                       onPress={() => {
                         addItem(item);
-                        router.push('/cart');
                       }}>
                       <Text style={styles.spotlightButtonText}>Add to cart</Text>
                     </Pressable>
