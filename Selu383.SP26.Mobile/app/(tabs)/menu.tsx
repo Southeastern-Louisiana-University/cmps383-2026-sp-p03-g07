@@ -167,13 +167,13 @@ const styles = StyleSheet.create({
   metaText: { color: '#8a5124', marginTop: 6, fontSize: 12 },
   price: { color: '#8a5124', fontWeight: '700', fontSize: 16 },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#4a6741',
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
-  primaryButtonText: { color: '#fff', fontWeight: '700' },
+  primaryButtonText: { color: '#fff', fontWeight: '700', textAlign: 'center' },
   emptyCard: { borderRadius: 22, backgroundColor: '#fffaf4', padding: 24, alignItems: 'center' },
   emptyText: { color: '#8f7d70', fontSize: 15 },
 });

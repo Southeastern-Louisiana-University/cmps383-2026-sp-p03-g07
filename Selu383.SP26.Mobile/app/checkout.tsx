@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   pillText: { fontWeight: '600', color: '#1f1a17' },
   pillTextSelected: { color: '#fffaf4' },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 20,
@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   primaryButtonDisabled: { opacity: 0.6 },
-  primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
+  primaryButtonText: { color: '#fffaf4', fontWeight: '700', textAlign: 'center' },
   errorText: { color: '#b33030' },
   guestBanner: {
     borderRadius: 14,

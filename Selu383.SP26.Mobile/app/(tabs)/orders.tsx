@@ -151,12 +151,12 @@ const styles = StyleSheet.create({
   reorderButtonText: { color: '#1d2d3c', fontWeight: '600', fontSize: 13 },
   buttonDisabled: { opacity: 0.6 },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 20,
     paddingVertical: 12,
     marginTop: 4,
   },
-  primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
+  primaryButtonText: { color: '#fffaf4', fontWeight: '700', textAlign: 'center' },
 });

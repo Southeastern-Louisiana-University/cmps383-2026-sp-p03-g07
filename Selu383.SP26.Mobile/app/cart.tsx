@@ -61,13 +61,13 @@ const styles = StyleSheet.create({
   quantityText: { fontSize: 15, fontWeight: '700', color: '#1f1a17', minWidth: 24, textAlign: 'center' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   primaryButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#1d2d3c',
     paddingHorizontal: 16,
     paddingVertical: 10,
   },
-  primaryButtonText: { color: '#fffaf4', fontWeight: '700' },
+  primaryButtonText: { color: '#fffaf4', fontWeight: '700', textAlign: 'center' },
   secondaryButton: {
     borderRadius: 999,
     backgroundColor: '#ead7c5',

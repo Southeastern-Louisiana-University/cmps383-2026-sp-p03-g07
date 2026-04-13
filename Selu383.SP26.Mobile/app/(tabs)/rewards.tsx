@@ -131,14 +131,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#f2c57d',
   },
   loginButton: {
-    alignSelf: 'flex-start',
+    alignSelf: 'center',
     borderRadius: 999,
     backgroundColor: '#f2c57d',
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginTop: 10,
   },
-  loginButtonText: { color: '#40261a', fontWeight: '700' },
+  loginButtonText: { color: '#40261a', fontWeight: '700', textAlign: 'center' },
   messageCard: {
     borderRadius: 14,
     backgroundColor: '#fffaf4',
