@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { resolveApiAssetUrl } from '@/constants/api';
 import { menuService } from '@/services/menuService';
@@ -408,7 +409,9 @@ export default function MenuScreen() {
               <Image
                 source={{ uri: resolveApiAssetUrl(item.imageUrl) }}
                 style={styles.itemImage}
-                resizeMode="cover"
+                contentFit="cover"
+                transition={180}
+                cachePolicy="memory-disk"
               />
             )}
             <View style={styles.cardBody}>

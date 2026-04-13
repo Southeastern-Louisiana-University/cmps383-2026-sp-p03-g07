@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image } from 'expo-image';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 
@@ -179,7 +180,13 @@ export default function HomeScreen() {
               onPress={() => {
                 addItem(item);
               }}>
-              <Image source={{ uri: resolveApiAssetUrl(item.imageUrl) }} style={styles.heroShowcaseImage} resizeMode="cover" />
+              <Image
+                source={{ uri: resolveApiAssetUrl(item.imageUrl) }}
+                style={styles.heroShowcaseImage}
+                contentFit="cover"
+                transition={180}
+                cachePolicy="memory-disk"
+              />
               <View style={styles.heroShowcaseOverlay} />
               <View style={styles.heroShowcaseCopy}>
                 <Text style={styles.heroShowcaseName} numberOfLines={2}>
@@ -220,7 +227,9 @@ export default function HomeScreen() {
                         'https://images.unsplash.com/photo-1511920170033-f8396924c348?w=480&h=320&fit=crop',
                     }}
                     style={styles.spotlightImage}
-                    resizeMode="cover"
+                    contentFit="cover"
+                    transition={180}
+                    cachePolicy="memory-disk"
                   />
                   <View style={styles.spotlightCopy}>
                     <Text style={styles.spotlightEyebrow}>
@@ -245,7 +254,13 @@ export default function HomeScreen() {
               ))
             : featuredItems.map((item) => (
                 <View key={item.id} style={styles.spotlightCard}>
-                  <Image source={{ uri: resolveApiAssetUrl(item.imageUrl) }} style={styles.spotlightImage} resizeMode="cover" />
+                  <Image
+                    source={{ uri: resolveApiAssetUrl(item.imageUrl) }}
+                    style={styles.spotlightImage}
+                    contentFit="cover"
+                    transition={180}
+                    cachePolicy="memory-disk"
+                  />
                   <View style={styles.spotlightCopy}>
                     <Text style={styles.spotlightEyebrow}>{item.category}</Text>
                     <Text style={styles.spotlightTitle} numberOfLines={2}>
@@ -281,7 +296,9 @@ export default function HomeScreen() {
                 <Image
                   source={{ uri: action.image }}
                   style={styles.actionImg}
-                  resizeMode="cover"
+                  contentFit="cover"
+                  transition={180}
+                  cachePolicy="memory-disk"
                 />
                 <View style={styles.actionImgOverlay} />
                 <Text style={styles.actionLabel}>{action.label}</Text>
@@ -305,7 +322,9 @@ export default function HomeScreen() {
         <Image
           source={{ uri: 'https://images.unsplash.com/photo-1497636577773-f1231844b336?w=800&h=300&fit=crop' }}
           style={styles.earnBannerImage}
-          resizeMode="cover"
+          contentFit="cover"
+          transition={180}
+          cachePolicy="memory-disk"
         />
         <View style={styles.earnBannerOverlay} />
         <View style={styles.earnBannerContent}>
@@ -341,7 +360,9 @@ export default function HomeScreen() {
                 <Image
                   source={{ uri: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=80&h=80&fit=crop' }}
                   style={styles.locationIconImg}
-                  resizeMode="cover"
+                  contentFit="cover"
+                  transition={180}
+                  cachePolicy="memory-disk"
                 />
               </View>
               <View style={styles.locationInfo}>
