@@ -26,6 +26,7 @@ export type CartItem = {
 type CartContextValue = {
   items: CartItem[];
   addItem: (menuItem: MenuItem) => void;
+  addItemWithCustomizations: (menuItem: MenuItem, customizations: string, unitPrice: number) => void;
   removeItem: (id: string) => void;
   updateQuantity: (id: string, quantity: number) => void;
   clear: () => void;
@@ -36,6 +37,10 @@ type CartContextValue = {
 
 const CartContext = createContext<CartContextValue | null>(null);
 const STORAGE_KEY = "selu383.cart.items";
+
+function roundToCents(value: number) {
+  return Math.round(value * 100) / 100;
+}
 
 function readStoredCart(): CartItem[] {
   const savedValue = window.localStorage.getItem(STORAGE_KEY);
@@ -120,6 +125,49 @@ export function CartProvider({ children }: PropsWithChildren) {
                   price: menuItem.price,
                   quantity: 1,
                   customizations: defaultCustomizations,
+                },
+              ];
+
+          writeStoredCart(nextItems);
+          return nextItems;
+        });
+        setCartNotice({
+          id: Date.now(),
+          message: "Item has been added to the cart",
+        });
+      },
+      addItemWithCustomizations(menuItem, customizations, unitPrice) {
+        if (isRewardsExclusiveItemName(menuItem.name)) {
+          return;
+        }
+
+        const normalizedCustomizations = customizations.trim();
+        const normalizedUnitPrice = roundToCents(unitPrice);
+
+        setItems((currentItems) => {
+          const existingItem = currentItems.find(
+            (item) =>
+              item.menuItemId === menuItem.id &&
+              item.customizations === normalizedCustomizations &&
+              roundToCents(item.price) === normalizedUnitPrice,
+          );
+
+          const nextItems = existingItem
+            ? currentItems.map((item) =>
+                item.id === existingItem.id
+                  ? { ...item, quantity: item.quantity + 1 }
+                  : item,
+              )
+            : [
+                ...currentItems,
+                {
+                  id: `${menuItem.id}-${Date.now()}`,
+                  menuItemId: menuItem.id,
+                  locationId: menuItem.locationId,
+                  name: menuItem.name,
+                  price: normalizedUnitPrice,
+                  quantity: 1,
+                  customizations: normalizedCustomizations,
                 },
               ];
 
