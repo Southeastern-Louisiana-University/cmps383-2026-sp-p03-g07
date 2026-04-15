@@ -58,7 +58,7 @@ function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
     return "Bread";
   }
 
-  if (item.preparationTag.toLowerCase() === "bakery" || /croissant|muffin|pastry|brioche|roll/.test(text)) {
+  if (item.preparationTag.toLowerCase() === "pastry" || /croissant|muffin|pastry|brioche|roll/.test(text)) {
     return "Pastries";
   }
 
@@ -234,16 +234,16 @@ export default function MenuPage({ navigate }: PageProps) {
     : null;
 
   return (
-    <div className="commerce-page order-page order-bakery-page">
-      <header className="order-bakery-topbar">
+    <div className="commerce-page order-page order-coffeehouse-page">
+      <header className="order-coffeehouse-topbar">
         <CommerceTopRail activeTab="order" navigate={navigate} />
       </header>
 
-      <section className="order-bakery-shell">
-        <nav aria-label="Menu categories" className="order-bakery-category-rail">
+      <section className="order-coffeehouse-shell">
+        <nav aria-label="Menu categories" className="order-coffeehouse-category-rail">
           {menuDisplayCategories.map((category) => (
             <button
-              className={category === selectedCategory ? "order-bakery-category active" : "order-bakery-category"}
+              className={category === selectedCategory ? "order-coffeehouse-category active" : "order-coffeehouse-category"}
               key={category}
               onClick={() => setSelectedCategory(category)}
               type="button"
@@ -253,11 +253,11 @@ export default function MenuPage({ navigate }: PageProps) {
           ))}
         </nav>
 
-        <div className="order-bakery-toolbar">
-          <label className="order-bakery-control">
+        <div className="order-coffeehouse-toolbar">
+          <label className="order-coffeehouse-control">
             <span>Store</span>
             <select
-              className="order-bakery-select"
+              className="order-coffeehouse-select"
               value={selectedLocationId}
               onChange={(event) => setSelectedLocationId(Number(event.target.value))}
             >
@@ -270,15 +270,15 @@ export default function MenuPage({ navigate }: PageProps) {
             </select>
           </label>
 
-          <div className="order-bakery-toolbar-copy">
+          <div className="order-coffeehouse-toolbar-copy">
             <span>{activeLocationName}</span>
             {lockedLocationName ? <p>Cart currently holds items from {lockedLocationName}.</p> : <p>Browse the full counter and build your next pickup.</p>}
           </div>
 
-          <label className="order-bakery-control order-bakery-control-sort">
+          <label className="order-coffeehouse-control order-coffeehouse-control-sort">
             <span>Sort by</span>
             <select
-              className="order-bakery-select"
+              className="order-coffeehouse-select"
               value={selectedSort}
               onChange={(event) => setSelectedSort(event.target.value as MenuSort)}
             >
@@ -290,7 +290,7 @@ export default function MenuPage({ navigate }: PageProps) {
             </select>
           </label>
 
-          <div className="order-bakery-summary">
+          <div className="order-coffeehouse-summary">
             <strong>{sortedItems.length} products</strong>
             <span>{selectedCategory}</span>
           </div>
@@ -299,48 +299,48 @@ export default function MenuPage({ navigate }: PageProps) {
         {statusMessage ? <p className="commerce-inline-status commerce-inline-status-error">{statusMessage}</p> : null}
 
         {isLoading ? (
-          <div className="order-bakery-empty-state">
+          <div className="order-coffeehouse-empty-state">
             <h2>Loading the counter...</h2>
             <p>Pulling the current menu so the category wall can populate.</p>
           </div>
         ) : sortedItems.length === 0 ? (
-          <div className="order-bakery-empty-state">
+          <div className="order-coffeehouse-empty-state">
             <h2>Nothing is plated in {selectedCategory} just yet.</h2>
-            <p>Try another category or switch the store to see a different bakery lineup.</p>
+            <p>Try another category or switch the store to see a different menu lineup.</p>
           </div>
         ) : (
-          <div className="order-bakery-grid">
+          <div className="order-coffeehouse-grid">
             {sortedItems.map((item) => {
               const canAddItem = !lockedLocationId || lockedLocationId === item.locationId;
               const displayCategory = getDisplayCategory(item) ?? selectedCategory;
 
               return (
-                <article className="order-bakery-card" key={item.id}>
-                  <div className="order-bakery-media">
-                    <div className="order-bakery-media-labels">
+                <article className="order-coffeehouse-card" key={item.id}>
+                  <div className="order-coffeehouse-media">
+                    <div className="order-coffeehouse-media-labels">
                       <span>{displayCategory}</span>
                       <span>{itemDisplayMeta.get(item.id)?.locationLabel ?? locationLookup.get(item.locationId)?.name ?? "House counter"}</span>
                     </div>
                     {item.imageUrl ? (
                       <img alt={item.name} src={resolveApiAssetUrl(item.imageUrl)} />
                     ) : (
-                      <div className="order-bakery-placeholder">{item.name.slice(0, 1)}</div>
+                      <div className="order-coffeehouse-placeholder">{item.name.slice(0, 1)}</div>
                     )}
                   </div>
 
-                  <div className="order-bakery-card-copy">
+                  <div className="order-coffeehouse-card-copy">
                     <div>
                       <h2>{item.name}</h2>
                       <p>{item.description}</p>
                     </div>
-                    <div className="order-bakery-card-footer">
-                      <div className="order-bakery-price">
+                    <div className="order-coffeehouse-card-footer">
+                      <div className="order-coffeehouse-price">
                         <strong>${item.price.toFixed(2)}</strong>
                         <span>{item.preparationTag}</span>
                       </div>
-                      <div className="order-bakery-card-actions">
+                      <div className="order-coffeehouse-card-actions">
                         <button
-                          className="order-bakery-customize-button"
+                          className="order-coffeehouse-customize-button"
                           disabled={!canAddItem}
                           onClick={() => setCustomizingItem(item)}
                           type="button"
@@ -348,7 +348,7 @@ export default function MenuPage({ navigate }: PageProps) {
                           Customize
                         </button>
                         <button
-                          className="order-bakery-add-button"
+                          className="order-coffeehouse-add-button"
                           disabled={!canAddItem}
                           onClick={() => addItem(item)}
                           type="button"

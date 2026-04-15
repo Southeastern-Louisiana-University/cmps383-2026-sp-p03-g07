@@ -45,7 +45,7 @@ const featuredProfiles: StoreProfile[] = [
     feature: "Downtown pilot built for campus mornings and all-day coffee runs.",
     blurb: "A walkable Hammond storefront designed for weekday studying, quick pickup, and a reliable first pour before the block wakes up.",
     phone: "985 555 0101",
-    directoryName: ["Bakery &", "Coffeehouse"],
+    directoryName: ["COFFEEHOUSE"],
     weeklyHours: [
       { day: "MO-FR", hours: "06.00 - 21.00" },
       { day: "Saturday", hours: "07.00 - 20.00" },
@@ -60,7 +60,7 @@ const featuredProfiles: StoreProfile[] = [
     feature: "Compact East Village pilot tuned for fast-moving neighborhood traffic.",
     blurb: "A tighter, higher-energy room with quick espresso service, easy walk-in ordering, and just enough seating to turn a rush into a ritual.",
     phone: "212 555 0102",
-    directoryName: ["Bakery &", "Coffeehouse"],
+    directoryName: ["COFFEEHOUSE"],
     weeklyHours: [
       { day: "MO-FR", hours: "07.00 - 21.00" },
       { day: "Saturday", hours: "08.00 - 21.00" },
@@ -75,7 +75,7 @@ const featuredProfiles: StoreProfile[] = [
     feature: "Neighborhood pilot with room for longer hangs and easy Carrollton pickup.",
     blurb: "Set along the Carrollton corridor, this room balances casual dine-in energy with steady grab-and-go flow for afternoon and evening traffic.",
     phone: "504 555 0103",
-    directoryName: ["Bakery"],
+    directoryName: ["COFFEEHOUSE"],
     weeklyHours: [
       { day: "MO-FR", hours: "07.00 - 20.00" },
       { day: "Saturday", hours: "08.00 - 19.00" },

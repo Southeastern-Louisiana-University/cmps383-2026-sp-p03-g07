@@ -42,7 +42,7 @@ const fallbackHeroProducts: HomeHeroProduct[] = [
     price: 3.5,
     imageUrl: "/menu/pastries/croissant.webp",
     category: "Pastries",
-    preparationTag: "Bakery",
+    preparationTag: "Pastry",
   },
   {
     id: -4,
@@ -210,7 +210,7 @@ export default function HomePage({ navigate }: PageProps) {
             </div>
 
             <p className="home-hero-lead">
-              Fresh pours, soft-baked pastries, and seasonal favorites now lead the page like a bakery window.
+              Fresh pours, soft-baked pastries, and seasonal favorites now lead the page like a COFFEEHOUSE counter.
               Put the product first, then let guests jump straight into ordering, rewards, or the nearest store.
             </p>
 
