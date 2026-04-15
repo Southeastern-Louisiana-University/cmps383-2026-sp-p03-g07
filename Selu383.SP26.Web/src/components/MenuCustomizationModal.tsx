@@ -194,25 +194,25 @@ export default function MenuCustomizationModal({ item, onAddToCart, onClose }: M
 
   return (
     <div
-      className="order-bakery-modal-backdrop"
+      className="order-coffeehouse-modal-backdrop"
       role="presentation"
       onClick={onClose}
     >
       <section
         aria-label={`Customize ${item.name}`}
         aria-modal="true"
-        className="order-bakery-modal"
+        className="order-coffeehouse-modal"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
       >
-        <header className="order-bakery-modal-header">
+        <header className="order-coffeehouse-modal-header">
           <div>
-            <p className="order-bakery-modal-kicker">Customize</p>
+            <p className="order-coffeehouse-modal-kicker">Customize</p>
             <h2>{item.name}</h2>
           </div>
           <button
             aria-label="Close customization"
-            className="order-bakery-modal-close"
+            className="order-coffeehouse-modal-close"
             onClick={onClose}
             ref={closeButtonRef}
             type="button"
@@ -221,11 +221,11 @@ export default function MenuCustomizationModal({ item, onAddToCart, onClose }: M
           </button>
         </header>
 
-        {item.description ? <p className="order-bakery-modal-description">{item.description}</p> : null}
+        {item.description ? <p className="order-coffeehouse-modal-description">{item.description}</p> : null}
 
-        <div className="order-bakery-modal-body">
+        <div className="order-coffeehouse-modal-body">
           {groups.length === 0 ? (
-            <p className="order-bakery-modal-empty">No customizations available for this item.</p>
+            <p className="order-coffeehouse-modal-empty">No customizations available for this item.</p>
           ) : (
             groups.map((group) => {
               const shotOptions = group.options.filter((option) => isShotOption(option));
@@ -234,21 +234,21 @@ export default function MenuCustomizationModal({ item, onAddToCart, onClose }: M
               const groupOptionIds = standardOptions.map((option) => option.id);
 
               return (
-                <section className="order-bakery-modal-group" key={group.groupName}>
-                  <div className="order-bakery-modal-group-heading">
+                <section className="order-coffeehouse-modal-group" key={group.groupName}>
+                  <div className="order-coffeehouse-modal-group-heading">
                     <h3>{group.groupName}</h3>
                     {isSingleSelect ? <span>Pick one</span> : <span>Add or remove</span>}
                   </div>
 
                   {standardOptions.length > 0 ? (
-                    <div className="order-bakery-option-grid">
+                    <div className="order-coffeehouse-option-grid">
                       {standardOptions.map((option) => {
                         const isSelected = selectedIds.has(option.id);
                         const priceTag = option.additionalPrice > 0 ? `+$${option.additionalPrice.toFixed(2)}` : option.additionalPrice < 0 ? `-$${Math.abs(option.additionalPrice).toFixed(2)}` : null;
 
                         return (
                           <button
-                            className={isSelected ? "order-bakery-option-chip selected" : "order-bakery-option-chip"}
+                            className={isSelected ? "order-coffeehouse-option-chip selected" : "order-coffeehouse-option-chip"}
                             key={option.id}
                             onClick={() => (isSingleSelect ? toggleSingleSelect(groupOptionIds, option.id) : toggleMultiSelect(option.id))}
                             type="button"
@@ -262,30 +262,30 @@ export default function MenuCustomizationModal({ item, onAddToCart, onClose }: M
                   ) : null}
 
                   {shotOptions.length > 0 ? (
-                    <div className="order-bakery-shot-list">
+                    <div className="order-coffeehouse-shot-list">
                       {shotOptions.map((option) => {
                         const quantity = shotQuantities[option.id] ?? 0;
                         const priceTag = option.additionalPrice > 0 ? `+$${option.additionalPrice.toFixed(2)}/ea` : null;
 
                         return (
-                          <div className="order-bakery-shot-row" key={option.id}>
-                            <div className="order-bakery-shot-copy">
+                          <div className="order-coffeehouse-shot-row" key={option.id}>
+                            <div className="order-coffeehouse-shot-copy">
                               <strong>{option.optionName}</strong>
                               {priceTag ? <span>{priceTag}</span> : null}
                             </div>
-                            <div className="order-bakery-shot-stepper" role="group" aria-label={`${option.optionName} quantity`}>
+                            <div className="order-coffeehouse-shot-stepper" role="group" aria-label={`${option.optionName} quantity`}>
                               <button
-                                className="order-bakery-stepper-button"
+                                className="order-coffeehouse-stepper-button"
                                 onClick={() => adjustShot(option.id, -1)}
                                 type="button"
                               >
                                 -
                               </button>
-                              <span className="order-bakery-stepper-value" aria-live="polite">
+                              <span className="order-coffeehouse-stepper-value" aria-live="polite">
                                 {quantity}
                               </span>
                               <button
-                                className="order-bakery-stepper-button"
+                                className="order-coffeehouse-stepper-button"
                                 onClick={() => adjustShot(option.id, 1)}
                                 type="button"
                               >
@@ -303,16 +303,16 @@ export default function MenuCustomizationModal({ item, onAddToCart, onClose }: M
           )}
         </div>
 
-        <footer className="order-bakery-modal-footer">
-          <div className="order-bakery-modal-summary">
+        <footer className="order-coffeehouse-modal-footer">
+          <div className="order-coffeehouse-modal-summary">
             <p>{customizationsLabel || "Standard build"}</p>
             <strong>${unitPrice.toFixed(2)}</strong>
           </div>
-          <div className="order-bakery-modal-actions">
-            <button className="order-bakery-modal-secondary" onClick={resetToDefault} type="button">
+          <div className="order-coffeehouse-modal-actions">
+            <button className="order-coffeehouse-modal-secondary" onClick={resetToDefault} type="button">
               Reset
             </button>
-            <button className="order-bakery-modal-primary" onClick={addToCart} type="button">
+            <button className="order-coffeehouse-modal-primary" onClick={addToCart} type="button">
               Add to cart
             </button>
           </div>

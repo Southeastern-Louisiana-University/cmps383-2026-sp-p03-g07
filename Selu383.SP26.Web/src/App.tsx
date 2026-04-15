@@ -174,6 +174,7 @@ function AppLayout() {
     activeRoute.path === "/checkout" ||
     activeRoute.path === "/profile" ||
     activeRoute.path === "/login" ||
+    activeRoute.path === "/signup" ||
     activeRoute.path === "/orders" ||
     activeRoute.path === "/order-status" ||
     activeRoute.path === "/reservations" ||

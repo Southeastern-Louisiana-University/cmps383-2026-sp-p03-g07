@@ -296,7 +296,7 @@ public static class SeedHelper
                         locationId,
                         "/menu/pastries/croissant.webp",
                         280,
-                        "Bakery"),
+                        "Pastry"),
                     CreateMenuItem(
                         "BRIOCHE WITH CHOCOLATE",
                         "Pastries",
@@ -305,7 +305,7 @@ public static class SeedHelper
                         locationId,
                         "/menu/pastries/brioche-with-chocolate.webp",
                         360,
-                        "Bakery"),
+                        "Pastry"),
                     CreateMenuItem(
                         "cinnamon roll",
                         "Pastries",
@@ -314,7 +314,7 @@ public static class SeedHelper
                         locationId,
                         "/menu/pastries/cinnamon-roll.webp",
                         390,
-                        "Bakery"),
+                        "Pastry"),
                     CreateMenuItem(
                         "FOCACCIA MARINARA PIECE",
                         "Pastries",
@@ -323,7 +323,7 @@ public static class SeedHelper
                         locationId,
                         "/menu/pastries/focaccia-marinara-piece.webp",
                         320,
-                        "Bakery"),
+                        "Pastry"),
                 }))
             .Concat(
                 saladAndQuichesLocationIds.SelectMany(locationId => new[]

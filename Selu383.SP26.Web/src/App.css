@@ -2585,7 +2585,7 @@
   color: rgba(27, 23, 19, 0.7);
 }
 
-.order-bakery-page {
+.order-coffeehouse-page {
   background:
     linear-gradient(180deg, #f5f1e6 0%, #f4efe6 32%, #f3eee4 100%);
   color: #15110d;
@@ -2593,32 +2593,32 @@
   font-weight: 400;
 }
 
-.order-bakery-page button,
-.order-bakery-page input,
-.order-bakery-page select,
-.order-bakery-page textarea,
-.order-bakery-page strong,
-.order-bakery-page b,
-.order-bakery-page .store-rail-link,
-.order-bakery-page .store-basket-badge {
+.order-coffeehouse-page button,
+.order-coffeehouse-page input,
+.order-coffeehouse-page select,
+.order-coffeehouse-page textarea,
+.order-coffeehouse-page strong,
+.order-coffeehouse-page b,
+.order-coffeehouse-page .store-rail-link,
+.order-coffeehouse-page .store-basket-badge {
   font-family: inherit;
   font-weight: 400;
 }
 
-.order-bakery-page h1,
-.order-bakery-page h2,
-.order-bakery-page h3 {
+.order-coffeehouse-page h1,
+.order-coffeehouse-page h2,
+.order-coffeehouse-page h3 {
   font-family: var(--font-display);
   font-weight: 400;
 }
 
-.order-bakery-topbar {
+.order-coffeehouse-topbar {
   padding: 1.4rem clamp(1.25rem, 2.8vw, 3rem);
   background: linear-gradient(180deg, #6f7b24 0%, #65711d 100%);
   color: #d7d9a1;
 }
 
-.order-bakery-shell {
+.order-coffeehouse-shell {
   max-width: 1600px;
   margin: 0 auto;
   padding: clamp(1.8rem, 3vw, 2.5rem) clamp(1.25rem, 3vw, 3rem) 4.5rem;
@@ -2626,14 +2626,14 @@
   gap: 1.6rem;
 }
 
-.order-bakery-heading {
+.order-coffeehouse-heading {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
   align-items: end;
 }
 
-.order-bakery-kicker {
+.order-coffeehouse-kicker {
   margin: 0 0 0.35rem;
   color: #707a2d;
   font-size: 0.78rem;
@@ -2642,7 +2642,7 @@
   text-transform: uppercase;
 }
 
-.order-bakery-heading h1 {
+.order-coffeehouse-heading h1 {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(2.5rem, 4.5vw, 3.9rem);
@@ -2652,10 +2652,10 @@
   text-transform: uppercase;
 }
 
-.order-bakery-cart-button,
-.order-bakery-add-button,
-.order-bakery-customize-button,
-.order-bakery-category {
+.order-coffeehouse-cart-button,
+.order-coffeehouse-add-button,
+.order-coffeehouse-customize-button,
+.order-coffeehouse-category {
   transition:
     transform 0.18s ease,
     background 0.18s ease,
@@ -2664,9 +2664,9 @@
     box-shadow 0.18s ease;
 }
 
-.order-bakery-cart-button,
-.order-bakery-add-button,
-.order-bakery-customize-button {
+.order-coffeehouse-cart-button,
+.order-coffeehouse-add-button,
+.order-coffeehouse-customize-button {
   border: 1px solid rgba(111, 123, 36, 0.18);
   border-radius: 999px;
   background: rgba(255, 251, 242, 0.95);
@@ -2677,20 +2677,20 @@
   text-transform: uppercase;
 }
 
-.order-bakery-cart-button {
+.order-coffeehouse-cart-button {
   min-height: 3.25rem;
   padding: 0 1.2rem;
 }
 
-.order-bakery-cart-button:hover,
-.order-bakery-add-button:hover,
-.order-bakery-customize-button:hover {
+.order-coffeehouse-cart-button:hover,
+.order-coffeehouse-add-button:hover,
+.order-coffeehouse-customize-button:hover {
   transform: translateY(-2px);
   background: #ffffff;
   box-shadow: 0 12px 24px rgba(78, 66, 43, 0.08);
 }
 
-.order-bakery-category-rail {
+.order-coffeehouse-category-rail {
   display: flex;
   gap: 0.7rem 1rem;
   flex-wrap: wrap;
@@ -2698,7 +2698,7 @@
   padding: 0.1rem 0 0.4rem;
 }
 
-.order-bakery-category {
+.order-coffeehouse-category {
   display: inline-flex;
   gap: 0.45rem;
   align-items: baseline;
@@ -2712,22 +2712,22 @@
   text-transform: uppercase;
 }
 
-.order-bakery-category span {
+.order-coffeehouse-category span {
   font-size: clamp(1rem, 1.3vw, 1.2rem);
 }
 
-.order-bakery-category.active {
+.order-coffeehouse-category.active {
   color: #75822c;
   text-decoration: underline;
   text-decoration-thickness: 0.14em;
   text-underline-offset: 0.22em;
 }
 
-.order-bakery-category:hover {
+.order-coffeehouse-category:hover {
   transform: translateY(-1px);
 }
 
-.order-bakery-toolbar {
+.order-coffeehouse-toolbar {
   display: grid;
   gap: 1rem 1.5rem;
   grid-template-columns: auto minmax(0, 1fr) auto auto;
@@ -2736,12 +2736,12 @@
   border-bottom: 1px solid rgba(126, 111, 80, 0.12);
 }
 
-.order-bakery-control {
+.order-coffeehouse-control {
   display: grid;
   gap: 0.35rem;
 }
 
-.order-bakery-control span {
+.order-coffeehouse-control span {
   color: rgba(21, 17, 13, 0.52);
   font-size: 0.72rem;
   font-weight: 400;
@@ -2749,7 +2749,7 @@
   text-transform: uppercase;
 }
 
-.order-bakery-select {
+.order-coffeehouse-select {
   min-width: 12rem;
   padding: 0 1.9rem 0.45rem 0;
   border: none;
@@ -2762,18 +2762,18 @@
   font-weight: 400;
 }
 
-.order-bakery-select:focus {
+.order-coffeehouse-select:focus {
   outline: none;
   border-bottom-color: #75822c;
 }
 
-.order-bakery-toolbar-copy {
+.order-coffeehouse-toolbar-copy {
   display: grid;
   gap: 0.15rem;
 }
 
-.order-bakery-toolbar-copy span,
-.order-bakery-summary span {
+.order-coffeehouse-toolbar-copy span,
+.order-coffeehouse-summary span {
   color: rgba(21, 17, 13, 0.56);
   font-size: 0.78rem;
   font-weight: 400;
@@ -2781,35 +2781,35 @@
   text-transform: uppercase;
 }
 
-.order-bakery-toolbar-copy p {
+.order-coffeehouse-toolbar-copy p {
   margin: 0;
   color: rgba(21, 17, 13, 0.72);
   font-size: 0.96rem;
 }
 
-.order-bakery-summary {
+.order-coffeehouse-summary {
   display: grid;
   gap: 0.2rem;
   justify-items: end;
 }
 
-.order-bakery-summary strong {
+.order-coffeehouse-summary strong {
   font-size: 1.15rem;
 }
 
-.order-bakery-grid {
+.order-coffeehouse-grid {
   display: grid;
   gap: 1.6rem 1.1rem;
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
-.order-bakery-card {
+.order-coffeehouse-card {
   display: grid;
   gap: 0.8rem;
   align-content: start;
 }
 
-.order-bakery-media {
+.order-coffeehouse-media {
   position: relative;
   aspect-ratio: 0.84;
   overflow: hidden;
@@ -2817,7 +2817,7 @@
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
 }
 
-.order-bakery-media-labels {
+.order-coffeehouse-media-labels {
   position: absolute;
   top: 0.95rem;
   left: 0.95rem;
@@ -2828,7 +2828,7 @@
   z-index: 1;
 }
 
-.order-bakery-media-labels span {
+.order-coffeehouse-media-labels span {
   padding: 0.26rem 0.55rem;
   background: rgba(252, 249, 241, 0.88);
   color: rgba(21, 17, 13, 0.7);
@@ -2838,7 +2838,7 @@
   text-transform: uppercase;
 }
 
-.order-bakery-media img {
+.order-coffeehouse-media img {
   width: 76%;
   height: 76%;
   margin: auto;
@@ -2849,7 +2849,7 @@
   transform: translateY(12%);
 }
 
-.order-bakery-placeholder {
+.order-coffeehouse-placeholder {
   width: 76%;
   height: 76%;
   margin: auto;
@@ -2866,14 +2866,14 @@
   transform: translateY(12%);
 }
 
-.order-bakery-card-copy {
+.order-coffeehouse-card-copy {
   display: grid;
   gap: 0.85rem;
   justify-items: center;
   text-align: center;
 }
 
-.order-bakery-card-copy h2 {
+.order-coffeehouse-card-copy h2 {
   margin: 0;
   font-size: 1.1rem;
   font-weight: 400;
@@ -2881,7 +2881,7 @@
   text-transform: uppercase;
 }
 
-.order-bakery-card-copy p {
+.order-coffeehouse-card-copy p {
   margin: 0.35rem auto 0;
   max-width: 28ch;
   color: rgba(21, 17, 13, 0.68);
@@ -2893,23 +2893,23 @@
   -webkit-line-clamp: 2;
 }
 
-.order-bakery-card-footer {
+.order-coffeehouse-card-footer {
   display: grid;
   gap: 0.8rem;
   justify-items: center;
 }
 
-.order-bakery-price {
+.order-coffeehouse-price {
   display: grid;
   gap: 0.18rem;
   justify-items: center;
 }
 
-.order-bakery-price strong {
+.order-coffeehouse-price strong {
   font-size: 1.3rem;
 }
 
-.order-bakery-price span {
+.order-coffeehouse-price span {
   color: rgba(21, 17, 13, 0.56);
   font-size: 0.72rem;
   font-weight: 400;
@@ -2917,41 +2917,41 @@
   text-transform: uppercase;
 }
 
-.order-bakery-add-button {
+.order-coffeehouse-add-button {
   min-height: 2.85rem;
   min-width: 10.5rem;
   padding: 0 1.1rem;
 }
 
-.order-bakery-customize-button {
+.order-coffeehouse-customize-button {
   min-height: 2.85rem;
   min-width: 10.5rem;
   padding: 0 1.1rem;
   background: rgba(255, 251, 242, 0.45);
 }
 
-.order-bakery-add-button:disabled {
+.order-coffeehouse-add-button:disabled {
   opacity: 0.46;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-.order-bakery-customize-button:disabled {
+.order-coffeehouse-customize-button:disabled {
   opacity: 0.46;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
 }
 
-.order-bakery-card-actions {
+.order-coffeehouse-card-actions {
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-@keyframes order-bakery-modal-pop {
+@keyframes order-coffeehouse-modal-pop {
   from {
     opacity: 0;
     transform: translateY(12px) scale(0.98);
@@ -2963,7 +2963,7 @@
   }
 }
 
-.order-bakery-modal-backdrop {
+.order-coffeehouse-modal-backdrop {
   position: fixed;
   inset: 0;
   z-index: 900;
@@ -2975,7 +2975,7 @@
   -webkit-backdrop-filter: blur(8px);
 }
 
-.order-bakery-modal {
+.order-coffeehouse-modal {
   width: min(44rem, 100%);
   max-height: min(82vh, 46rem);
   overflow: auto;
@@ -2986,17 +2986,17 @@
   display: grid;
   gap: 1rem;
   padding: 1.25rem 1.25rem 1.1rem;
-  animation: order-bakery-modal-pop 0.18s ease;
+  animation: order-coffeehouse-modal-pop 0.18s ease;
 }
 
-.order-bakery-modal-header {
+.order-coffeehouse-modal-header {
   display: flex;
   gap: 1rem;
   align-items: flex-start;
   justify-content: space-between;
 }
 
-.order-bakery-modal-kicker {
+.order-coffeehouse-modal-kicker {
   margin: 0 0 0.35rem;
   color: rgba(21, 17, 13, 0.58);
   font-size: 0.72rem;
@@ -3005,14 +3005,14 @@
   text-transform: uppercase;
 }
 
-.order-bakery-modal-header h2 {
+.order-coffeehouse-modal-header h2 {
   margin: 0;
   font-size: clamp(1.45rem, 2.8vw, 2rem);
   line-height: 1.05;
   text-transform: uppercase;
 }
 
-.order-bakery-modal-close {
+.order-coffeehouse-modal-close {
   border: 1px solid rgba(111, 123, 36, 0.18);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.9);
@@ -3027,25 +3027,25 @@
     box-shadow 0.18s ease;
 }
 
-.order-bakery-modal-close:hover {
+.order-coffeehouse-modal-close:hover {
   transform: translateY(-2px);
   background: #ffffff;
   box-shadow: 0 12px 24px rgba(78, 66, 43, 0.08);
 }
 
-.order-bakery-modal-description {
+.order-coffeehouse-modal-description {
   margin: 0;
   color: rgba(21, 17, 13, 0.72);
   line-height: 1.55;
 }
 
-.order-bakery-modal-body {
+.order-coffeehouse-modal-body {
   display: grid;
   gap: 1.1rem;
   padding: 0.2rem 0;
 }
 
-.order-bakery-modal-empty {
+.order-coffeehouse-modal-empty {
   margin: 0;
   padding: 1rem;
   border: 1px dashed rgba(111, 123, 36, 0.22);
@@ -3053,7 +3053,7 @@
   color: rgba(21, 17, 13, 0.72);
 }
 
-.order-bakery-modal-group {
+.order-coffeehouse-modal-group {
   display: grid;
   gap: 0.7rem;
   padding: 0.95rem;
@@ -3062,34 +3062,34 @@
   background: rgba(255, 255, 255, 0.7);
 }
 
-.order-bakery-modal-group-heading {
+.order-coffeehouse-modal-group-heading {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
   align-items: baseline;
 }
 
-.order-bakery-modal-group-heading h3 {
+.order-coffeehouse-modal-group-heading h3 {
   margin: 0;
   font-size: 1.05rem;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-.order-bakery-modal-group-heading span {
+.order-coffeehouse-modal-group-heading span {
   color: rgba(21, 17, 13, 0.55);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.order-bakery-option-grid {
+.order-coffeehouse-option-grid {
   display: flex;
   gap: 0.55rem;
   flex-wrap: wrap;
 }
 
-.order-bakery-option-chip {
+.order-coffeehouse-option-chip {
   display: inline-flex;
   gap: 0.45rem;
   align-items: center;
@@ -3108,30 +3108,30 @@
     box-shadow 0.18s ease;
 }
 
-.order-bakery-option-chip b {
+.order-coffeehouse-option-chip b {
   font-size: 0.82rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   opacity: 0.7;
 }
 
-.order-bakery-option-chip:hover {
+.order-coffeehouse-option-chip:hover {
   transform: translateY(-1px);
   background: rgba(255, 255, 255, 0.92);
   box-shadow: 0 12px 24px rgba(78, 66, 43, 0.06);
 }
 
-.order-bakery-option-chip.selected {
+.order-coffeehouse-option-chip.selected {
   border-color: rgba(111, 123, 36, 0.5);
   background: linear-gradient(135deg, rgba(246, 231, 168, 0.7), rgba(216, 187, 116, 0.56));
 }
 
-.order-bakery-shot-list {
+.order-coffeehouse-shot-list {
   display: grid;
   gap: 0.7rem;
 }
 
-.order-bakery-shot-row {
+.order-coffeehouse-shot-row {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
@@ -3139,25 +3139,25 @@
   padding: 0.35rem 0.25rem;
 }
 
-.order-bakery-shot-copy {
+.order-coffeehouse-shot-copy {
   display: grid;
   gap: 0.15rem;
 }
 
-.order-bakery-shot-copy strong {
+.order-coffeehouse-shot-copy strong {
   font-size: 0.98rem;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-.order-bakery-shot-copy span {
+.order-coffeehouse-shot-copy span {
   color: rgba(21, 17, 13, 0.58);
   font-size: 0.72rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 
-.order-bakery-shot-stepper {
+.order-coffeehouse-shot-stepper {
   display: grid;
   grid-template-columns: 2.4rem 2.7rem 2.4rem;
   align-items: center;
@@ -3168,7 +3168,7 @@
   overflow: hidden;
 }
 
-.order-bakery-stepper-button {
+.order-coffeehouse-stepper-button {
   width: 100%;
   height: 2.3rem;
   border: none;
@@ -3181,18 +3181,18 @@
   transition: background 0.18s ease;
 }
 
-.order-bakery-stepper-button:hover {
+.order-coffeehouse-stepper-button:hover {
   background: rgba(111, 123, 36, 0.08);
 }
 
-.order-bakery-stepper-value {
+.order-coffeehouse-stepper-value {
   color: rgba(21, 17, 13, 0.8);
   font-size: 0.9rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-.order-bakery-modal-footer {
+.order-coffeehouse-modal-footer {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
@@ -3201,13 +3201,13 @@
   border-top: 1px solid rgba(126, 111, 80, 0.14);
 }
 
-.order-bakery-modal-summary {
+.order-coffeehouse-modal-summary {
   min-width: 0;
   display: grid;
   gap: 0.25rem;
 }
 
-.order-bakery-modal-summary p {
+.order-coffeehouse-modal-summary p {
   margin: 0;
   color: rgba(21, 17, 13, 0.62);
   font-size: 0.85rem;
@@ -3218,19 +3218,19 @@
   text-transform: uppercase;
 }
 
-.order-bakery-modal-summary strong {
+.order-coffeehouse-modal-summary strong {
   font-size: 1.25rem;
 }
 
-.order-bakery-modal-actions {
+.order-coffeehouse-modal-actions {
   display: flex;
   gap: 0.6rem;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
-.order-bakery-modal-primary,
-.order-bakery-modal-secondary {
+.order-coffeehouse-modal-primary,
+.order-coffeehouse-modal-secondary {
   border: 1px solid rgba(111, 123, 36, 0.18);
   border-radius: 999px;
   font: inherit;
@@ -3243,24 +3243,24 @@
     box-shadow 0.18s ease;
 }
 
-.order-bakery-modal-secondary {
+.order-coffeehouse-modal-secondary {
   background: rgba(255, 251, 242, 0.45);
   color: rgba(21, 17, 13, 0.82);
 }
 
-.order-bakery-modal-primary {
+.order-coffeehouse-modal-primary {
   background: rgba(255, 251, 242, 0.95);
   color: rgba(21, 17, 13, 0.92);
 }
 
-.order-bakery-modal-primary:hover,
-.order-bakery-modal-secondary:hover {
+.order-coffeehouse-modal-primary:hover,
+.order-coffeehouse-modal-secondary:hover {
   transform: translateY(-2px);
   background: #ffffff;
   box-shadow: 0 12px 24px rgba(78, 66, 43, 0.08);
 }
 
-.order-bakery-empty-state {
+.order-coffeehouse-empty-state {
   display: grid;
   gap: 0.7rem;
   justify-items: start;
@@ -3269,12 +3269,12 @@
   background: rgba(255, 250, 241, 0.55);
 }
 
-.order-bakery-empty-state h2,
-.order-bakery-empty-state p {
+.order-coffeehouse-empty-state h2,
+.order-coffeehouse-empty-state p {
   margin: 0;
 }
 
-.order-bakery-empty-state p {
+.order-coffeehouse-empty-state p {
   color: rgba(21, 17, 13, 0.72);
 }
 
@@ -4925,7 +4925,7 @@ html {
 .commerce-page,
 .rewards-showcase,
 .store-directory-page,
-.order-bakery-page {
+.order-coffeehouse-page {
   font-family: var(--font-sans);
   font-weight: 400;
 }
@@ -4934,7 +4934,7 @@ html {
 .commerce-page :is(button, input, select, textarea, strong, b),
 .rewards-showcase :is(button, input, select, textarea, strong, b),
 .store-directory-page :is(button, input, select, textarea, strong, b),
-.order-bakery-page :is(button, input, select, textarea, strong, b) {
+.order-coffeehouse-page :is(button, input, select, textarea, strong, b) {
   font-family: inherit;
   font-weight: 400;
 }
@@ -4943,7 +4943,7 @@ html {
 .commerce-page :is(h1, h2, h3),
 .rewards-showcase :is(h1, h2, h3),
 .store-directory-page :is(h1, h2, h3),
-.order-bakery-page :is(h1, h2, h3) {
+.order-coffeehouse-page :is(h1, h2, h3) {
   font-family: var(--font-display);
   font-weight: 400;
 }
@@ -5008,71 +5008,71 @@ html {
 }
 
 @media (max-width: 1280px) {
-  .order-bakery-grid {
+  .order-coffeehouse-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 960px) {
-  .order-bakery-heading,
-  .order-bakery-toolbar {
+  .order-coffeehouse-heading,
+  .order-coffeehouse-toolbar {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
   }
 
-  .order-bakery-heading {
+  .order-coffeehouse-heading {
     display: grid;
   }
 
-  .order-bakery-toolbar-copy {
+  .order-coffeehouse-toolbar-copy {
     grid-column: 1 / -1;
     order: 3;
   }
 
-  .order-bakery-summary {
+  .order-coffeehouse-summary {
     justify-items: start;
   }
 
-  .order-bakery-grid {
+  .order-coffeehouse-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 640px) {
-  .order-bakery-shell {
+  .order-coffeehouse-shell {
     padding-left: 1rem;
     padding-right: 1rem;
   }
 
-  .order-bakery-category-rail {
+  .order-coffeehouse-category-rail {
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 0.65rem;
   }
 
-  .order-bakery-category {
+  .order-coffeehouse-category {
     flex: 0 0 auto;
   }
 
-  .order-bakery-toolbar {
+  .order-coffeehouse-toolbar {
     grid-template-columns: 1fr;
   }
 
-  .order-bakery-control,
-  .order-bakery-control-sort {
+  .order-coffeehouse-control,
+  .order-coffeehouse-control-sort {
     width: 100%;
   }
 
-  .order-bakery-select {
+  .order-coffeehouse-select {
     min-width: 0;
     width: 100%;
   }
 
-  .order-bakery-grid {
+  .order-coffeehouse-grid {
     grid-template-columns: 1fr;
   }
 
-  .order-bakery-media {
+  .order-coffeehouse-media {
     aspect-ratio: 0.92;
   }
 }
