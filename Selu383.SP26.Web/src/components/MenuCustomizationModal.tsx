@@ -174,13 +174,15 @@ export default function MenuCustomizationModal({ item, onAddToCart, onClose }: M
     });
   }
 
-  function adjustShot(optionId: number, delta: number) {
-    setShotQuantities((current) => {
-      const next = { ...current };
-      next[optionId] = Math.max(0, (next[optionId] ?? 0) + delta);
-      return next;
-    });
-  }
+    function adjustShot(optionId: number, delta: number) {
+        setShotQuantities((current) => {
+            const next = { ...current };
+            const newQuantity = (next[optionId] ?? 0) + delta;
+            // Limit espresso shots to a maximum of 3
+            next[optionId] = Math.max(0, Math.min(3, newQuantity));
+            return next;
+        });
+    }
 
   function resetToDefault() {
     setSelectedIds(new Set(defaultSelectedIds));
