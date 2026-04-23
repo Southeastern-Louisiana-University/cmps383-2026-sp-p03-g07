@@ -11,7 +11,7 @@ import { CommerceTopRail } from "./commerceShared";
 
 const menuDisplayCategories = [
   "Coffee",
-  "Matcha",
+  "Lemonade",
   "Pastries",
   "Bread",
   "Breakfast",
@@ -46,8 +46,8 @@ function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
     return null;
   }
 
-  if (text.includes("matcha")) {
-    return "Matcha";
+  if (item.category === "Lemonade") {
+    return "Lemonade";
   }
 
   if (item.category === "Vegan" || text.includes("plant-based") || text.includes("vegan")) {

@@ -246,14 +246,13 @@ public static class SeedHelper
         var saladAndQuichesLocationIds = new[] { 1, 2, 3 };
         var sandwichLocationIds = new[] { 1, 2, 3 };
         var sweetAndPopsLocationIds = new[] { 1, 2, 3 };
-        var matchaLocationIds = new[] { 1, 2, 3 };
+        var lemonadeLocationIds = new[] { 1, 2, 3 };
         var coffeeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
-            "Caramel Macchiato",
-            "Cold Brew",
-            "Iced Caramel Macchiato",
-            "Iced Mocha",
-            "Sakuna Latte",
+            "Iced Latte",
+            "Supernova",
+            "Roaring Frappe",
+            "Black & White Cold Brew",
             "Sugar Shaken Espresso",
         };
         var sandwichMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -450,103 +449,69 @@ public static class SeedHelper
                         "Celebration"),
                 }))
             .Concat(
-                matchaLocationIds.SelectMany(locationId => new[]
+                lemonadeLocationIds.SelectMany(locationId => new[]
                 {
                     CreateMenuItem(
-                        "Hojicha Strawberry Latte",
-                        "Matcha",
-                        "Iced hojicha latte layered with strawberry, milk, and a soft matcha finish.",
-                        7.25m,
-                        locationId,
-                        "/menu/matcha/hojicha-strawberry-latte.webp",
-                        220,
-                        "Seasonal Matcha",
-                        isFeatured: locationId == 1),
-                    CreateMenuItem(
-                        "Matcha Latte W:Matcha Foam",
-                        "Matcha",
-                        "Iced matcha latte topped with an extra cloud of matcha foam.",
-                        7.00m,
-                        locationId,
-                        "/menu/matcha/matcha-latte-w-matcha-foam.webp",
-                        190,
-                        "Signature Matcha"),
-                    CreateMenuItem(
-                        "Matcha Mango Latte",
-                        "Matcha",
-                        "Iced matcha layered with mango puree and creamy milk.",
-                        7.25m,
-                        locationId,
-                        "/menu/matcha/matcha-mango-latte.webp",
-                        210,
-                        "Fruit Matcha"),
-                    CreateMenuItem(
-                        "Matcha Soft Serve in Cup",
-                        "Matcha",
-                        "Creamy matcha soft serve with a smooth finish served in a cup.",
-                        6.50m,
-                        locationId,
-                        "/menu/matcha/matcha-soft-serve-in-cup.webp",
-                        260,
-                        "Soft Serve"),
-                    CreateMenuItem(
-                        "STRAWBERRY MATCHA",
-                        "Matcha",
-                        "Iced matcha layered with milk and bright house strawberry puree.",
-                        7.25m,
+                        "Strawberry Limeade",
+                        "Lemonade",
+                        "Fresh lime juice blended with strawberry purée for a refreshing, tangy drink.",
+                        5.00m,
                         locationId,
                         "/menu/matcha/strawberry-matcha.webp",
-                        215,
-                        "Fruit Matcha"),
+                        170,
+                        "Limeade",
+                        isFeatured: locationId == 1
+                    ),
+                    CreateMenuItem(
+                        "Shaken Lemonade",
+                        "Lemonade",
+                        "Fresh lemon juice and simple syrup vigorously shaken for a bright, refreshing lemonade.",
+                        5.00m,
+                        locationId,
+                        "/menu/matcha/matcha-mango-latte.webp",
+                        150,
+                        "Lemonade"
+                    ),
                 }))
             .Concat(
                 coffeeLocationIds.SelectMany(locationId => new[]
                 {
                     CreateMenuItem(
-                        "Caramel Macchiato",
+                        "Iced Latte",
                         "Coffee",
-                        "Layered espresso and milk with house caramel running through the glass.",
-                        6.25m,
-                        locationId,
-                        "/menu/coffee/caramel-macchiato.webp",
-                        250,
-                        "Signature Latte"),
-                    CreateMenuItem(
-                        "Cold Brew",
-                        "Coffee",
-                        "Cold-steeped coffee with a bold body and clean finish over ice.",
-                        5.25m,
-                        locationId,
-                        "/menu/coffee/cold-brew.png",
-                        30,
-                        "Cold Drinks"),
-                    CreateMenuItem(
-                        "Iced Caramel Macchiato",
-                        "Coffee",
-                        "Iced espresso and milk finished with a smooth caramel cascade.",
-                        6.50m,
+                        "Espresso and milk served over ice for a refreshing coffee drink.",
+                        5.50m,
                         locationId,
                         "/menu/coffee/iced-caramel-macchiato.jpg",
-                        260,
+                        180,
                         "Cold Drinks"),
                     CreateMenuItem(
-                        "Iced Mocha",
+                        "Supernova",
                         "Coffee",
-                        "Chilled mocha latte topped with whipped cream and chocolate drizzle.",
-                        6.25m,
-                        locationId,
-                        "/menu/coffee/iced-mocha.jpg",
-                        320,
-                        "Cold Drinks"),
-                    CreateMenuItem(
-                        "Sakuna Latte",
-                        "Coffee",
-                        "Silky iced latte layered with floral sweetness and a bright berry finish.",
-                        6.95m,
+                        "A unique coffee blend with a complex, balanced profile and subtle sweetness. Delicious as espresso or paired with milk.",
+                        7.95m,
                         locationId,
                         "/menu/coffee/sakuna-latte.webp",
-                        240,
-                        "Seasonal Latte"),
+                        120,
+                        "Signature Blend"),
+                    CreateMenuItem(
+                        "Roaring Frappe",
+                        "Coffee",
+                        "Cold brew, milk, and ice blended together with a signature syrup or flavor, topped with whipped cream.",
+                        6.20m,
+                        locationId,
+                        "/menu/coffee/iced-mocha.jpg",
+                        380,
+                        "Blended"),
+                    CreateMenuItem(
+                        "Black & White Cold Brew",
+                        "Coffee",
+                        "Cold brew made with both dark and light roast beans, finished with a drizzle of condensed milk.",
+                        5.15m,
+                        locationId,
+                        "/menu/coffee/cold-brew.png",
+                        70,
+                        "Cold Brew"),
                     CreateMenuItem(
                         "Sugar Shaken Espresso",
                         "Coffee",
@@ -607,18 +572,28 @@ public static class SeedHelper
 
         await dataContext.SaveChangesAsync();
 
-        var caramelMacchiatoIds = await dataContext.MenuItems
-            .Where(x => x.Name == "Caramel Macchiato" && coffeeLocationIds.Contains(x.LocationId))
+        var icedLatteIds = await dataContext.MenuItems
+            .Where(x => x.Name == "Iced Latte" && coffeeLocationIds.Contains(x.LocationId))
             .GroupBy(x => x.LocationId)
             .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
             .ToDictionaryAsync(x => x.LocationId, x => x.Id);
-        var icedMochaIds = await dataContext.MenuItems
-            .Where(x => x.Name == "Iced Mocha" && coffeeLocationIds.Contains(x.LocationId))
+        var supernovaIds = await dataContext.MenuItems
+            .Where(x => x.Name == "Supernova" && coffeeLocationIds.Contains(x.LocationId))
             .GroupBy(x => x.LocationId)
             .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
             .ToDictionaryAsync(x => x.LocationId, x => x.Id);
-        var coldBrewIds = await dataContext.MenuItems
-            .Where(x => x.Name == "Cold Brew" && coffeeLocationIds.Contains(x.LocationId))
+        var roaringFrappeIds = await dataContext.MenuItems
+            .Where(x => x.Name == "Roaring Frappe" && coffeeLocationIds.Contains(x.LocationId))
+            .GroupBy(x => x.LocationId)
+            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+        var blackAndWhiteColdBrewIds = await dataContext.MenuItems
+            .Where(x => x.Name == "Black & White Cold Brew" && coffeeLocationIds.Contains(x.LocationId))
+            .GroupBy(x => x.LocationId)
+            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+        var sugarShakenEspressoIds = await dataContext.MenuItems
+            .Where(x => x.Name == "Sugar Shaken Espresso" && coffeeLocationIds.Contains(x.LocationId))
             .GroupBy(x => x.LocationId)
             .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
             .ToDictionaryAsync(x => x.LocationId, x => x.Id);
@@ -627,31 +602,50 @@ public static class SeedHelper
 
         foreach (var locationId in coffeeLocationIds)
         {
-            if (caramelMacchiatoIds.TryGetValue(locationId, out var caramelMacchiatoId))
+            if (icedLatteIds.TryGetValue(locationId, out var icedLatteId))
             {
                 seededCustomizations.AddRange(
                 [
-                    new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
-                    new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
-                    new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
+                    new MenuCustomization { MenuItemId = icedLatteId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+                    new MenuCustomization { MenuItemId = icedLatteId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
+                    new MenuCustomization { MenuItemId = icedLatteId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
                 ]);
             }
 
-            if (icedMochaIds.TryGetValue(locationId, out var icedMochaId))
+            if (supernovaIds.TryGetValue(locationId, out var supernovaId))
             {
                 seededCustomizations.AddRange(
                 [
-                    new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Whipped Cream", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
-                    new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Chocolate Drizzle", AdditionalPrice = 0.50m, SortOrder = 2 },
+                    new MenuCustomization { MenuItemId = supernovaId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, SortOrder = 1 },
+                    new MenuCustomization { MenuItemId = supernovaId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
+                    new MenuCustomization { MenuItemId = supernovaId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
                 ]);
             }
 
-            if (coldBrewIds.TryGetValue(locationId, out var coldBrewId))
+            if (roaringFrappeIds.TryGetValue(locationId, out var roaringFrappeId))
             {
                 seededCustomizations.AddRange(
                 [
-                    new MenuCustomization { MenuItemId = coldBrewId, GroupName = "Sweetener", OptionName = "Vanilla Sweet Cream", AdditionalPrice = 0.75m, SortOrder = 1 },
-                    new MenuCustomization { MenuItemId = coldBrewId, GroupName = "Sweetener", OptionName = "Sugar Free Vanilla", AdditionalPrice = 0.50m, SortOrder = 2 },
+                    new MenuCustomization { MenuItemId = roaringFrappeId, GroupName = "Toppings", OptionName = "Whipped Cream", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+                    new MenuCustomization { MenuItemId = roaringFrappeId, GroupName = "Toppings", OptionName = "Chocolate Drizzle", AdditionalPrice = 0.50m, SortOrder = 2 },
+                ]);
+            }
+
+            if (blackAndWhiteColdBrewIds.TryGetValue(locationId, out var blackAndWhiteColdBrewId))
+            {
+                seededCustomizations.AddRange(
+                [
+                    new MenuCustomization { MenuItemId = blackAndWhiteColdBrewId, GroupName = "Sweetener", OptionName = "Condensed Milk Drizzle", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+                    new MenuCustomization { MenuItemId = blackAndWhiteColdBrewId, GroupName = "Sweetener", OptionName = "Vanilla Sweet Cream", AdditionalPrice = 0.75m, SortOrder = 2 },
+                    new MenuCustomization { MenuItemId = blackAndWhiteColdBrewId, GroupName = "Sweetener", OptionName = "Sugar Free Vanilla", AdditionalPrice = 0.50m, SortOrder = 3 },
+                ]);
+            }
+
+            if (sugarShakenEspressoIds.TryGetValue(locationId, out var sugarShakenEspressoId))
+            {
+                seededCustomizations.AddRange(
+                [
+                    new MenuCustomization { MenuItemId = sugarShakenEspressoId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 1 },
                 ]);
             }
         }
@@ -700,8 +694,8 @@ public static class SeedHelper
             },
             new Reward
             {
-                Name = "Free Matcha",
-                Description = "Redeem 1250 points for any matcha drink (up to $7.25).",
+                Name = "Free Lemonade",
+                Description = "Redeem 1250 points for any lemonade drink (up to $5.00).",
                 PointsCost = 1250,
                 IsActive = true,
                 TierName = "Member",
@@ -842,7 +836,7 @@ public static class SeedHelper
             .Where(x => x.LocationId == locationId)
             .ToListAsync();
 
-        var icedMocha = locationMenuItems.FirstOrDefault(x => x.Name == "Iced Mocha")
+        var icedMocha = locationMenuItems.FirstOrDefault(x => x.Name == "Roaring Frappe")
             ?? locationMenuItems.FirstOrDefault(x => x.Category == "Coffee")
             ?? await dataContext.MenuItems.FirstAsync();
         var sugarShakenEspresso = locationMenuItems.FirstOrDefault(x => x.Name == "Sugar Shaken Espresso")

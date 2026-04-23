@@ -14,26 +14,26 @@ import {
 
 type HomeHeroProduct = Pick<MenuItem, "id" | "name" | "description" | "price" | "imageUrl" | "category" | "preparationTag">;
 
-const homeHeroCategoryPriority = ["Coffee", "Matcha", "Pastries", "Sweet and Pops"] as const;
+const homeHeroCategoryPriority = ["Coffee", "Lemonade", "Pastries", "Sweet and Pops"] as const;
 
 const fallbackHeroProducts: HomeHeroProduct[] = [
   {
     id: -1,
-    name: "Caramel Macchiato",
-    description: "Layered espresso and milk with house caramel running through the glass.",
-    price: 6.25,
-    imageUrl: "/menu/coffee/caramel-macchiato.webp",
+    name: "Iced Latte",
+    description: "Espresso and milk served over ice for a refreshing coffee drink.",
+    price: 5.5,
+    imageUrl: "/menu/coffee/iced-caramel-macchiato.jpg",
     category: "Coffee",
-    preparationTag: "Signature Latte",
+    preparationTag: "Cold Drinks",
   },
   {
     id: -2,
-    name: "Strawberry Matcha",
-    description: "Iced matcha layered with milk and bright house strawberry puree.",
-    price: 7.25,
+    name: "Strawberry Limeade",
+    description: "Fresh lime juice blended with strawberry purée for a refreshing, tangy drink.",
+    price: 5.0,
     imageUrl: "/menu/matcha/strawberry-matcha.webp",
-    category: "Matcha",
-    preparationTag: "Fruit Matcha",
+    category: "Lemonade",
+    preparationTag: "Limeade",
   },
   {
     id: -3,
@@ -46,12 +46,12 @@ const fallbackHeroProducts: HomeHeroProduct[] = [
   },
   {
     id: -4,
-    name: "Iced Mocha",
-    description: "Chilled mocha latte topped with whipped cream and chocolate drizzle.",
-    price: 6.25,
-    imageUrl: "/menu/coffee/iced-mocha.jpg",
+    name: "Black & White Cold Brew",
+    description: "Cold brew made with both dark and light roast beans, finished with a drizzle of condensed milk.",
+    price: 5.15,
+    imageUrl: "/menu/coffee/cold-brew.png",
     category: "Coffee",
-    preparationTag: "Cold Drinks",
+    preparationTag: "Cold Brew",
   },
 ];
 
