@@ -426,14 +426,11 @@ export default function MenuScreen() {
               </View>
 
               <View style={styles.actionRow}>
-                <Pressable style={[styles.primaryButton, styles.actionButton]} onPress={() => addItem(item)}>
-                  <Text style={styles.primaryButtonText}>Add</Text>
-                </Pressable>
                 <Pressable
-                  style={[styles.secondaryButton, styles.actionButton]}
+                  style={[styles.primaryButton, styles.actionButton]}
                   onPress={() => setCustomizingItem(item)}
                 >
-                  <Text style={styles.secondaryButtonText}>Customize</Text>
+                  <Text style={styles.primaryButtonText}>Add</Text>
                 </Pressable>
               </View>
             </View>

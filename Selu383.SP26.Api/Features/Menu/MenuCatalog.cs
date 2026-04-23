@@ -5,7 +5,8 @@ public static class MenuCatalog
     public static readonly string[] SupportedCategories =
     [
         "Coffee",
-        "Matcha",
+        "Lemonade",
+        "Crepes",
         "Pastries",
         "Salad & Quiches",
         "Sandwiches & Bagels",

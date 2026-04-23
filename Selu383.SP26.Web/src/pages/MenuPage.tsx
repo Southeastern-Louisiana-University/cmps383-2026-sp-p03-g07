@@ -11,11 +11,10 @@ import { CommerceTopRail } from "./commerceShared";
 
 const menuDisplayCategories = [
   "Coffee",
-  "Matcha",
+  "Lemonade",
   "Pastries",
-  "Bread",
-  "Breakfast",
-  "Sandwiches & Bagels",
+  "Crepes",
+  "Bagels",
   "Salads & Quiches",
   "Cakes & Sweets",
   "Vegan",
@@ -40,22 +39,21 @@ function getItemSearchText(item: MenuItem) {
 
 function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
   const text = getItemSearchText(item);
-  const itemName = item.name.toLowerCase();
 
   if (item.category === "Gifts") {
     return null;
   }
 
-  if (text.includes("matcha")) {
-    return "Matcha";
+  if (item.category === "Lemonade") {
+    return "Lemonade";
+  }
+
+  if (item.category === "Crepes") {
+    return "Crepes";
   }
 
   if (item.category === "Vegan" || text.includes("plant-based") || text.includes("vegan")) {
     return "Vegan";
-  }
-
-  if (/\bbread\b|\bloaf\b/.test(itemName)) {
-    return "Bread";
   }
 
   if (item.preparationTag.toLowerCase() === "pastry" || /croissant|muffin|pastry|brioche|roll/.test(text)) {
@@ -66,16 +64,12 @@ function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
     return "Salads & Quiches";
   }
 
-  if (/breakfast|brunch|toast|muesli/.test(text)) {
-    return "Breakfast";
-  }
-
   if (item.category === "Sweet and Pops") {
     return "Cakes & Sweets";
   }
 
   if (item.category === "Sandwiches & Bagels") {
-    return "Sandwiches & Bagels";
+    return "Bagels";
   }
 
   if (item.category === "Coffee") {
@@ -114,7 +108,7 @@ function getMenuItemGroupingKey(item: MenuItem) {
 }
 
 export default function MenuPage({ navigate }: PageProps) {
-  const { addItem, addItemWithCustomizations, items: cartItems } = useCart();
+  const { addItemWithCustomizations, items: cartItems } = useCart();
   const cartLocationId = cartItems[0]?.locationId ?? 0;
   const [items, setItems] = useState<MenuItem[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -340,17 +334,9 @@ export default function MenuPage({ navigate }: PageProps) {
                       </div>
                       <div className="order-coffeehouse-card-actions">
                         <button
-                          className="order-coffeehouse-customize-button"
-                          disabled={!canAddItem}
-                          onClick={() => setCustomizingItem(item)}
-                          type="button"
-                        >
-                          Customize
-                        </button>
-                        <button
                           className="order-coffeehouse-add-button"
                           disabled={!canAddItem}
-                          onClick={() => addItem(item)}
+                          onClick={() => setCustomizingItem(item)}
                           type="button"
                         >
                           {canAddItem ? "Add" : "Store locked"}
