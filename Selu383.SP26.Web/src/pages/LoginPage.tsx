@@ -122,22 +122,22 @@ export default function LoginPage({ navigate, query }: PageProps) {
                 type="button"
               >
                 Sign in
-	              </button>
-	              <button
-	                className={mode === "register" ? "auth-mode-pill active" : "auth-mode-pill"}
-	                onClick={() => navigate("/signup")}
-	                type="button"
-	              >
-	                Register
-	              </button>
-	              <button
-	                className={mode === "reset" ? "auth-mode-pill active" : "auth-mode-pill"}
-	                onClick={() => navigate("/forgot-password")}
-	                type="button"
-	              >
-	                Reset
-	              </button>
-	            </div>
+              </button>
+              <button
+                className={mode === "register" ? "auth-mode-pill active" : "auth-mode-pill"}
+                onClick={() => navigate("/signup")}
+                type="button"
+              >
+                Register
+              </button>
+              <button
+                className={mode === "reset" ? "auth-mode-pill active" : "auth-mode-pill"}
+                onClick={() => navigate("/forgot-password")}
+                type="button"
+              >
+                Reset
+              </button>
+            </div>
 
             <div className="commerce-panel-heading">
               <div>

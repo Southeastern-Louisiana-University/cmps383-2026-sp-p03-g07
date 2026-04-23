@@ -39,18 +39,18 @@ export default function ProfileScreen() {
           <Text style={styles.heroCopy}>
             Sign in to access your profile, saved orders, and rewards.
           </Text>
-	          <View style={styles.heroButtons}>
-	            <Pressable style={styles.primaryButton} onPress={() => router.push('/Auth/login')}>
-	              <Text style={styles.primaryButtonText}>Login</Text>
-	            </Pressable>
-	            <Pressable style={styles.secondaryButton} onPress={() => router.push('/Auth/signup')}>
-	              <Text style={styles.secondaryButtonText}>Create account</Text>
-	            </Pressable>
-	          </View>
-	          <Pressable onPress={() => router.push('/Auth/reset')}>
-	            <Text style={styles.forgotLinkText}>Forgot password? Reset</Text>
-	          </Pressable>
-	        </View>
+          <View style={styles.heroButtons}>
+            <Pressable style={styles.primaryButton} onPress={() => router.push('/Auth/login')}>
+              <Text style={styles.primaryButtonText}>Login</Text>
+            </Pressable>
+            <Pressable style={styles.secondaryButton} onPress={() => router.push('/Auth/signup')}>
+              <Text style={styles.secondaryButtonText}>Create account</Text>
+            </Pressable>
+          </View>
+          <Pressable onPress={() => router.push('/Auth/reset')}>
+            <Text style={styles.forgotLinkText}>Forgot password? Reset</Text>
+          </Pressable>
+        </View>
 
         <Pressable style={styles.actionCard} onPress={() => router.push('/locations')}>
           <Text style={styles.actionTitle}>Store finder</Text>
