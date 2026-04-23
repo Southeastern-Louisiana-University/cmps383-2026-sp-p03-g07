@@ -208,12 +208,6 @@ export default function HomePage({ navigate }: PageProps) {
                 <span className="store-display-bottom">LIONS</span>
               </h1>
             </div>
-
-            <p className="home-hero-lead">
-              Fresh pours, soft-baked pastries, and seasonal favorites now lead the page like a COFFEEHOUSE counter.
-              Put the product first, then let guests jump straight into ordering, rewards, or the nearest store.
-            </p>
-
             <div className="home-hero-actions">
               <button className="commerce-primary-button" onClick={() => navigate("/menu")} type="button">
                 Shop the menu
