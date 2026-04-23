@@ -153,24 +153,24 @@ export default function ProfilePage({ navigate }: PageProps) {
                 <span className="commerce-hero-pill">Member alerts ready</span>
               </div>
 
-	              <div className="commerce-hero-actions">
-	                <button className="commerce-primary-button" onClick={() => navigate("/login")} type="button">
-	                  Sign in
-	                </button>
-	                <button
-	                  className="commerce-secondary-button"
-	                  onClick={() => navigate("/signup")}
-	                  type="button"
-	                >
-	                  Register
-	                </button>
-	              </div>
-	              <div style={{ marginTop: "0.85rem" }}>
-	                <button className="cart-inline-link" onClick={() => navigate("/forgot-password")} type="button">
-	                  Forgot password?
-	                </button>
-	              </div>
-	            </div>
+              <div className="commerce-hero-actions">
+                <button className="commerce-primary-button" onClick={() => navigate("/login")} type="button">
+                  Sign in
+                </button>
+                <button
+                  className="commerce-secondary-button"
+                  onClick={() => navigate("/signup")}
+                  type="button"
+                >
+                  Register
+                </button>
+              </div>
+              <div style={{ marginTop: "0.85rem" }}>
+                <button className="cart-inline-link" onClick={() => navigate("/forgot-password")} type="button">
+                  Forgot password?
+                </button>
+              </div>
+            </div>
 
             <div className="account-highlight-grid">
               {guestHighlights.map((highlight) => (
