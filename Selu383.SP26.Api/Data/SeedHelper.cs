@@ -213,34 +213,18 @@ public static class SeedHelper
         var seededMenuItems = new[] { 1, 2, 3 }
             .Select(locationId =>
                 CreateMenuItem(
-                    "Vegan Hummus Wrap",
-                    "Vegan",
-                    "Hummus, cucumbers, greens, pickled onions, and herbs wrapped fresh to order.",
-                    7.75m,
+                    "Caffeinated Lions Mug",
+                    "Gifts",
+                    "Branded ceramic mug with the house olive-and-gold palette.",
+                    16.00m,
                     locationId,
-                    "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=400&q=80",
-                    340,
-                    "Plant-Based",
-                    isFeatured: locationId == 1,
-                    inventoryCount: 5))
-            .Concat(
-                new[] { 1, 2, 3 }.Select(locationId =>
-                    CreateMenuItem(
-                        "Caffeinated Lions Mug",
-                        "Gifts",
-                        "Branded ceramic mug with the house olive-and-gold palette.",
-                        16.00m,
-                        locationId,
-                        "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=400&q=80",
-                        0,
-                        "Merch")))
+                    "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=400&q=80",
+                    0,
+                    "Merch"))
             .ToArray();
 
         var coffeeLocationIds = new[] { 1, 2, 3 };
-        var pastryLocationIds = new[] { 1, 2, 3 };
-        var saladAndQuichesLocationIds = new[] { 1, 2, 3 };
         var sandwichLocationIds = new[] { 1, 2, 3 };
-        var sweetAndPopsLocationIds = new[] { 1, 2, 3 };
         var lemonadeLocationIds = new[] { 1, 2, 3 };
         var crepeLocationIds = new[] { 1, 2, 3 };
         var lemonadeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
@@ -281,18 +265,6 @@ public static class SeedHelper
             "Breakfast Bagel",
             "The Classic",
         };
-        var saladAndQuichesMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "Smoked Chicken Salad",
-        };
-        var sweetAndPopsMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "BROWNIE",
-            "CARROT CAKE",
-            "CHEESECAKE",
-            "DOUBLE CHOCOLATE",
-            "RASPBERRY SLICE",
-        };
         var retiredMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Toffee Nut Latte",
@@ -301,46 +273,6 @@ public static class SeedHelper
         };
 
         seededMenuItems = seededMenuItems
-            .Concat(
-                pastryLocationIds.SelectMany(locationId => new[]
-                {
-                    CreateMenuItem(
-                        "CROISSANT",
-                        "Pastries",
-                        "Buttery layers with a crisp shell and tender center.",
-                        3.50m,
-                        locationId,
-                        "/menu/pastries/croissant.webp",
-                        280,
-                        "Pastry"),
-                    CreateMenuItem(
-                        "BRIOCHE WITH CHOCOLATE",
-                        "Pastries",
-                        "Soft brioche finished with a glossy dark chocolate cap.",
-                        4.95m,
-                        locationId,
-                        "/menu/pastries/brioche-with-chocolate.webp",
-                        360,
-                        "Pastry"),
-                    CreateMenuItem(
-                        "cinnamon roll",
-                        "Pastries",
-                        "Twisted cinnamon pastry with buttery layers and a rich spiced filling.",
-                        4.75m,
-                        locationId,
-                        "/menu/pastries/cinnamon-roll.webp",
-                        390,
-                        "Pastry"),
-                    CreateMenuItem(
-                        "FOCACCIA MARINARA PIECE",
-                        "Pastries",
-                        "Airy focaccia square layered with marinara, olive oil, and roasted edges.",
-                        5.25m,
-                        locationId,
-                        "/menu/pastries/focaccia-marinara-piece.webp",
-                        320,
-                        "Pastry"),
-                }))
             .Concat(
                 crepeLocationIds.SelectMany(locationId => new[]
                 {
@@ -476,20 +408,6 @@ public static class SeedHelper
                         "Savory Crepe"),
                 }))
             .Concat(
-                saladAndQuichesLocationIds.SelectMany(locationId => new[]
-                {
-                    CreateMenuItem(
-                        "Smoked Chicken Salad",
-                        "Salad & Quiches",
-                        "Smoked chicken with mixed greens, apple, almonds, and dried cranberries.",
-                        11.50m,
-                        locationId,
-                        "/menu/salads-quiches/smoked-chicken-salad.jpg",
-                        430,
-                        "Fresh",
-                        isFeatured: locationId == 1),
-                }))
-            .Concat(
                 sandwichLocationIds.SelectMany(locationId => new[]
                 {
                     CreateMenuItem(
@@ -538,56 +456,6 @@ public static class SeedHelper
                         "/menu/sandwiches-bagels/avocado-toast.webp",
                         420,
                         "Bagel"),
-                }))
-            .Concat(
-                sweetAndPopsLocationIds.SelectMany(locationId => new[]
-                {
-                    CreateMenuItem(
-                        "BROWNIE",
-                        "Sweet and Pops",
-                        "Dense chocolate brownie with a fudgy center and deep cocoa finish.",
-                        5.25m,
-                        locationId,
-                        "/menu/cakes-sweets/brownie.webp",
-                        420,
-                        "Slice",
-                        isFeatured: locationId == 1),
-                    CreateMenuItem(
-                        "CARROT CAKE",
-                        "Sweet and Pops",
-                        "Spiced carrot cake finished with smooth cream cheese frosting.",
-                        38.00m,
-                        locationId,
-                        "/menu/cakes-sweets/carrot-cake.webp",
-                        540,
-                        "Celebration"),
-                    CreateMenuItem(
-                        "CHEESECAKE",
-                        "Sweet and Pops",
-                        "Creamy vanilla cheesecake with a buttery crust and soft finish.",
-                        45.00m,
-                        locationId,
-                        "/menu/cakes-sweets/cheesecake.webp",
-                        560,
-                        "Celebration"),
-                    CreateMenuItem(
-                        "DOUBLE CHOCOLATE",
-                        "Sweet and Pops",
-                        "Rich chocolate cake layered with glossy ganache and dark cocoa notes.",
-                        42.00m,
-                        locationId,
-                        "/menu/cakes-sweets/double-chocolate.webp",
-                        610,
-                        "Celebration"),
-                    CreateMenuItem(
-                        "RASPBERRY SLICE",
-                        "Sweet and Pops",
-                        "Bright raspberry cake finished with a glossy berry top and crisp base.",
-                        48.00m,
-                        locationId,
-                        "/menu/cakes-sweets/raspberry-slice.webp",
-                        580,
-                        "Celebration"),
                 }))
             .Concat(
                 lemonadeLocationIds.SelectMany(locationId => new[]
@@ -675,12 +543,8 @@ public static class SeedHelper
                     && !lemonadeMenuNames.Contains(existingItem.Name))
                 || (string.Equals(existingItem.Category, "Crepes", StringComparison.OrdinalIgnoreCase)
                     && !crepeMenuNames.Contains(existingItem.Name))
-                || (string.Equals(existingItem.Category, "Salad & Quiches", StringComparison.OrdinalIgnoreCase)
-                    && !saladAndQuichesMenuNames.Contains(existingItem.Name))
                 || (string.Equals(existingItem.Category, "Sandwiches & Bagels", StringComparison.OrdinalIgnoreCase)
                     && !sandwichMenuNames.Contains(existingItem.Name))
-                || (string.Equals(existingItem.Category, "Sweet and Pops", StringComparison.OrdinalIgnoreCase)
-                    && !sweetAndPopsMenuNames.Contains(existingItem.Name))
                 || retiredMenuNames.Contains(existingItem.Name))
             .ToList();
 
@@ -987,8 +851,8 @@ public static class SeedHelper
         var sugarShakenEspresso = locationMenuItems.FirstOrDefault(x => x.Name == "Sugar Shaken Espresso")
             ?? locationMenuItems.FirstOrDefault(x => x.Category == "Coffee" && x.Id != icedMocha.Id)
             ?? icedMocha;
-        var croissant = locationMenuItems.FirstOrDefault(x => x.Name == "CROISSANT")
-            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Pastries")
+        var classicBagel = locationMenuItems.FirstOrDefault(x => x.Name == "The Classic")
+            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Sandwiches & Bagels")
             ?? icedMocha;
 
         var orders = new[]
@@ -999,7 +863,7 @@ public static class SeedHelper
                 LocationId = locationId,
                 OrderType = "pickup",
                 Status = "Completed",
-                Total = icedMocha.Price + (croissant.Price * 2),
+                Total = icedMocha.Price + (classicBagel.Price * 2),
                 PaymentStatus = "Paid",
                 PickupName = "Sue",
                 CreatedAt = DateTime.UtcNow.AddHours(-6),
@@ -1017,12 +881,12 @@ public static class SeedHelper
                     },
                     new OrderItem
                     {
-                        MenuItemId = croissant.Id,
-                        ItemName = croissant.Name,
+                        MenuItemId = classicBagel.Id,
+                        ItemName = classicBagel.Name,
                         Quantity = 2,
-                        UnitPrice = croissant.Price,
-                        Total = croissant.Price * 2,
-                        Customizations = "Warmed"
+                        UnitPrice = classicBagel.Price,
+                        Total = classicBagel.Price * 2,
+                        Customizations = "Toasted"
                     }
                 ]
             },

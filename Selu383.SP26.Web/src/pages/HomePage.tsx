@@ -14,7 +14,7 @@ import {
 
 type HomeHeroProduct = Pick<MenuItem, "id" | "name" | "description" | "price" | "imageUrl" | "category" | "preparationTag">;
 
-const homeHeroCategoryPriority = ["Coffee", "Lemonade", "Pastries", "Sweet and Pops"] as const;
+const homeHeroCategoryPriority = ["Coffee", "Lemonade", "Crepes", "Sandwiches & Bagels"] as const;
 
 const fallbackHeroProducts: HomeHeroProduct[] = [
   {
@@ -37,21 +37,21 @@ const fallbackHeroProducts: HomeHeroProduct[] = [
   },
   {
     id: -3,
-    name: "Croissant",
-    description: "Buttery layers with a crisp shell and tender center.",
-    price: 3.5,
-    imageUrl: "/menu/pastries/croissant.webp",
-    category: "Pastries",
-    preparationTag: "Pastry",
+    name: "Mannino Honey Crepe",
+    description: "A sweet crepe drizzled with Mannino honey and topped with mixed berries.",
+    price: 10.0,
+    imageUrl: "/menu/cakes-sweets/raspberry-slice.webp",
+    category: "Crepes",
+    preparationTag: "Sweet Crepe",
   },
   {
     id: -4,
-    name: "Black & White Cold Brew",
-    description: "Cold brew made with both dark and light roast beans, finished with a drizzle of condensed milk.",
-    price: 5.15,
-    imageUrl: "/menu/coffee/cold-brew.png",
-    category: "Coffee",
-    preparationTag: "Cold Brew",
+    name: "Travis Special",
+    description: "Cream cheese, salmon, spinach, and a fried egg served on a freshly toasted bagel.",
+    price: 14.0,
+    imageUrl: "/menu/sandwiches-bagels/avocado-bagel.webp",
+    category: "Sandwiches & Bagels",
+    preparationTag: "Bagel",
   },
 ];
 

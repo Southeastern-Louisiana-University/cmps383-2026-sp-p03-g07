@@ -12,12 +12,8 @@ import { CommerceTopRail } from "./commerceShared";
 const menuDisplayCategories = [
   "Coffee",
   "Lemonade",
-  "Pastries",
   "Crepes",
   "Bagels",
-  "Salads & Quiches",
-  "Cakes & Sweets",
-  "Vegan",
 ] as const;
 
 type MenuDisplayCategory = (typeof menuDisplayCategories)[number];
@@ -52,20 +48,12 @@ function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
     return "Crepes";
   }
 
-  if (item.category === "Vegan" || text.includes("plant-based") || text.includes("vegan")) {
-    return "Vegan";
+  if (["Vegan", "Salads & Quiches", "Cakes & Sweets", "Pastries", "Salad & Quiches", "Sweet and Pops"].includes(item.category)) {
+    return null;
   }
 
   if (item.preparationTag.toLowerCase() === "pastry" || /croissant|muffin|pastry|brioche|roll/.test(text)) {
-    return "Pastries";
-  }
-
-  if (item.category === "Salad & Quiches") {
-    return "Salads & Quiches";
-  }
-
-  if (item.category === "Sweet and Pops") {
-    return "Cakes & Sweets";
+    return null;
   }
 
   if (item.category === "Sandwiches & Bagels") {

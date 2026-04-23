@@ -43,11 +43,14 @@ public class CommerceEndpointSmokeTests
         categoriesResponse.StatusCode.Should().Be(HttpStatusCode.OK);
         var categories = await categoriesResponse.Content.ReadAsJsonAsync<List<string>>();
         categories.Should().Contain("Coffee");
+        categories.Should().Contain("Lemonade");
+        categories.Should().Contain("Crepes");
         categories.Should().Contain("Sandwiches & Bagels");
-        categories.Should().Contain("Salad & Quiches");
-        categories.Should().Contain("Sweet and Pops");
-        categories.Should().Contain("Vegan");
         categories.Should().Contain("Gifts");
+        categories.Should().NotContain("Salads & Quiches");
+        categories.Should().NotContain("Cakes & Sweets");
+        categories.Should().NotContain("Pastries");
+        categories.Should().NotContain("Vegan");
 
         var menuResponse = await webClient.GetAsync("/api/menu");
         menuResponse.StatusCode.Should().Be(HttpStatusCode.OK);
