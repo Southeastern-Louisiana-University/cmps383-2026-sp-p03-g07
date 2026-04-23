@@ -114,7 +114,7 @@ function getMenuItemGroupingKey(item: MenuItem) {
 }
 
 export default function MenuPage({ navigate }: PageProps) {
-  const { addItem, addItemWithCustomizations, items: cartItems } = useCart();
+  const { addItemWithCustomizations, items: cartItems } = useCart();
   const cartLocationId = cartItems[0]?.locationId ?? 0;
   const [items, setItems] = useState<MenuItem[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -340,17 +340,9 @@ export default function MenuPage({ navigate }: PageProps) {
                       </div>
                       <div className="order-coffeehouse-card-actions">
                         <button
-                          className="order-coffeehouse-customize-button"
-                          disabled={!canAddItem}
-                          onClick={() => setCustomizingItem(item)}
-                          type="button"
-                        >
-                          Customize
-                        </button>
-                        <button
                           className="order-coffeehouse-add-button"
                           disabled={!canAddItem}
-                          onClick={() => addItem(item)}
+                          onClick={() => setCustomizingItem(item)}
                           type="button"
                         >
                           {canAddItem ? "Add" : "Store locked"}

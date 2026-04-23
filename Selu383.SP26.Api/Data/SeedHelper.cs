@@ -607,29 +607,55 @@ public static class SeedHelper
 
         await dataContext.SaveChangesAsync();
 
-        var caramelMacchiatoId = await dataContext.MenuItems
-            .Where(x => x.Name == "Caramel Macchiato" && x.LocationId == 1)
-            .Select(x => x.Id)
-            .FirstAsync();
-        var icedMochaId = await dataContext.MenuItems
-            .Where(x => x.Name == "Iced Mocha" && x.LocationId == 1)
-            .Select(x => x.Id)
-            .FirstAsync();
-        var coldBrewId = await dataContext.MenuItems
-            .Where(x => x.Name == "Cold Brew" && x.LocationId == 1)
-            .Select(x => x.Id)
-            .FirstAsync();
+        var caramelMacchiatoIds = await dataContext.MenuItems
+            .Where(x => x.Name == "Caramel Macchiato" && coffeeLocationIds.Contains(x.LocationId))
+            .GroupBy(x => x.LocationId)
+            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+        var icedMochaIds = await dataContext.MenuItems
+            .Where(x => x.Name == "Iced Mocha" && coffeeLocationIds.Contains(x.LocationId))
+            .GroupBy(x => x.LocationId)
+            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+        var coldBrewIds = await dataContext.MenuItems
+            .Where(x => x.Name == "Cold Brew" && coffeeLocationIds.Contains(x.LocationId))
+            .GroupBy(x => x.LocationId)
+            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
 
-        var seededCustomizations = new[]
+        var seededCustomizations = new List<MenuCustomization>();
+
+        foreach (var locationId in coffeeLocationIds)
         {
-            new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
-            new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
-            new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
-            new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Whipped Cream", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
-            new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Chocolate Drizzle", AdditionalPrice = 0.50m, SortOrder = 2 },
-            new MenuCustomization { MenuItemId = coldBrewId, GroupName = "Sweetener", OptionName = "Vanilla Sweet Cream", AdditionalPrice = 0.75m, SortOrder = 1 },
-            new MenuCustomization { MenuItemId = coldBrewId, GroupName = "Sweetener", OptionName = "Sugar Free Vanilla", AdditionalPrice = 0.50m, SortOrder = 2 }
-        };
+            if (caramelMacchiatoIds.TryGetValue(locationId, out var caramelMacchiatoId))
+            {
+                seededCustomizations.AddRange(
+                [
+                    new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+                    new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
+                    new MenuCustomization { MenuItemId = caramelMacchiatoId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
+                ]);
+            }
+
+            if (icedMochaIds.TryGetValue(locationId, out var icedMochaId))
+            {
+                seededCustomizations.AddRange(
+                [
+                    new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Whipped Cream", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+                    new MenuCustomization { MenuItemId = icedMochaId, GroupName = "Toppings", OptionName = "Chocolate Drizzle", AdditionalPrice = 0.50m, SortOrder = 2 },
+                ]);
+            }
+
+            if (coldBrewIds.TryGetValue(locationId, out var coldBrewId))
+            {
+                seededCustomizations.AddRange(
+                [
+                    new MenuCustomization { MenuItemId = coldBrewId, GroupName = "Sweetener", OptionName = "Vanilla Sweet Cream", AdditionalPrice = 0.75m, SortOrder = 1 },
+                    new MenuCustomization { MenuItemId = coldBrewId, GroupName = "Sweetener", OptionName = "Sugar Free Vanilla", AdditionalPrice = 0.50m, SortOrder = 2 },
+                ]);
+            }
+        }
+
         var existingCustomizations = await dataContext.MenuCustomizations.ToListAsync();
 
         foreach (var seededCustomization in seededCustomizations)
