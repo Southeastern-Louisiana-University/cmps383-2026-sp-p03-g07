@@ -14,8 +14,7 @@ const menuDisplayCategories = [
   "Lemonade",
   "Pastries",
   "Crepes",
-  "Breakfast",
-  "Sandwiches & Bagels",
+  "Bagels",
   "Salads & Quiches",
   "Cakes & Sweets",
   "Vegan",
@@ -65,16 +64,12 @@ function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
     return "Salads & Quiches";
   }
 
-  if (/breakfast|brunch|toast|muesli/.test(text)) {
-    return "Breakfast";
-  }
-
   if (item.category === "Sweet and Pops") {
     return "Cakes & Sweets";
   }
 
   if (item.category === "Sandwiches & Bagels") {
-    return "Sandwiches & Bagels";
+    return "Bagels";
   }
 
   if (item.category === "Coffee") {
