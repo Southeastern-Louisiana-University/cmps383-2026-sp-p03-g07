@@ -5,6 +5,17 @@ import type { PageProps } from "../types/router.types";
 import { CommerceTopRail } from "./commerceShared";
 
 const CATEGORIES = ["Coffee Quality", "Food", "Service", "Atmosphere", "Cleanliness", "Overall"];
+const SAMPLE_FEEDBACK = [
+  { rating: 5, category: "Coffee Quality", name: "Maya", comment: "Cold brew was smooth and not too bitter. Perfect start to the day.", when: "2 days ago" },
+  { rating: 4, category: "Service", name: "Jordan", comment: "Quick pickup and super friendly staff. My drink was ready right on time.", when: "This week" },
+  { rating: 5, category: "Food", name: "Avery", comment: "Crepe was warm and filling. Great portion for the price.", when: "Last week" },
+  { rating: 4, category: "Atmosphere", name: "Sam", comment: "Cozy vibe and a good spot to study. Music volume was just right.", when: "Last week" },
+] as const;
+
+function renderStars(rating: number) {
+  const safeRating = Math.max(0, Math.min(5, Math.round(rating)));
+  return `${"★".repeat(safeRating)}${"☆".repeat(5 - safeRating)}`;
+}
 
 function StarRating({ value, onChange }: { value: number; onChange: (v: number) => void }) {
   const [hovered, setHovered] = useState(0);
@@ -171,6 +182,30 @@ export default function FeedbackPage({ navigate }: PageProps) {
               </button>
             </div>
           </section>
+        </section>
+
+        <section aria-label="Feedback" className="feedback-samples">
+          <div className="feedback-samples-heading">
+            <p className="commerce-kicker">Feedback</p>
+          </div>
+
+          <div className="feedback-samples-grid">
+            {SAMPLE_FEEDBACK.map((entry) => (
+              <article className="feedback-sample-card" key={`${entry.name}-${entry.category}-${entry.when}`}>
+                <div className="feedback-sample-meta">
+                  <span className="feedback-sample-stars" aria-label={`${entry.rating} out of 5`}>
+                    {renderStars(entry.rating)}
+                  </span>
+                  <span className="feedback-sample-dot" aria-hidden="true">•</span>
+                  <span className="feedback-sample-category">{entry.category}</span>
+                  <span className="feedback-sample-dot" aria-hidden="true">•</span>
+                  <span className="feedback-sample-when">{entry.when}</span>
+                </div>
+                <p className="feedback-sample-comment">{entry.comment}</p>
+                <p className="feedback-sample-author">— {entry.name}</p>
+              </article>
+            ))}
+          </div>
         </section>
       </section>
     </div>
