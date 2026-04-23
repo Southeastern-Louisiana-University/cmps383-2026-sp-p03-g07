@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Selu383.SP26.Api.Data;
 using Selu383.SP26.Api.Features.Auth;
@@ -37,7 +38,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddIdentity<User, Role>()
-    .AddEntityFrameworkStores<DataContext>();
+    .AddEntityFrameworkStores<DataContext>()
+    .AddTokenProvider<DataProtectorTokenProvider<User>>(TokenOptions.DefaultProvider);
 
 builder.Services.AddMemoryCache();
 builder.Services.AddDistributedMemoryCache();

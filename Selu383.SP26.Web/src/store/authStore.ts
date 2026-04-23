@@ -16,6 +16,7 @@ type AuthContextValue = {
   error: string;
   login: (userName: string, password: string) => Promise<void>;
   register: (userName: string, password: string, email: string, phone: string) => Promise<void>;
+  resetPassword: (userName: string, email: string, phone: string, newPassword: string) => Promise<void>;
   logout: () => Promise<void>;
   refresh: () => Promise<void>;
   updateProfile: (data: { displayName?: string; birthday?: string | null; profilePictureUrl?: string }) => Promise<void>;
@@ -76,6 +77,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
         setUser(nextUser);
         setError("");
         window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
+      },
+      resetPassword(userName, email, phone, newPassword) {
+        return authApi.resetPassword(userName, email, phone, newPassword);
       },
       logout() {
         // Clear local state immediately - never block on the server

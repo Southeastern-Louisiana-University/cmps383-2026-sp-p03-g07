@@ -68,6 +68,12 @@ public static class SeedHelper
             adminUser = new User { UserName = "galkadi" };
             await userManager.CreateAsync(adminUser, defaultPassword);
         }
+        if (string.IsNullOrWhiteSpace(adminUser.Email) || string.IsNullOrWhiteSpace(adminUser.PhoneNumber))
+        {
+            adminUser.Email = string.IsNullOrWhiteSpace(adminUser.Email) ? "galkadi@example.com" : adminUser.Email;
+            adminUser.PhoneNumber = string.IsNullOrWhiteSpace(adminUser.PhoneNumber) ? "9855550101" : adminUser.PhoneNumber;
+            await userManager.UpdateAsync(adminUser);
+        }
         if (!await userManager.IsInRoleAsync(adminUser, RoleNames.Admin))
         {
             await userManager.AddToRoleAsync(adminUser, RoleNames.Admin);
@@ -78,6 +84,12 @@ public static class SeedHelper
         {
             bob = new User { UserName = "bob" };
             await userManager.CreateAsync(bob, defaultPassword);
+        }
+        if (string.IsNullOrWhiteSpace(bob.Email) || string.IsNullOrWhiteSpace(bob.PhoneNumber))
+        {
+            bob.Email = string.IsNullOrWhiteSpace(bob.Email) ? "bob@example.com" : bob.Email;
+            bob.PhoneNumber = string.IsNullOrWhiteSpace(bob.PhoneNumber) ? "9855550102" : bob.PhoneNumber;
+            await userManager.UpdateAsync(bob);
         }
         if (!await userManager.IsInRoleAsync(bob, RoleNames.User))
         {
@@ -93,6 +105,12 @@ public static class SeedHelper
         else if (sue.Points < 1000)
         {
             sue.Points = 1000;
+            await userManager.UpdateAsync(sue);
+        }
+        if (string.IsNullOrWhiteSpace(sue.Email) || string.IsNullOrWhiteSpace(sue.PhoneNumber))
+        {
+            sue.Email = string.IsNullOrWhiteSpace(sue.Email) ? "sue@example.com" : sue.Email;
+            sue.PhoneNumber = string.IsNullOrWhiteSpace(sue.PhoneNumber) ? "9855550103" : sue.PhoneNumber;
             await userManager.UpdateAsync(sue);
         }
         if (!await userManager.IsInRoleAsync(sue, RoleNames.User))

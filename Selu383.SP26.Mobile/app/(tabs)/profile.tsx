@@ -39,15 +39,18 @@ export default function ProfileScreen() {
           <Text style={styles.heroCopy}>
             Sign in to access your profile, saved orders, and rewards.
           </Text>
-          <View style={styles.heroButtons}>
-            <Pressable style={styles.primaryButton} onPress={() => router.push('/Auth/login')}>
-              <Text style={styles.primaryButtonText}>Login</Text>
-            </Pressable>
-            <Pressable style={styles.secondaryButton} onPress={() => router.push('/Auth/signup')}>
-              <Text style={styles.secondaryButtonText}>Create account</Text>
-            </Pressable>
-          </View>
-        </View>
+	          <View style={styles.heroButtons}>
+	            <Pressable style={styles.primaryButton} onPress={() => router.push('/Auth/login')}>
+	              <Text style={styles.primaryButtonText}>Login</Text>
+	            </Pressable>
+	            <Pressable style={styles.secondaryButton} onPress={() => router.push('/Auth/signup')}>
+	              <Text style={styles.secondaryButtonText}>Create account</Text>
+	            </Pressable>
+	          </View>
+	          <Pressable onPress={() => router.push('/Auth/reset')}>
+	            <Text style={styles.forgotLinkText}>Forgot password? Reset</Text>
+	          </Pressable>
+	        </View>
 
         <Pressable style={styles.actionCard} onPress={() => router.push('/locations')}>
           <Text style={styles.actionTitle}>Store finder</Text>
@@ -183,9 +186,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
   },
   title: { fontSize: 28, fontWeight: '700', color: '#fffaf4' },
-  heroCopy: { color: '#9eb4c8' },
-  birthdayNote: { color: '#f2c57d', fontSize: 13, marginTop: 4 },
-  heroButtons: { flexDirection: 'row', gap: 10, marginTop: 8 },
+	  heroCopy: { color: '#9eb4c8' },
+	  forgotLinkText: { color: '#f2c57d', fontWeight: '700', marginTop: 10 },
+	  birthdayNote: { color: '#f2c57d', fontSize: 13, marginTop: 4 },
+	  heroButtons: { flexDirection: 'row', gap: 10, marginTop: 8 },
   avatar: { width: 70, height: 70, borderRadius: 35, marginBottom: 4 },
   avatarPlaceholder: {
     width: 70,

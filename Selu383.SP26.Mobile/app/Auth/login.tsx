@@ -32,6 +32,9 @@ export default function LoginScreen() {
         <Pressable onPress={() => router.push('/Auth/signup')}>
           <Text style={styles.linkText}>Need an account? Register</Text>
         </Pressable>
+        <Pressable onPress={() => router.push('/Auth/reset')}>
+          <Text style={styles.linkText}>Forgot password? Reset</Text>
+        </Pressable>
       </View>
     </ScrollView>
   );

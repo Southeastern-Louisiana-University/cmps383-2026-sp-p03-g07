@@ -2316,6 +2316,10 @@
   font-weight: 700;
 }
 
+.commerce-inline-status-success {
+  color: #5f6a1a;
+}
+
 .commerce-inline-status-error {
   color: #8b4129;
 }
@@ -3548,6 +3552,11 @@
 .auth-form-grid {
   display: grid;
   gap: 1rem;
+}
+
+.auth-helper-row {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .orders-feature-card,

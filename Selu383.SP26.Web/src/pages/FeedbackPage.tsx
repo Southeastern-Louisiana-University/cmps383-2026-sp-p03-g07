@@ -109,7 +109,6 @@ export default function FeedbackPage({ navigate }: PageProps) {
             </p>
             <div className="commerce-hero-pills">
               <span className="commerce-hero-pill">Anonymous welcome</span>
-              <span className="commerce-hero-pill">Instant submission</span>
               <span className="commerce-hero-pill">Helps us improve</span>
             </div>
           </div>

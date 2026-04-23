@@ -6,6 +6,17 @@ import { feedbackService } from '@/services/feedbackService';
 import { useAuth } from '@/store/authStore';
 
 const RATINGS = [1, 2, 3, 4, 5];
+const SAMPLE_FEEDBACK = [
+  { rating: 5, category: 'Coffee Quality', name: 'Maya', comment: 'Cold brew was smooth and not too bitter. Perfect start to the day.', when: '2 days ago' },
+  { rating: 4, category: 'Service', name: 'Jordan', comment: 'Quick pickup and super friendly staff. My drink was ready right on time.', when: 'This week' },
+  { rating: 5, category: 'Food', name: 'Avery', comment: 'Crepe was warm and filling. Great portion for the price.', when: 'Last week' },
+  { rating: 4, category: 'Atmosphere', name: 'Sam', comment: 'Cozy vibe and a good spot to study. Music volume was just right.', when: 'Last week' },
+] as const;
+
+function renderStars(rating: number) {
+  const safeRating = Math.max(0, Math.min(5, Math.round(rating)));
+  return `${'★'.repeat(safeRating)}${'☆'.repeat(5 - safeRating)}`;
+}
 
 export default function FeedbackScreen() {
   const { user } = useAuth();
@@ -15,22 +26,34 @@ export default function FeedbackScreen() {
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  if (!user) {
-    return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Feedback</Text>
-        <View style={styles.card}>
+	  if (!user) {
+	    return (
+	      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+	        <Text style={styles.title}>Feedback</Text>
+	        <View style={styles.card}>
           <Text style={styles.cardTitle}>Sign in to leave feedback</Text>
           <Text style={styles.cardCopy}>
             We value your opinion. Log in to share your experience with us.
           </Text>
-          <Pressable style={styles.primaryButton} onPress={() => router.push('/Auth/login')}>
-            <Text style={styles.primaryButtonText}>Login</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-    );
-  }
+	          <Pressable style={styles.primaryButton} onPress={() => router.push('/Auth/login')}>
+	            <Text style={styles.primaryButtonText}>Login</Text>
+	          </Pressable>
+	        </View>
+	        <View style={styles.samplesSection}>
+	          <Text style={styles.samplesHeading}>Recent feedback</Text>
+	          {SAMPLE_FEEDBACK.map((entry) => (
+	            <View style={styles.sampleCard} key={`${entry.name}-${entry.category}-${entry.when}`}>
+	              <Text style={styles.sampleMeta}>
+	                {renderStars(entry.rating)} • {entry.category} • {entry.when}
+	              </Text>
+	              <Text style={styles.sampleComment}>{entry.comment}</Text>
+	              <Text style={styles.sampleAuthor}>— {entry.name}</Text>
+	            </View>
+	          ))}
+	        </View>
+	      </ScrollView>
+	    );
+	  }
 
   if (submitted) {
     return (
@@ -78,22 +101,22 @@ export default function FeedbackScreen() {
     }
   }
 
-  return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.title}>Feedback</Text>
+	  return (
+	    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+	      <Text style={styles.title}>Feedback</Text>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>How was your experience?</Text>
-        <Text style={styles.cardCopy}>
-          Tell us what you think about our food, service, and app.
-        </Text>
+	      <View style={styles.card}>
+	        <Text style={styles.cardTitle}>How was your experience?</Text>
+	        <Text style={styles.cardCopy}>
+	          Tell us what you think about our food, service, and app.
+	        </Text>
 
-        <Text style={styles.label}>Rating</Text>
-        <View style={styles.starsRow}>
-          {RATINGS.map((star) => (
-            <Pressable key={star} onPress={() => setRating(star)} style={styles.starButton}>
-              <Text style={[styles.star, star <= rating && styles.starActive]}>
-                {star <= rating ? '★' : '☆'}
+	        <Text style={styles.ratingLabel}>Overall rating</Text>
+	        <View style={styles.starsRow}>
+	          {RATINGS.map((star) => (
+	            <Pressable key={star} onPress={() => setRating(star)} style={styles.starButton}>
+	              <Text style={[styles.star, star <= rating && styles.starActive]}>
+	                {star <= rating ? '★' : '☆'}
               </Text>
             </Pressable>
           ))}
@@ -112,31 +135,45 @@ export default function FeedbackScreen() {
 
         {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
-        <Pressable
-          style={[styles.primaryButton, submitting && styles.buttonDisabled]}
-          onPress={submitFeedback}
-          disabled={submitting}>
-          <Text style={styles.primaryButtonText}>
-            {submitting ? 'Submitting...' : 'Submit feedback'}
-          </Text>
-        </Pressable>
-      </View>
-    </ScrollView>
-  );
-}
+	        <Pressable
+	          style={[styles.primaryButton, submitting && styles.buttonDisabled]}
+	          onPress={submitFeedback}
+	          disabled={submitting}>
+	          <Text style={styles.primaryButtonText}>
+	            {submitting ? 'Submitting...' : 'Submit feedback'}
+	          </Text>
+	        </Pressable>
+	      </View>
+
+	      <View style={styles.samplesSection}>
+	        <Text style={styles.samplesHeading}>Recent feedback</Text>
+	        {SAMPLE_FEEDBACK.map((entry) => (
+	          <View style={styles.sampleCard} key={`${entry.name}-${entry.category}-${entry.when}`}>
+	            <Text style={styles.sampleMeta}>
+	              {renderStars(entry.rating)} • {entry.category} • {entry.when}
+	            </Text>
+	            <Text style={styles.sampleComment}>{entry.comment}</Text>
+	            <Text style={styles.sampleAuthor}>— {entry.name}</Text>
+	          </View>
+	        ))}
+	      </View>
+	    </ScrollView>
+	  );
+	}
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#f6efe7' },
   content: { gap: 14, padding: 20, paddingBottom: 40 },
-  title: { fontSize: 28, fontWeight: '700', color: '#1f1a17' },
-  card: { gap: 10, borderRadius: 22, backgroundColor: '#fffaf4', padding: 16 },
-  cardTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a17' },
-  cardCopy: { color: '#6c5b4d' },
-  label: { fontSize: 13, fontWeight: '600', color: '#6c5b4d', textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 },
-  starsRow: { flexDirection: 'row', gap: 8 },
-  starButton: { padding: 4 },
-  star: { fontSize: 32, color: '#d0c5bc' },
-  starActive: { color: '#f2c57d' },
+	  title: { fontSize: 28, fontWeight: '700', color: '#1f1a17' },
+	  card: { gap: 10, borderRadius: 22, backgroundColor: '#fffaf4', padding: 16 },
+	  cardTitle: { fontSize: 17, fontWeight: '700', color: '#1f1a17' },
+	  cardCopy: { color: '#6c5b4d' },
+	  label: { fontSize: 13, fontWeight: '600', color: '#6c5b4d', textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 },
+	  ratingLabel: { fontSize: 13, fontWeight: '800', color: '#1f1a17', textTransform: 'uppercase', letterSpacing: 1, marginTop: 4 },
+	  starsRow: { flexDirection: 'row', gap: 8 },
+	  starButton: { padding: 4 },
+	  star: { fontSize: 32, color: '#d0c5bc' },
+	  starActive: { color: '#f2c57d' },
   input: {
     borderRadius: 18,
     backgroundColor: '#f6efe7',
@@ -166,6 +203,12 @@ const styles = StyleSheet.create({
     gap: 12,
     alignItems: 'flex-start',
   },
-  successTitle: { fontSize: 26, fontWeight: '700', color: '#f2c57d' },
-  successCopy: { color: '#eadcd1' },
-});
+	  successTitle: { fontSize: 26, fontWeight: '700', color: '#f2c57d' },
+	  successCopy: { color: '#eadcd1' },
+	  samplesSection: { gap: 10, marginTop: 4 },
+	  samplesHeading: { fontSize: 17, fontWeight: '700', color: '#1f1a17', marginTop: 10 },
+	  sampleCard: { gap: 6, borderRadius: 22, backgroundColor: '#fffaf4', padding: 16 },
+	  sampleMeta: { color: '#6c5b4d', fontWeight: '600' },
+	  sampleComment: { color: '#1f1a17' },
+	  sampleAuthor: { color: '#8a5124', fontWeight: '700' },
+	});

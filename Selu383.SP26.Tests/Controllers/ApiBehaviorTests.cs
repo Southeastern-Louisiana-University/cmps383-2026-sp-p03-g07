@@ -59,6 +59,48 @@ public class ApiBehaviorTests
     }
 
     [TestMethod]
+    public async Task PasswordReset_WorksWithEmailAndPhone()
+    {
+        using var webClient = context.GetStandardWebClient();
+
+        var userName = $"reset{Guid.NewGuid():N}";
+        var email = $"{userName}@example.com";
+        const string phone = "9855550100";
+        const string newPassword = "NewPassword123!";
+
+        var registerResponse = await webClient.PostAsJsonAsync("/api/authentication/register", new
+        {
+            userName,
+            password = AuthenticationHelpers.DefaultUserPassword,
+            email,
+            phone
+        });
+
+        registerResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var logoutResponse = await webClient.PostAsync("/api/authentication/logout", null);
+        logoutResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var resetResponse = await webClient.PostAsJsonAsync("/api/authentication/reset-password", new
+        {
+            userName,
+            email,
+            phone,
+            newPassword
+        });
+
+        resetResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        var loginResponse = await webClient.PostAsJsonAsync("/api/authentication/login", new
+        {
+            userName,
+            password = newPassword
+        });
+
+        loginResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [TestMethod]
     public async Task MenuCreate_RequiresAuthorizedLocationManagerOrAdmin()
     {
         using var webClient = context.GetStandardWebClient();
