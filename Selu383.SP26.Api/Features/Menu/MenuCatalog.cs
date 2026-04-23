@@ -6,6 +6,7 @@ public static class MenuCatalog
     [
         "Coffee",
         "Lemonade",
+        "Crepes",
         "Pastries",
         "Salad & Quiches",
         "Sandwiches & Bagels",

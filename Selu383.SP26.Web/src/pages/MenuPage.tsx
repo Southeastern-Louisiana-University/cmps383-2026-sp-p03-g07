@@ -13,7 +13,7 @@ const menuDisplayCategories = [
   "Coffee",
   "Lemonade",
   "Pastries",
-  "Bread",
+  "Crepes",
   "Breakfast",
   "Sandwiches & Bagels",
   "Salads & Quiches",
@@ -40,7 +40,6 @@ function getItemSearchText(item: MenuItem) {
 
 function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
   const text = getItemSearchText(item);
-  const itemName = item.name.toLowerCase();
 
   if (item.category === "Gifts") {
     return null;
@@ -50,12 +49,12 @@ function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
     return "Lemonade";
   }
 
-  if (item.category === "Vegan" || text.includes("plant-based") || text.includes("vegan")) {
-    return "Vegan";
+  if (item.category === "Crepes") {
+    return "Crepes";
   }
 
-  if (/\bbread\b|\bloaf\b/.test(itemName)) {
-    return "Bread";
+  if (item.category === "Vegan" || text.includes("plant-based") || text.includes("vegan")) {
+    return "Vegan";
   }
 
   if (item.preparationTag.toLowerCase() === "pastry" || /croissant|muffin|pastry|brioche|roll/.test(text)) {

@@ -210,36 +210,31 @@ public static class SeedHelper
             };
         }
 
-        var seededMenuItems = new[]
-        {
-            new MenuItem
-            {
-                Name = "Vegan Hummus Wrap",
-                Category = "Vegan",
-                Description = "Hummus, cucumbers, greens, pickled onions, and herbs wrapped fresh to order.",
-                Price = 7.75m,
-                IsAvailable = true,
-                LocationId = 3,
-                ImageUrl = "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=400&q=80",
-                Calories = 340,
-                IsFeatured = true,
-                InventoryCount = 5,
-                PreparationTag = "Plant-Based"
-            },
-            new MenuItem
-            {
-                Name = "Caffeinated Lions Mug",
-                Category = "Gifts",
-                Description = "Branded ceramic mug with the house olive-and-gold palette.",
-                Price = 16.00m,
-                IsAvailable = true,
-                LocationId = 1,
-                ImageUrl = "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=400&q=80",
-                Calories = 0,
-                InventoryCount = 8,
-                PreparationTag = "Merch"
-            }
-        };
+        var seededMenuItems = new[] { 1, 2, 3 }
+            .Select(locationId =>
+                CreateMenuItem(
+                    "Vegan Hummus Wrap",
+                    "Vegan",
+                    "Hummus, cucumbers, greens, pickled onions, and herbs wrapped fresh to order.",
+                    7.75m,
+                    locationId,
+                    "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=400&q=80",
+                    340,
+                    "Plant-Based",
+                    isFeatured: locationId == 1,
+                    inventoryCount: 5))
+            .Concat(
+                new[] { 1, 2, 3 }.Select(locationId =>
+                    CreateMenuItem(
+                        "Caffeinated Lions Mug",
+                        "Gifts",
+                        "Branded ceramic mug with the house olive-and-gold palette.",
+                        16.00m,
+                        locationId,
+                        "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=400&q=80",
+                        0,
+                        "Merch")))
+            .ToArray();
 
         var coffeeLocationIds = new[] { 1, 2, 3 };
         var pastryLocationIds = new[] { 1, 2, 3 };
@@ -247,6 +242,12 @@ public static class SeedHelper
         var sandwichLocationIds = new[] { 1, 2, 3 };
         var sweetAndPopsLocationIds = new[] { 1, 2, 3 };
         var lemonadeLocationIds = new[] { 1, 2, 3 };
+        var crepeLocationIds = new[] { 1, 2, 3 };
+        var lemonadeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Strawberry Limeade",
+            "Shaken Lemonade",
+        };
         var coffeeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Iced Latte",
@@ -254,6 +255,23 @@ public static class SeedHelper
             "Roaring Frappe",
             "Black & White Cold Brew",
             "Sugar Shaken Espresso",
+        };
+        var crepeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "Mannino Honey Crepe",
+            "Downtowner",
+            "Funky Monkey",
+            "Le S'mores",
+            "Strawberry Fields",
+            "Bonjour",
+            "Banana Foster",
+            "Matt's Scrambled Eggs",
+            "Meanie Mushroom",
+            "Turkey Club",
+            "Green Machine",
+            "Perfect Pair",
+            "Crepe Fromage",
+            "Farmers Market Crepe",
         };
         var sandwichMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -323,6 +341,140 @@ public static class SeedHelper
                         "/menu/pastries/focaccia-marinara-piece.webp",
                         320,
                         "Pastry"),
+                }))
+            .Concat(
+                crepeLocationIds.SelectMany(locationId => new[]
+                {
+                    // Sweet Crepes
+                    CreateMenuItem(
+                        "Mannino Honey Crepe",
+                        "Crepes",
+                        "A sweet crepe drizzled with Mannino honey and topped with mixed berries.",
+                        10.00m,
+                        locationId,
+                        "/menu/cakes-sweets/raspberry-slice.webp",
+                        520,
+                        "Sweet Crepe",
+                        isFeatured: locationId == 1),
+                    CreateMenuItem(
+                        "Downtowner",
+                        "Crepes",
+                        "Strawberries and bananas wrapped in a crepe, finished with Nutella and Hershey's chocolate sauce.",
+                        10.75m,
+                        locationId,
+                        "/menu/cakes-sweets/double-chocolate.webp",
+                        610,
+                        "Sweet Crepe"),
+                    CreateMenuItem(
+                        "Funky Monkey",
+                        "Crepes",
+                        "Nutella and bananas wrapped in a crepe, served with whipped cream.",
+                        10.00m,
+                        locationId,
+                        "/menu/cakes-sweets/brownie.webp",
+                        590,
+                        "Sweet Crepe"),
+                    CreateMenuItem(
+                        "Le S'mores",
+                        "Crepes",
+                        "Marshmallow cream and chocolate sauce inside a crepe, topped with graham cracker crumbs.",
+                        9.50m,
+                        locationId,
+                        "/menu/cakes-sweets/cheesecake.webp",
+                        640,
+                        "Sweet Crepe"),
+                    CreateMenuItem(
+                        "Strawberry Fields",
+                        "Crepes",
+                        "Fresh strawberries with Hershey's chocolate drizzle and a dusting of powdered sugar.",
+                        10.00m,
+                        locationId,
+                        "/menu/matcha/strawberry-matcha.webp",
+                        500,
+                        "Sweet Crepe"),
+                    CreateMenuItem(
+                        "Bonjour",
+                        "Crepes",
+                        "A sweet crepe filled with syrup and cinnamon, finished with powdered sugar.",
+                        8.50m,
+                        locationId,
+                        "/menu/pastries/cinnamon-roll.webp",
+                        420,
+                        "Sweet Crepe"),
+                    CreateMenuItem(
+                        "Banana Foster",
+                        "Crepes",
+                        "Bananas with cinnamon in a crepe, topped with a generous drizzle of caramel sauce.",
+                        8.95m,
+                        locationId,
+                        "/menu/coffee/caramel-macchiato.webp",
+                        530,
+                        "Sweet Crepe"),
+
+                    // Savory Crepes
+                    CreateMenuItem(
+                        "Matt's Scrambled Eggs",
+                        "Crepes",
+                        "Scrambled eggs and melted mozzarella cheese wrapped in a crepe.",
+                        5.00m,
+                        locationId,
+                        "/menu/sandwiches-bagels/breakfast-sandwich.webp",
+                        410,
+                        "Savory Crepe"),
+                    CreateMenuItem(
+                        "Meanie Mushroom",
+                        "Crepes",
+                        "Sautéed mushrooms, mozzarella, tomato, and bacon inside a delicate crepe.",
+                        10.50m,
+                        locationId,
+                        "/menu/sandwiches-bagels/roast-beef-sandwich.webp",
+                        520,
+                        "Savory Crepe"),
+                    CreateMenuItem(
+                        "Turkey Club",
+                        "Crepes",
+                        "Sliced turkey, bacon, spinach, and tomato wrapped in a savory crepe.",
+                        10.50m,
+                        locationId,
+                        "/menu/sandwiches-bagels/kale-turkey-focaccia.webp",
+                        540,
+                        "Savory Crepe"),
+                    CreateMenuItem(
+                        "Green Machine",
+                        "Crepes",
+                        "Spinach, artichokes, and mozzarella cheese inside a fresh crepe.",
+                        10.00m,
+                        locationId,
+                        "/menu/sandwiches-bagels/avocado-toast.webp",
+                        480,
+                        "Savory Crepe"),
+                    CreateMenuItem(
+                        "Perfect Pair",
+                        "Crepes",
+                        "A unique combination of bacon and Nutella wrapped in a crepe.",
+                        10.00m,
+                        locationId,
+                        "/menu/pastries/brioche-with-chocolate.webp",
+                        620,
+                        "Savory Crepe"),
+                    CreateMenuItem(
+                        "Crepe Fromage",
+                        "Crepes",
+                        "A savory crepe filled with a blend of cheeses.",
+                        8.00m,
+                        locationId,
+                        "/menu/pastries/croissant.webp",
+                        450,
+                        "Savory Crepe"),
+                    CreateMenuItem(
+                        "Farmers Market Crepe",
+                        "Crepes",
+                        "Turkey, spinach, and mozzarella wrapped in a savory crepe.",
+                        10.50m,
+                        locationId,
+                        "/menu/sandwiches-bagels/vegan-zucchini-sandwich.webp",
+                        510,
+                        "Savory Crepe"),
                 }))
             .Concat(
                 saladAndQuichesLocationIds.SelectMany(locationId => new[]
@@ -530,6 +682,10 @@ public static class SeedHelper
                 !MenuCatalog.IsSupportedCategory(existingItem.Category)
                 || (string.Equals(existingItem.Category, "Coffee", StringComparison.OrdinalIgnoreCase)
                     && !coffeeMenuNames.Contains(existingItem.Name))
+                || (string.Equals(existingItem.Category, "Lemonade", StringComparison.OrdinalIgnoreCase)
+                    && !lemonadeMenuNames.Contains(existingItem.Name))
+                || (string.Equals(existingItem.Category, "Crepes", StringComparison.OrdinalIgnoreCase)
+                    && !crepeMenuNames.Contains(existingItem.Name))
                 || (string.Equals(existingItem.Category, "Salad & Quiches", StringComparison.OrdinalIgnoreCase)
                     && !saladAndQuichesMenuNames.Contains(existingItem.Name))
                 || (string.Equals(existingItem.Category, "Sandwiches & Bagels", StringComparison.OrdinalIgnoreCase)
