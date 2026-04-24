@@ -202,7 +202,6 @@ export default function HomePage({ navigate }: PageProps) {
             <p className="home-hero-kicker">{featuredLocation.name} spotlight</p>
 
             <div className="home-store-copy">
-              <span aria-hidden="true" className="store-wordmark-splash" />
               <h1 className="store-display">
                 <span className="store-display-top">CAFFEINATED</span>
                 <span className="store-display-bottom">LIONS</span>
