@@ -14,7 +14,7 @@ import {
 
 type HomeHeroProduct = Pick<MenuItem, "id" | "name" | "description" | "price" | "imageUrl" | "category" | "preparationTag">;
 
-const homeHeroCategoryPriority = ["Coffee", "Lemonade", "Pastries", "Sweet and Pops"] as const;
+const homeHeroCategoryPriority = ["Drinks", "Sweet Crepes", "Savory Crepes", "Bagels"] as const;
 
 const fallbackHeroProducts: HomeHeroProduct[] = [
   {
@@ -22,36 +22,36 @@ const fallbackHeroProducts: HomeHeroProduct[] = [
     name: "Iced Latte",
     description: "Espresso and milk served over ice for a refreshing coffee drink.",
     price: 5.5,
-    imageUrl: "/menu/coffee/iced-caramel-macchiato.jpg",
-    category: "Coffee",
+    imageUrl: "/menu/drinks/iced-latte.png",
+    category: "Drinks",
     preparationTag: "Cold Drinks",
   },
   {
     id: -2,
-    name: "Strawberry Limeade",
-    description: "Fresh lime juice blended with strawberry purée for a refreshing, tangy drink.",
-    price: 5.0,
-    imageUrl: "/menu/matcha/strawberry-matcha.webp",
-    category: "Lemonade",
-    preparationTag: "Limeade",
+    name: "Meanie Mushroom",
+    description: "Sautéed mushrooms, mozzarella, tomato, and bacon inside a delicate crepe.",
+    price: 10.5,
+    imageUrl: "/menu/crepes/meanie-mushroom.png",
+    category: "Savory Crepes",
+    preparationTag: "Savory Crepe",
   },
   {
     id: -3,
-    name: "Croissant",
-    description: "Buttery layers with a crisp shell and tender center.",
-    price: 3.5,
-    imageUrl: "/menu/pastries/croissant.webp",
-    category: "Pastries",
-    preparationTag: "Pastry",
+    name: "Mannino Honey Crepe",
+    description: "A sweet crepe drizzled with Mannino honey and topped with mixed berries.",
+    price: 10.0,
+    imageUrl: "/menu/crepes/mannino-honey-crepe.png",
+    category: "Sweet Crepes",
+    preparationTag: "Sweet Crepe",
   },
   {
     id: -4,
-    name: "Black & White Cold Brew",
-    description: "Cold brew made with both dark and light roast beans, finished with a drizzle of condensed milk.",
-    price: 5.15,
-    imageUrl: "/menu/coffee/cold-brew.png",
-    category: "Coffee",
-    preparationTag: "Cold Brew",
+    name: "Travis Special",
+    description: "Cream cheese, salmon, spinach, and a fried egg served on a freshly toasted bagel.",
+    price: 14.0,
+    imageUrl: "/menu/sandwiches-bagels/travis-special.png",
+    category: "Bagels",
+    preparationTag: "Bagel",
   },
 ];
 
@@ -202,18 +202,11 @@ export default function HomePage({ navigate }: PageProps) {
             <p className="home-hero-kicker">{featuredLocation.name} spotlight</p>
 
             <div className="home-store-copy">
-              <span aria-hidden="true" className="store-wordmark-splash" />
               <h1 className="store-display">
                 <span className="store-display-top">CAFFEINATED</span>
                 <span className="store-display-bottom">LIONS</span>
               </h1>
             </div>
-
-            <p className="home-hero-lead">
-              Fresh pours, soft-baked pastries, and seasonal favorites now lead the page like a COFFEEHOUSE counter.
-              Put the product first, then let guests jump straight into ordering, rewards, or the nearest store.
-            </p>
-
             <div className="home-hero-actions">
               <button className="commerce-primary-button" onClick={() => navigate("/menu")} type="button">
                 Shop the menu
@@ -342,7 +335,7 @@ export default function HomePage({ navigate }: PageProps) {
           <div className="home-step">
             <div className="home-step-number">01</div>
             <h3>Browse the menu</h3>
-            <p>Explore our full menu of espresso drinks, cold brews, pastries, and seasonal specials. Then reserve your spot.</p>
+            <p>Explore our full menu of drinks, crepes, and bagels. Then reserve your spot.</p>
           </div>
           <div className="home-step-divider" aria-hidden="true" />
           <div className="home-step">

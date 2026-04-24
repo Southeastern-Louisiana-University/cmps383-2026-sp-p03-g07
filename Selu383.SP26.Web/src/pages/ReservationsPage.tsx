@@ -5,6 +5,35 @@ import { useAuth } from "../store/authStore";
 import type { Location, Reservation } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
 
+type TimeOption = { value: string; label: string };
+
+function format12HourLabel(hours24: number, minutes: number) {
+  const normalizedHours = ((hours24 % 24) + 24) % 24;
+  const isPm = normalizedHours >= 12;
+  const hours12 = normalizedHours % 12 || 12;
+  const minuteText = String(minutes).padStart(2, "0");
+  return `${hours12}:${minuteText} ${isPm ? "PM" : "AM"}`;
+}
+
+function buildTimeOptions({ startHour, endHour, intervalMinutes }: { startHour: number; endHour: number; intervalMinutes: number }): TimeOption[] {
+  const options: TimeOption[] = [];
+
+  for (let hours = startHour; hours <= endHour; hours += 1) {
+    for (let minutes = 0; minutes < 60; minutes += intervalMinutes) {
+      if (hours === endHour && minutes > 0) {
+        continue;
+      }
+
+      const value = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
+      options.push({ value, label: format12HourLabel(hours, minutes) });
+    }
+  }
+
+  return options;
+}
+
+const TIME_OPTIONS = buildTimeOptions({ startHour: 6, endHour: 21, intervalMinutes: 30 });
+
 export default function ReservationsPage({ navigate }: PageProps) {
   const { user } = useAuth();
   const [locations, setLocations] = useState<Location[]>([]);
@@ -139,9 +168,8 @@ export default function ReservationsPage({ navigate }: PageProps) {
               <label htmlFor="res-time" style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>
                 Time
               </label>
-              <input
+              <select
                 id="res-time"
-                type="time"
                 value={reservationTime}
                 onChange={(e) => setReservationTime(e.target.value)}
                 style={{
@@ -153,7 +181,14 @@ export default function ReservationsPage({ navigate }: PageProps) {
                   fontSize: 15,
                   boxSizing: "border-box",
                 }}
-              />
+              >
+                <option value="">Select a time</option>
+                {TIME_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
             <div style={{ flex: 1, minWidth: 120 }}>
               <label htmlFor="party-size" style={{ display: "block", fontWeight: 600, marginBottom: 6 }}>

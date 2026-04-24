@@ -8,6 +8,12 @@ export const authApi = {
       body: JSON.stringify({ userName, password }),
     });
   },
+  resetPassword(userName: string, email: string, phone: string, newPassword: string) {
+    return apiRequest<void>("/api/authentication/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ userName, email, phone, newPassword }),
+    });
+  },
   logout() {
     return apiRequest<void>("/api/authentication/logout", {
       method: "POST",
