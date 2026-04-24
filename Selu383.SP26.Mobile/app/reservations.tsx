@@ -19,6 +19,30 @@ export default function ReservationsScreen() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
 
+  function parse12HourTime(value: string) {
+    const normalized = value.trim().toLowerCase();
+    const match = normalized.match(/^(\d{1,2})(?::(\d{2}))?\s*(am|pm)$/i);
+    if (!match) return null;
+
+    let hours = Number(match[1]);
+    const minutes = match[2] ? Number(match[2]) : 0;
+    const meridiem = match[3].toLowerCase();
+
+    if (!Number.isFinite(hours) || !Number.isFinite(minutes)) return null;
+    if (hours < 1 || hours > 12) return null;
+    if (minutes < 0 || minutes > 59) return null;
+
+    if (meridiem === 'am') {
+      if (hours === 12) hours = 0;
+    } else if (meridiem === 'pm') {
+      if (hours !== 12) hours += 12;
+    } else {
+      return null;
+    }
+
+    return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+  }
+
   useEffect(() => {
     void locationService.getLocations().then((locs) => {
       setLocations(locs);
@@ -56,6 +80,13 @@ export default function ReservationsScreen() {
       setErrorMessage('Please enter a date and time.');
       return;
     }
+
+    const time24 = parse12HourTime(reservationTime);
+    if (!time24) {
+      setErrorMessage('Please enter the time like 6:30 PM.');
+      return;
+    }
+
     const size = parseInt(partySize, 10);
     if (!size || size < 1 || size > 20) {
       setErrorMessage('Party size must be between 1 and 20.');
@@ -66,7 +97,7 @@ export default function ReservationsScreen() {
     setErrorMessage('');
     setSuccessMessage('');
     try {
-      const isoDateTime = `${reservationDate}T${reservationTime}:00`;
+      const isoDateTime = `${reservationDate}T${time24}:00`;
       await reservationService.create({
         locationId: locationId!,
         reservationTime: isoDateTime,
@@ -115,14 +146,13 @@ export default function ReservationsScreen() {
           keyboardType="numbers-and-punctuation"
         />
 
-        <Text style={styles.label}>Time (HH:MM)</Text>
+        <Text style={styles.label}>Time (h:mm AM/PM)</Text>
         <TextInput
           style={styles.input}
           value={reservationTime}
           onChangeText={setReservationTime}
-          placeholder="18:30"
+          placeholder="6:30 PM"
           placeholderTextColor="#8f7d70"
-          keyboardType="numbers-and-punctuation"
         />
 
         <Text style={styles.label}>Party size</Text>

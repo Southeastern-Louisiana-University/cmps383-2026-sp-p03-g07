@@ -24,7 +24,7 @@ function isShotOption(option: MenuCustomization) {
 
 function isSingleSelectGroup(groupName: string) {
   const normalized = groupName.trim().toLowerCase();
-  return normalized === 'milk' || normalized === 'sweetener';
+  return normalized === 'milk' || normalized === 'sweetener' || normalized === 'ice';
 }
 
 function buildCustomizationLabel(option: MenuCustomization, quantity: number | null) {
@@ -332,7 +332,7 @@ export default function MenuScreen() {
     ]).then(([locs, cats]) => {
       setLocations(locs);
       if (locs.length > 0) setSelectedLocation(locs[0].id);
-      setCategories(['All', ...cats]);
+      setCategories(['All', ...cats.filter((cat) => cat.trim().toLowerCase() !== 'gifts')]);
     });
   }, []);
 

@@ -10,9 +10,9 @@ import type { PageProps } from "../types/router.types";
 import { CommerceTopRail } from "./commerceShared";
 
 const menuDisplayCategories = [
-  "Coffee",
-  "Lemonade",
-  "Crepes",
+  "Drinks",
+  "Sweet Crepes",
+  "Savory Crepes",
   "Bagels",
 ] as const;
 
@@ -29,39 +29,25 @@ const sortOptions: Array<{ value: MenuSort; label: string }> = [
   { value: "name", label: "Name A-Z" },
 ];
 
-function getItemSearchText(item: MenuItem) {
-  return `${item.name} ${item.category} ${item.description} ${item.preparationTag}`.toLowerCase();
-}
-
 function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
-  const text = getItemSearchText(item);
-
   if (item.category === "Gifts") {
     return null;
   }
 
-  if (item.category === "Lemonade") {
-    return "Lemonade";
-  }
-
-  if (item.category === "Crepes") {
-    return "Crepes";
-  }
-
-  if (["Vegan", "Salads & Quiches", "Cakes & Sweets", "Pastries", "Salad & Quiches", "Sweet and Pops"].includes(item.category)) {
-    return null;
-  }
-
-  if (item.preparationTag.toLowerCase() === "pastry" || /croissant|muffin|pastry|brioche|roll/.test(text)) {
-    return null;
-  }
-
-  if (item.category === "Sandwiches & Bagels") {
+  if (item.category === "Bagels") {
     return "Bagels";
   }
 
-  if (item.category === "Coffee") {
-    return "Coffee";
+  if (item.category === "Drinks") {
+    return "Drinks";
+  }
+
+  if (item.category === "Sweet Crepes") {
+    return "Sweet Crepes";
+  }
+
+  if (item.category === "Savory Crepes") {
+    return "Savory Crepes";
   }
 
   return null;
@@ -100,7 +86,7 @@ export default function MenuPage({ navigate }: PageProps) {
   const cartLocationId = cartItems[0]?.locationId ?? 0;
   const [items, setItems] = useState<MenuItem[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<MenuDisplayCategory>("Coffee");
+  const [selectedCategory, setSelectedCategory] = useState<MenuDisplayCategory>("Drinks");
   const [selectedLocationId, setSelectedLocationId] = useState<number>(cartLocationId);
   const [selectedSort, setSelectedSort] = useState<MenuSort>("selected");
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);

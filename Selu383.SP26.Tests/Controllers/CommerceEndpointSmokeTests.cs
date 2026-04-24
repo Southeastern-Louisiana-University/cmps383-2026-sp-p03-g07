@@ -39,18 +39,22 @@ public class CommerceEndpointSmokeTests
         var locationResponse = await webClient.GetAsync($"/api/locations/{firstLocation.Id}");
         locationResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var categoriesResponse = await webClient.GetAsync("/api/menu/categories");
-        categoriesResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-        var categories = await categoriesResponse.Content.ReadAsJsonAsync<List<string>>();
-        categories.Should().Contain("Coffee");
-        categories.Should().Contain("Lemonade");
-        categories.Should().Contain("Crepes");
-        categories.Should().Contain("Sandwiches & Bagels");
-        categories.Should().Contain("Gifts");
-        categories.Should().NotContain("Salads & Quiches");
-        categories.Should().NotContain("Cakes & Sweets");
-        categories.Should().NotContain("Pastries");
-        categories.Should().NotContain("Vegan");
+	        var categoriesResponse = await webClient.GetAsync("/api/menu/categories");
+	        categoriesResponse.StatusCode.Should().Be(HttpStatusCode.OK);
+	        var categories = await categoriesResponse.Content.ReadAsJsonAsync<List<string>>();
+	        categories.Should().Contain("Drinks");
+	        categories.Should().Contain("Sweet Crepes");
+	        categories.Should().Contain("Savory Crepes");
+	        categories.Should().Contain("Bagels");
+	        categories.Should().Contain("Gifts");
+	        categories.Should().NotContain("Coffee");
+	        categories.Should().NotContain("Lemonade");
+	        categories.Should().NotContain("Crepes");
+	        categories.Should().NotContain("Sandwiches & Bagels");
+	        categories.Should().NotContain("Salads & Quiches");
+	        categories.Should().NotContain("Cakes & Sweets");
+	        categories.Should().NotContain("Pastries");
+	        categories.Should().NotContain("Vegan");
 
         var menuResponse = await webClient.GetAsync("/api/menu");
         menuResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -296,14 +300,14 @@ public class CommerceEndpointSmokeTests
 
         updateLocationResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        var managerMenuCreateResponse = await webClient.PostAsJsonAsync("/api/menu", new
-        {
-            name = "Manager Espresso",
-            category = "Coffee",
-            description = "Manager-created menu item",
-            price = 4.95m,
-            isAvailable = true,
-            locationId = managedLocation.Id,
+	        var managerMenuCreateResponse = await webClient.PostAsJsonAsync("/api/menu", new
+	        {
+	            name = "Manager Espresso",
+	            category = "Drinks",
+	            description = "Manager-created menu item",
+	            price = 4.95m,
+	            isAvailable = true,
+	            locationId = managedLocation.Id,
             imageUrl = "",
             calories = 120,
             isFeatured = false,
@@ -324,14 +328,14 @@ public class CommerceEndpointSmokeTests
         await webClient.AssertLoggedOut();
         await webClient.AssertLoggedInAsAdmin();
 
-        var updateMenuResponse = await webClient.PutAsJsonAsync($"/api/menu/{managedMenuItem!.Id}", new
-        {
-            id = managedMenuItem.Id,
-            name = "Manager Espresso Updated",
-            category = "Coffee",
-            description = "Updated by admin",
-            price = 5.25m,
-            isAvailable = true,
+	        var updateMenuResponse = await webClient.PutAsJsonAsync($"/api/menu/{managedMenuItem!.Id}", new
+	        {
+	            id = managedMenuItem.Id,
+	            name = "Manager Espresso Updated",
+	            category = "Drinks",
+	            description = "Updated by admin",
+	            price = 5.25m,
+	            isAvailable = true,
             locationId = managedLocation.Id,
             imageUrl = "",
             calories = 130,

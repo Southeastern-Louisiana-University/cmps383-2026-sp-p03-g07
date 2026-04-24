@@ -17,7 +17,7 @@ function isShotOption(option: MenuCustomization) {
 
 function isSingleSelectGroup(groupName: string) {
   const normalized = groupName.trim().toLowerCase();
-  return normalized === "milk" || normalized === "sweetener";
+  return normalized === "milk" || normalized === "sweetener" || normalized === "ice";
 }
 
 function buildCustomizationLabel(option: MenuCustomization, quantity: number | null) {

@@ -10,6 +10,10 @@ const SAMPLE_FEEDBACK = [
   { rating: 4, category: "Service", name: "Jordan", comment: "Quick pickup and super friendly staff. My drink was ready right on time.", when: "This week" },
   { rating: 5, category: "Food", name: "Avery", comment: "Crepe was warm and filling. Great portion for the price.", when: "Last week" },
   { rating: 4, category: "Atmosphere", name: "Sam", comment: "Cozy vibe and a good spot to study. Music volume was just right.", when: "Last week" },
+  { rating: 5, category: "Overall", name: "Lena", comment: "Loved the new menu—super easy to customize and everything tasted fresh.", when: "Yesterday" },
+  { rating: 4, category: "Cleanliness", name: "Chris", comment: "Tables were clean and the pickup area stayed organized even during the rush.", when: "This week" },
+  { rating: 5, category: "Service", name: "Nina", comment: "Barista helped me pick the perfect drink and got my order out fast.", when: "This month" },
+  { rating: 4, category: "Food", name: "Diego", comment: "Bagel was toasted just right and the add-ons made it even better.", when: "This month" },
 ] as const;
 
 function renderStars(rating: number) {

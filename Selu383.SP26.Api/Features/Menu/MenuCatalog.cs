@@ -4,10 +4,10 @@ public static class MenuCatalog
 {
     public static readonly string[] SupportedCategories =
     [
-        "Coffee",
-        "Lemonade",
-        "Crepes",
-        "Sandwiches & Bagels",
+        "Drinks",
+        "Sweet Crepes",
+        "Savory Crepes",
+        "Bagels",
         "Gifts"
     ];
 

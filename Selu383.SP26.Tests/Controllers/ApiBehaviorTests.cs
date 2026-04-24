@@ -106,63 +106,63 @@ public class ApiBehaviorTests
         using var webClient = context.GetStandardWebClient();
         var locationId = context.GetAnyLocationId();
 
-        var anonymousResponse = await webClient.PostAsJsonAsync("/api/menu", new
-        {
-            name = "Test Drink",
-            category = "Coffee",
-            price = 5.25m,
-            isAvailable = true,
-            locationId
-        });
+	        var anonymousResponse = await webClient.PostAsJsonAsync("/api/menu", new
+	        {
+	            name = "Test Drink",
+	            category = "Drinks",
+	            price = 5.25m,
+	            isAvailable = true,
+	            locationId
+	        });
 
         anonymousResponse.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
 
         await webClient.AssertLoggedInAsBob();
 
-        var userResponse = await webClient.PostAsJsonAsync("/api/menu", new
-        {
-            name = "Test Drink",
-            category = "Coffee",
-            price = 5.25m,
-            isAvailable = true,
-            locationId
-        });
+	        var userResponse = await webClient.PostAsJsonAsync("/api/menu", new
+	        {
+	            name = "Test Drink",
+	            category = "Drinks",
+	            price = 5.25m,
+	            isAvailable = true,
+	            locationId
+	        });
 
         userResponse.StatusCode.Should().Be(HttpStatusCode.Forbidden);
 
         await webClient.AssertLoggedOut();
         await webClient.AssertLoggedInAsAdmin();
 
-        var invalidLocationResponse = await webClient.PostAsJsonAsync("/api/menu", new
-        {
-            name = "Ghost Drink",
-            category = "Coffee",
-            price = 5.25m,
-            isAvailable = true,
-            locationId = 99999
-        });
+	        var invalidLocationResponse = await webClient.PostAsJsonAsync("/api/menu", new
+	        {
+	            name = "Ghost Drink",
+	            category = "Drinks",
+	            price = 5.25m,
+	            isAvailable = true,
+	            locationId = 99999
+	        });
 
         invalidLocationResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var invalidCategoryResponse = await webClient.PostAsJsonAsync("/api/menu", new
-        {
-            name = "Ghost Drink",
-            category = "Drinks",
-            price = 5.25m,
-            isAvailable = true,
-            locationId
-        });
+	        var invalidCategoryResponse = await webClient.PostAsJsonAsync("/api/menu", new
+	        {
+	            name = "Ghost Drink",
+	            category = "Coffee",
+	            price = 5.25m,
+	            isAvailable = true,
+	            locationId
+	        });
 
         invalidCategoryResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var adminResponse = await webClient.PostAsJsonAsync("/api/menu", new
-        {
-            name = "Manager Approved Latte",
-            category = "Coffee",
-            price = 5.25m,
-            isAvailable = true,
-            locationId
-        });
+	        var adminResponse = await webClient.PostAsJsonAsync("/api/menu", new
+	        {
+	            name = "Manager Approved Latte",
+	            category = "Drinks",
+	            price = 5.25m,
+	            isAvailable = true,
+	            locationId
+	        });
 
         adminResponse.StatusCode.Should().Be(HttpStatusCode.Created);
         var createdItem = await adminResponse.Content.ReadAsJsonAsync<MenuItemDto>();
@@ -179,14 +179,14 @@ public class ApiBehaviorTests
         using (var scope = context.GetServices().CreateScope())
         {
             var dataContext = scope.ServiceProvider.GetRequiredService<DataContext>();
-            var legacyItem = new MenuItem
-            {
-                Name = "Legacy Drink",
-                Category = "Drinks",
-                Description = "Legacy category item",
-                Price = 4.50m,
-                IsAvailable = true,
-                LocationId = locationId,
+	        var legacyItem = new MenuItem
+	        {
+	            Name = "Legacy Drink",
+	            Category = "Coffee",
+	            Description = "Legacy category item",
+	            Price = 4.50m,
+	            IsAvailable = true,
+	            LocationId = locationId,
                 ImageUrl = "",
                 Calories = 90,
                 InventoryCount = 5,
