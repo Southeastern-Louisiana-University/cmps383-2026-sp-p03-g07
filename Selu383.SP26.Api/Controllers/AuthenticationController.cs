@@ -27,7 +27,17 @@ public class AuthenticationController : ControllerBase
     public async Task<ActionResult<UserDto>> Me()
     {
         var username = User.GetCurrentUserName();
-        var resultDto = await GetUserDto(userManager.Users).SingleAsync(x => x.UserName == username);
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return Unauthorized();
+        }
+
+        var resultDto = await GetUserDto(userManager.Users).SingleOrDefaultAsync(x => x.UserName == username);
+        if (resultDto == null)
+        {
+            return NotFound();
+        }
+
         return Ok(resultDto);
     }
 
@@ -130,6 +140,11 @@ public class AuthenticationController : ControllerBase
     public async Task<ActionResult<UserDto>> UpdateProfile([FromBody] UpdateProfileDto dto)
     {
         var username = User.GetCurrentUserName();
+        if (string.IsNullOrWhiteSpace(username))
+        {
+            return Unauthorized();
+        }
+
         var user = await userManager.FindByNameAsync(username);
         if (user == null)
         {
