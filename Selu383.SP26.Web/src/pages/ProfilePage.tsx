@@ -165,6 +165,11 @@ export default function ProfilePage({ navigate }: PageProps) {
                   Register
                 </button>
               </div>
+              <div style={{ marginTop: "0.85rem" }}>
+                <button className="cart-inline-link" onClick={() => navigate("/forgot-password")} type="button">
+                  Forgot password?
+                </button>
+              </div>
             </div>
 
             <div className="account-highlight-grid">

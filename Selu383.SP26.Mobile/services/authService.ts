@@ -11,6 +11,12 @@ export const authService = {
       body: JSON.stringify({ userName, password }),
     });
   },
+  resetPassword(userName: string, email: string, phone: string, newPassword: string) {
+    return apiRequest<void>('/api/authentication/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ userName, email, phone, newPassword }),
+    });
+  },
   register(userName: string, password: string, email: string, phone: string) {
     return apiRequest<UserSession>('/api/authentication/register', {
       method: 'POST',

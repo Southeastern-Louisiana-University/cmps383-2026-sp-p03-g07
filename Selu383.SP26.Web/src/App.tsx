@@ -40,6 +40,7 @@ const routes: RouteDefinition[] = [
   { path: "/stores", label: "Stores", element: StoreMapPage, showInPrimaryNav: true },
   { path: "/login", label: "Login", element: LoginPage },
   { path: "/signup", label: "Register", element: LoginPage },
+  { path: "/forgot-password", label: "Reset Password", element: LoginPage },
   { path: "/orders", label: "Orders", element: OrderHistory, protected: true, showInPrimaryNav: true },
   { path: "/order-status", label: "Track", element: OrderStatusPage, protected: true },
   { path: "/profile", label: "Profile", element: ProfilePage, protected: true },
@@ -185,6 +186,7 @@ function AppLayout() {
     activeRoute.path === "/profile" ||
     activeRoute.path === "/login" ||
     activeRoute.path === "/signup" ||
+    activeRoute.path === "/forgot-password" ||
     activeRoute.path === "/orders" ||
     activeRoute.path === "/order-status" ||
     activeRoute.path === "/reservations" ||

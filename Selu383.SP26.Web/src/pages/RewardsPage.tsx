@@ -93,7 +93,7 @@ export default function RewardsPage({ navigate }: PageProps) {
         <section className="rewards-hero">
           <div className="rewards-hero-copy">
             <p className="rewards-kicker">Rewards</p>
-            <h1>POINTS, SIMPLE.</h1>
+            <h1>POINTS</h1>
             <p className="rewards-hero-description">
               Earn {POINTS_PER_DOLLAR} points for every $1 you spend. Redeem rewards starting at {REWARD_THRESHOLD} points.
             </p>

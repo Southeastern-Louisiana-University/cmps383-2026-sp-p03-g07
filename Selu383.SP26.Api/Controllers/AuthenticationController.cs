@@ -88,6 +88,43 @@ public class AuthenticationController : ControllerBase
         return Ok();
     }
 
+    [HttpPost("reset-password")]
+    public async Task<ActionResult> ResetPassword([FromBody] ResetPasswordDto dto)
+    {
+        var user = await userManager.FindByNameAsync(dto.UserName);
+        if (user == null)
+        {
+            return BadRequest("No account found with that username.");
+        }
+
+        var emailMatches = string.Equals(
+            (user.Email ?? string.Empty).Trim(),
+            dto.Email.Trim(),
+            StringComparison.OrdinalIgnoreCase);
+        var phoneMatches = string.Equals(
+            NormalizePhone(user.PhoneNumber ?? string.Empty),
+            NormalizePhone(dto.Phone),
+            StringComparison.Ordinal);
+
+        if (!emailMatches || !phoneMatches)
+        {
+            return BadRequest("Email or phone number does not match our records.");
+        }
+
+        var token = await userManager.GeneratePasswordResetTokenAsync(user);
+        var resetResult = await userManager.ResetPasswordAsync(user, token, dto.NewPassword);
+        if (!resetResult.Succeeded)
+        {
+            var errors = string.Join(" ", resetResult.Errors.Select(e => e.Description));
+            return BadRequest(errors);
+        }
+
+        await userManager.ResetAccessFailedCountAsync(user);
+        await userManager.SetLockoutEndDateAsync(user, null);
+
+        return Ok();
+    }
+
     [HttpPut("profile")]
     [Authorize]
     public async Task<ActionResult<UserDto>> UpdateProfile([FromBody] UpdateProfileDto dto)
@@ -121,5 +158,10 @@ public class AuthenticationController : ControllerBase
             Birthday = x.Birthday,
             ProfilePictureUrl = x.ProfilePictureUrl
         });
+    }
+
+    private static string NormalizePhone(string value)
+    {
+        return new string(value.Where(char.IsDigit).ToArray());
     }
 }

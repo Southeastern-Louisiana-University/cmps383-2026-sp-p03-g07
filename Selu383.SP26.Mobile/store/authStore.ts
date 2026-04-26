@@ -15,6 +15,7 @@ type AuthContextValue = {
   loading: boolean;
   login: (userName: string, password: string) => Promise<void>;
   register: (userName: string, password: string, email: string, phone: string) => Promise<void>;
+  resetPassword: (userName: string, email: string, phone: string, newPassword: string) => Promise<void>;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
   updateProfile: (data: { displayName?: string; birthday?: string | null; profilePictureUrl?: string }) => Promise<void>;
@@ -52,6 +53,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
       async register(userName, password, email, phone) {
         const nextUser = await authService.register(userName, password, email, phone);
         setUser(nextUser);
+      },
+      resetPassword(userName, email, phone, newPassword) {
+        return authService.resetPassword(userName, email, phone, newPassword);
       },
       refresh,
       async logout() {

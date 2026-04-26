@@ -105,7 +105,7 @@ export default function OrderHistory({ navigate, query }: PageProps) {
         <section className="commerce-hero orders-hero">
           <div className="commerce-hero-copy">
             <p className="commerce-kicker">Orders</p>
-            <h1>YOUR ORDER HISTORY, ALL IN ONE TIMELINE.</h1>
+            <h1>YOUR ORDER HISTORY</h1>
             <p className="commerce-hero-description">
               Review previous visits, track the current order, and reopen a favorite run without leaving
               the Lions visual system.

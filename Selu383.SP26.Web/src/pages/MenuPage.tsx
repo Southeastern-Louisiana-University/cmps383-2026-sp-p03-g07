@@ -10,14 +10,10 @@ import type { PageProps } from "../types/router.types";
 import { CommerceTopRail } from "./commerceShared";
 
 const menuDisplayCategories = [
-  "Coffee",
-  "Lemonade",
-  "Pastries",
-  "Crepes",
+  "Drinks",
+  "Sweet Crepes",
+  "Savory Crepes",
   "Bagels",
-  "Salads & Quiches",
-  "Cakes & Sweets",
-  "Vegan",
 ] as const;
 
 type MenuDisplayCategory = (typeof menuDisplayCategories)[number];
@@ -33,47 +29,25 @@ const sortOptions: Array<{ value: MenuSort; label: string }> = [
   { value: "name", label: "Name A-Z" },
 ];
 
-function getItemSearchText(item: MenuItem) {
-  return `${item.name} ${item.category} ${item.description} ${item.preparationTag}`.toLowerCase();
-}
-
 function getDisplayCategory(item: MenuItem): MenuDisplayCategory | null {
-  const text = getItemSearchText(item);
-
   if (item.category === "Gifts") {
     return null;
   }
 
-  if (item.category === "Lemonade") {
-    return "Lemonade";
-  }
-
-  if (item.category === "Crepes") {
-    return "Crepes";
-  }
-
-  if (item.category === "Vegan" || text.includes("plant-based") || text.includes("vegan")) {
-    return "Vegan";
-  }
-
-  if (item.preparationTag.toLowerCase() === "pastry" || /croissant|muffin|pastry|brioche|roll/.test(text)) {
-    return "Pastries";
-  }
-
-  if (item.category === "Salad & Quiches") {
-    return "Salads & Quiches";
-  }
-
-  if (item.category === "Sweet and Pops") {
-    return "Cakes & Sweets";
-  }
-
-  if (item.category === "Sandwiches & Bagels") {
+  if (item.category === "Bagels") {
     return "Bagels";
   }
 
-  if (item.category === "Coffee") {
-    return "Coffee";
+  if (item.category === "Drinks") {
+    return "Drinks";
+  }
+
+  if (item.category === "Sweet Crepes") {
+    return "Sweet Crepes";
+  }
+
+  if (item.category === "Savory Crepes") {
+    return "Savory Crepes";
   }
 
   return null;
@@ -112,7 +86,7 @@ export default function MenuPage({ navigate }: PageProps) {
   const cartLocationId = cartItems[0]?.locationId ?? 0;
   const [items, setItems] = useState<MenuItem[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<MenuDisplayCategory>("Coffee");
+  const [selectedCategory, setSelectedCategory] = useState<MenuDisplayCategory>("Drinks");
   const [selectedLocationId, setSelectedLocationId] = useState<number>(cartLocationId);
   const [selectedSort, setSelectedSort] = useState<MenuSort>("selected");
   const [customizingItem, setCustomizingItem] = useState<MenuItem | null>(null);

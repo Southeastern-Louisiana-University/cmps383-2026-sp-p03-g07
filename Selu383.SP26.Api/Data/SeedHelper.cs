@@ -68,6 +68,12 @@ public static class SeedHelper
             adminUser = new User { UserName = "galkadi" };
             await userManager.CreateAsync(adminUser, defaultPassword);
         }
+        if (string.IsNullOrWhiteSpace(adminUser.Email) || string.IsNullOrWhiteSpace(adminUser.PhoneNumber))
+        {
+            adminUser.Email = string.IsNullOrWhiteSpace(adminUser.Email) ? "galkadi@example.com" : adminUser.Email;
+            adminUser.PhoneNumber = string.IsNullOrWhiteSpace(adminUser.PhoneNumber) ? "9855550101" : adminUser.PhoneNumber;
+            await userManager.UpdateAsync(adminUser);
+        }
         if (!await userManager.IsInRoleAsync(adminUser, RoleNames.Admin))
         {
             await userManager.AddToRoleAsync(adminUser, RoleNames.Admin);
@@ -78,6 +84,12 @@ public static class SeedHelper
         {
             bob = new User { UserName = "bob" };
             await userManager.CreateAsync(bob, defaultPassword);
+        }
+        if (string.IsNullOrWhiteSpace(bob.Email) || string.IsNullOrWhiteSpace(bob.PhoneNumber))
+        {
+            bob.Email = string.IsNullOrWhiteSpace(bob.Email) ? "bob@example.com" : bob.Email;
+            bob.PhoneNumber = string.IsNullOrWhiteSpace(bob.PhoneNumber) ? "9855550102" : bob.PhoneNumber;
+            await userManager.UpdateAsync(bob);
         }
         if (!await userManager.IsInRoleAsync(bob, RoleNames.User))
         {
@@ -93,6 +105,12 @@ public static class SeedHelper
         else if (sue.Points < 1000)
         {
             sue.Points = 1000;
+            await userManager.UpdateAsync(sue);
+        }
+        if (string.IsNullOrWhiteSpace(sue.Email) || string.IsNullOrWhiteSpace(sue.PhoneNumber))
+        {
+            sue.Email = string.IsNullOrWhiteSpace(sue.Email) ? "sue@example.com" : sue.Email;
+            sue.PhoneNumber = string.IsNullOrWhiteSpace(sue.PhoneNumber) ? "9855550103" : sue.PhoneNumber;
             await userManager.UpdateAsync(sue);
         }
         if (!await userManager.IsInRoleAsync(sue, RoleNames.User))
@@ -213,50 +231,30 @@ public static class SeedHelper
         var seededMenuItems = new[] { 1, 2, 3 }
             .Select(locationId =>
                 CreateMenuItem(
-                    "Vegan Hummus Wrap",
-                    "Vegan",
-                    "Hummus, cucumbers, greens, pickled onions, and herbs wrapped fresh to order.",
-                    7.75m,
+                    "Caffeinated Lions Mug",
+                    "Gifts",
+                    "Branded ceramic mug with the house olive-and-gold palette.",
+                    16.00m,
                     locationId,
-                    "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=400&q=80",
-                    340,
-                    "Plant-Based",
-                    isFeatured: locationId == 1,
-                    inventoryCount: 5))
-            .Concat(
-                new[] { 1, 2, 3 }.Select(locationId =>
-                    CreateMenuItem(
-                        "Caffeinated Lions Mug",
-                        "Gifts",
-                        "Branded ceramic mug with the house olive-and-gold palette.",
-                        16.00m,
-                        locationId,
-                        "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=400&q=80",
-                        0,
-                        "Merch")))
+                    "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?auto=format&fit=crop&w=400&q=80",
+                    0,
+                    "Merch"))
             .ToArray();
 
-        var coffeeLocationIds = new[] { 1, 2, 3 };
-        var pastryLocationIds = new[] { 1, 2, 3 };
-        var saladAndQuichesLocationIds = new[] { 1, 2, 3 };
-        var sandwichLocationIds = new[] { 1, 2, 3 };
-        var sweetAndPopsLocationIds = new[] { 1, 2, 3 };
-        var lemonadeLocationIds = new[] { 1, 2, 3 };
+        var drinkLocationIds = new[] { 1, 2, 3 };
         var crepeLocationIds = new[] { 1, 2, 3 };
-        var lemonadeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "Strawberry Limeade",
-            "Shaken Lemonade",
-        };
-        var coffeeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        var bagelLocationIds = new[] { 1, 2, 3 };
+
+        var drinkMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Iced Latte",
             "Supernova",
             "Roaring Frappe",
             "Black & White Cold Brew",
-            "Sugar Shaken Espresso",
+            "Strawberry Limeade",
+            "Shaken Lemonade",
         };
-        var crepeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        var sweetCrepeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Mannino Honey Crepe",
             "Downtowner",
@@ -265,6 +263,9 @@ public static class SeedHelper
             "Strawberry Fields",
             "Bonjour",
             "Banana Foster",
+        };
+        var savoryCrepeMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
             "Matt's Scrambled Eggs",
             "Meanie Mushroom",
             "Turkey Club",
@@ -273,25 +274,13 @@ public static class SeedHelper
             "Crepe Fromage",
             "Farmers Market Crepe",
         };
-        var sandwichMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        var bagelMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
             "Travis Special",
             "Crème Brulagel",
             "The Fancy One",
             "Breakfast Bagel",
             "The Classic",
-        };
-        var saladAndQuichesMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "Smoked Chicken Salad",
-        };
-        var sweetAndPopsMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-        {
-            "BROWNIE",
-            "CARROT CAKE",
-            "CHEESECAKE",
-            "DOUBLE CHOCOLATE",
-            "RASPBERRY SLICE",
         };
         var retiredMenuNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -302,387 +291,266 @@ public static class SeedHelper
 
         seededMenuItems = seededMenuItems
             .Concat(
-                pastryLocationIds.SelectMany(locationId => new[]
-                {
-                    CreateMenuItem(
-                        "CROISSANT",
-                        "Pastries",
-                        "Buttery layers with a crisp shell and tender center.",
-                        3.50m,
-                        locationId,
-                        "/menu/pastries/croissant.webp",
-                        280,
-                        "Pastry"),
-                    CreateMenuItem(
-                        "BRIOCHE WITH CHOCOLATE",
-                        "Pastries",
-                        "Soft brioche finished with a glossy dark chocolate cap.",
-                        4.95m,
-                        locationId,
-                        "/menu/pastries/brioche-with-chocolate.webp",
-                        360,
-                        "Pastry"),
-                    CreateMenuItem(
-                        "cinnamon roll",
-                        "Pastries",
-                        "Twisted cinnamon pastry with buttery layers and a rich spiced filling.",
-                        4.75m,
-                        locationId,
-                        "/menu/pastries/cinnamon-roll.webp",
-                        390,
-                        "Pastry"),
-                    CreateMenuItem(
-                        "FOCACCIA MARINARA PIECE",
-                        "Pastries",
-                        "Airy focaccia square layered with marinara, olive oil, and roasted edges.",
-                        5.25m,
-                        locationId,
-                        "/menu/pastries/focaccia-marinara-piece.webp",
-                        320,
-                        "Pastry"),
-                }))
-            .Concat(
                 crepeLocationIds.SelectMany(locationId => new[]
                 {
                     // Sweet Crepes
                     CreateMenuItem(
                         "Mannino Honey Crepe",
-                        "Crepes",
-                        "A sweet crepe drizzled with Mannino honey and topped with mixed berries.",
-                        10.00m,
-                        locationId,
-                        "/menu/cakes-sweets/raspberry-slice.webp",
-                        520,
-                        "Sweet Crepe",
-                        isFeatured: locationId == 1),
+                        "Sweet Crepes",
+		                        "A sweet crepe drizzled with Mannino honey and topped with mixed berries.",
+		                        10.00m,
+		                        locationId,
+		                        "/menu/crepes/mannino-honey-crepe.png",
+		                        520,
+		                        "Sweet Crepe",
+		                        isFeatured: locationId == 1),
                     CreateMenuItem(
                         "Downtowner",
-                        "Crepes",
-                        "Strawberries and bananas wrapped in a crepe, finished with Nutella and Hershey's chocolate sauce.",
-                        10.75m,
-                        locationId,
-                        "/menu/cakes-sweets/double-chocolate.webp",
-                        610,
-                        "Sweet Crepe"),
+                        "Sweet Crepes",
+		                        "Strawberries and bananas wrapped in a crepe, finished with Nutella and Hershey's chocolate sauce.",
+		                        10.75m,
+		                        locationId,
+		                        "/menu/crepes/downtowner.png",
+		                        610,
+		                        "Sweet Crepe"),
                     CreateMenuItem(
                         "Funky Monkey",
-                        "Crepes",
-                        "Nutella and bananas wrapped in a crepe, served with whipped cream.",
-                        10.00m,
-                        locationId,
-                        "/menu/cakes-sweets/brownie.webp",
-                        590,
-                        "Sweet Crepe"),
+                        "Sweet Crepes",
+		                        "Nutella and bananas wrapped in a crepe, served with whipped cream.",
+		                        10.00m,
+		                        locationId,
+		                        "/menu/crepes/funky-monkey.png",
+		                        590,
+		                        "Sweet Crepe"),
                     CreateMenuItem(
                         "Le S'mores",
-                        "Crepes",
-                        "Marshmallow cream and chocolate sauce inside a crepe, topped with graham cracker crumbs.",
-                        9.50m,
-                        locationId,
-                        "/menu/cakes-sweets/cheesecake.webp",
-                        640,
-                        "Sweet Crepe"),
+                        "Sweet Crepes",
+		                        "Marshmallow cream and chocolate sauce inside a crepe, topped with graham cracker crumbs.",
+		                        9.50m,
+		                        locationId,
+		                        "/menu/crepes/le-smores.png",
+		                        640,
+		                        "Sweet Crepe"),
                     CreateMenuItem(
                         "Strawberry Fields",
-                        "Crepes",
-                        "Fresh strawberries with Hershey's chocolate drizzle and a dusting of powdered sugar.",
-                        10.00m,
-                        locationId,
-                        "/menu/matcha/strawberry-matcha.webp",
-                        500,
-                        "Sweet Crepe"),
+                        "Sweet Crepes",
+		                        "Fresh strawberries with Hershey's chocolate drizzle and a dusting of powdered sugar.",
+		                        10.00m,
+		                        locationId,
+		                        "/menu/crepes/strawberry-fields.png",
+		                        500,
+		                        "Sweet Crepe"),
                     CreateMenuItem(
                         "Bonjour",
-                        "Crepes",
-                        "A sweet crepe filled with syrup and cinnamon, finished with powdered sugar.",
-                        8.50m,
-                        locationId,
-                        "/menu/pastries/cinnamon-roll.webp",
-                        420,
-                        "Sweet Crepe"),
+                        "Sweet Crepes",
+		                        "A sweet crepe filled with syrup and cinnamon, finished with powdered sugar.",
+		                        8.50m,
+		                        locationId,
+		                        "/menu/crepes/bonjour.png",
+		                        420,
+		                        "Sweet Crepe"),
                     CreateMenuItem(
                         "Banana Foster",
-                        "Crepes",
-                        "Bananas with cinnamon in a crepe, topped with a generous drizzle of caramel sauce.",
-                        8.95m,
-                        locationId,
-                        "/menu/coffee/caramel-macchiato.webp",
-                        530,
-                        "Sweet Crepe"),
+                        "Sweet Crepes",
+		                        "Bananas with cinnamon in a crepe, topped with a generous drizzle of caramel sauce.",
+		                        8.95m,
+		                        locationId,
+		                        "/menu/crepes/banana-foster.png",
+		                        530,
+		                        "Sweet Crepe"),
 
                     // Savory Crepes
                     CreateMenuItem(
                         "Matt's Scrambled Eggs",
-                        "Crepes",
+                        "Savory Crepes",
                         "Scrambled eggs and melted mozzarella cheese wrapped in a crepe.",
                         5.00m,
                         locationId,
-                        "/menu/sandwiches-bagels/breakfast-sandwich.webp",
+                        "/menu/crepes/matts-scrambled-eggs.png",
                         410,
                         "Savory Crepe"),
                     CreateMenuItem(
                         "Meanie Mushroom",
-                        "Crepes",
+                        "Savory Crepes",
                         "Sautéed mushrooms, mozzarella, tomato, and bacon inside a delicate crepe.",
                         10.50m,
                         locationId,
-                        "/menu/sandwiches-bagels/roast-beef-sandwich.webp",
+                        "/menu/crepes/meanie-mushroom.png",
                         520,
                         "Savory Crepe"),
                     CreateMenuItem(
                         "Turkey Club",
-                        "Crepes",
+                        "Savory Crepes",
                         "Sliced turkey, bacon, spinach, and tomato wrapped in a savory crepe.",
                         10.50m,
                         locationId,
-                        "/menu/sandwiches-bagels/kale-turkey-focaccia.webp",
+                        "/menu/crepes/turkey-club.png",
                         540,
                         "Savory Crepe"),
                     CreateMenuItem(
                         "Green Machine",
-                        "Crepes",
+                        "Savory Crepes",
                         "Spinach, artichokes, and mozzarella cheese inside a fresh crepe.",
                         10.00m,
                         locationId,
-                        "/menu/sandwiches-bagels/avocado-toast.webp",
+                        "/menu/crepes/green-machine.png",
                         480,
                         "Savory Crepe"),
                     CreateMenuItem(
                         "Perfect Pair",
-                        "Crepes",
+                        "Savory Crepes",
                         "A unique combination of bacon and Nutella wrapped in a crepe.",
                         10.00m,
                         locationId,
-                        "/menu/pastries/brioche-with-chocolate.webp",
+                        "/menu/crepes/perfect-pair.png",
                         620,
                         "Savory Crepe"),
                     CreateMenuItem(
                         "Crepe Fromage",
-                        "Crepes",
+                        "Savory Crepes",
                         "A savory crepe filled with a blend of cheeses.",
                         8.00m,
                         locationId,
-                        "/menu/pastries/croissant.webp",
+                        "/menu/crepes/crepe-fromage.png",
                         450,
                         "Savory Crepe"),
                     CreateMenuItem(
                         "Farmers Market Crepe",
-                        "Crepes",
+                        "Savory Crepes",
                         "Turkey, spinach, and mozzarella wrapped in a savory crepe.",
                         10.50m,
                         locationId,
-                        "/menu/sandwiches-bagels/vegan-zucchini-sandwich.webp",
+                        "/menu/crepes/farmers-market-crepe.png",
                         510,
                         "Savory Crepe"),
                 }))
             .Concat(
-                saladAndQuichesLocationIds.SelectMany(locationId => new[]
-                {
-                    CreateMenuItem(
-                        "Smoked Chicken Salad",
-                        "Salad & Quiches",
-                        "Smoked chicken with mixed greens, apple, almonds, and dried cranberries.",
-                        11.50m,
-                        locationId,
-                        "/menu/salads-quiches/smoked-chicken-salad.jpg",
-                        430,
-                        "Fresh",
-                        isFeatured: locationId == 1),
-                }))
-            .Concat(
-                sandwichLocationIds.SelectMany(locationId => new[]
+                bagelLocationIds.SelectMany(locationId => new[]
                 {
                     CreateMenuItem(
                         "Travis Special",
-                        "Sandwiches & Bagels",
+                        "Bagels",
                         "Cream cheese, salmon, spinach, and a fried egg served on a freshly toasted bagel.",
                         14.00m,
                         locationId,
-                        "/menu/sandwiches-bagels/avocado-bagel.webp",
+                        "/menu/sandwiches-bagels/travis-special.png",
                         650,
                         "Bagel",
                         isFeatured: locationId == 1),
                     CreateMenuItem(
                         "Crème Brulagel",
-                        "Sandwiches & Bagels",
+                        "Bagels",
                         "A toasted bagel with a caramelized sugar crust inspired by crème brûlée, served with cream cheese.",
                         8.00m,
                         locationId,
-                        "/menu/pastries/cinnamon-roll.webp",
+                        "/menu/sandwiches-bagels/creme-brulagel.png",
                         520,
                         "Bagel"),
                     CreateMenuItem(
                         "The Fancy One",
-                        "Sandwiches & Bagels",
+                        "Bagels",
                         "Smoked salmon, cream cheese, and fresh dill on a toasted bagel.",
                         13.00m,
                         locationId,
-                        "/menu/sandwiches-bagels/kale-turkey-focaccia.webp",
+                        "/menu/sandwiches-bagels/the-fancy-one.png",
                         610,
                         "Bagel"),
                     CreateMenuItem(
                         "Breakfast Bagel",
-                        "Sandwiches & Bagels",
+                        "Bagels",
                         "A toasted bagel with your choice of ham, bacon, or sausage, a fried egg, and cheddar cheese.",
                         9.50m,
                         locationId,
-                        "/menu/sandwiches-bagels/breakfast-sandwich.webp",
+                        "/menu/sandwiches-bagels/breakfast-bagel.png",
                         720,
                         "Bagel"),
                     CreateMenuItem(
                         "The Classic",
-                        "Sandwiches & Bagels",
+                        "Bagels",
                         "A toasted bagel with cream cheese.",
                         5.25m,
                         locationId,
-                        "/menu/sandwiches-bagels/avocado-toast.webp",
+                        "/menu/sandwiches-bagels/the-classic.png",
                         420,
                         "Bagel"),
-                }))
-            .Concat(
-                sweetAndPopsLocationIds.SelectMany(locationId => new[]
-                {
-                    CreateMenuItem(
-                        "BROWNIE",
-                        "Sweet and Pops",
-                        "Dense chocolate brownie with a fudgy center and deep cocoa finish.",
-                        5.25m,
-                        locationId,
-                        "/menu/cakes-sweets/brownie.webp",
-                        420,
-                        "Slice",
-                        isFeatured: locationId == 1),
-                    CreateMenuItem(
-                        "CARROT CAKE",
-                        "Sweet and Pops",
-                        "Spiced carrot cake finished with smooth cream cheese frosting.",
-                        38.00m,
-                        locationId,
-                        "/menu/cakes-sweets/carrot-cake.webp",
-                        540,
-                        "Celebration"),
-                    CreateMenuItem(
-                        "CHEESECAKE",
-                        "Sweet and Pops",
-                        "Creamy vanilla cheesecake with a buttery crust and soft finish.",
-                        45.00m,
-                        locationId,
-                        "/menu/cakes-sweets/cheesecake.webp",
-                        560,
-                        "Celebration"),
-                    CreateMenuItem(
-                        "DOUBLE CHOCOLATE",
-                        "Sweet and Pops",
-                        "Rich chocolate cake layered with glossy ganache and dark cocoa notes.",
-                        42.00m,
-                        locationId,
-                        "/menu/cakes-sweets/double-chocolate.webp",
-                        610,
-                        "Celebration"),
-                    CreateMenuItem(
-                        "RASPBERRY SLICE",
-                        "Sweet and Pops",
-                        "Bright raspberry cake finished with a glossy berry top and crisp base.",
-                        48.00m,
-                        locationId,
-                        "/menu/cakes-sweets/raspberry-slice.webp",
-                        580,
-                        "Celebration"),
-                }))
-            .Concat(
-                lemonadeLocationIds.SelectMany(locationId => new[]
-                {
-                    CreateMenuItem(
-                        "Strawberry Limeade",
-                        "Lemonade",
-                        "Fresh lime juice blended with strawberry purée for a refreshing, tangy drink.",
-                        5.00m,
-                        locationId,
-                        "/menu/matcha/strawberry-matcha.webp",
-                        170,
-                        "Limeade",
-                        isFeatured: locationId == 1
-                    ),
-                    CreateMenuItem(
-                        "Shaken Lemonade",
-                        "Lemonade",
-                        "Fresh lemon juice and simple syrup vigorously shaken for a bright, refreshing lemonade.",
-                        5.00m,
-                        locationId,
-                        "/menu/matcha/matcha-mango-latte.webp",
-                        150,
-                        "Lemonade"
-                    ),
-                }))
-            .Concat(
-                coffeeLocationIds.SelectMany(locationId => new[]
-                {
-                    CreateMenuItem(
-                        "Iced Latte",
-                        "Coffee",
-                        "Espresso and milk served over ice for a refreshing coffee drink.",
-                        5.50m,
-                        locationId,
-                        "/menu/coffee/iced-caramel-macchiato.jpg",
-                        180,
-                        "Cold Drinks"),
-                    CreateMenuItem(
-                        "Supernova",
-                        "Coffee",
-                        "A unique coffee blend with a complex, balanced profile and subtle sweetness. Delicious as espresso or paired with milk.",
-                        7.95m,
-                        locationId,
-                        "/menu/coffee/sakuna-latte.webp",
-                        120,
-                        "Signature Blend"),
-                    CreateMenuItem(
-                        "Roaring Frappe",
-                        "Coffee",
-                        "Cold brew, milk, and ice blended together with a signature syrup or flavor, topped with whipped cream.",
-                        6.20m,
-                        locationId,
-                        "/menu/coffee/iced-mocha.jpg",
-                        380,
-                        "Blended"),
-                    CreateMenuItem(
-                        "Black & White Cold Brew",
-                        "Coffee",
-                        "Cold brew made with both dark and light roast beans, finished with a drizzle of condensed milk.",
-                        5.15m,
-                        locationId,
-                        "/menu/coffee/cold-brew.png",
-                        70,
-                        "Cold Brew"),
-                    CreateMenuItem(
-                        "Sugar Shaken Espresso",
-                        "Coffee",
-                        "Espresso shaken with sugar over ice and mellowed with creamy milk.",
-                        5.95m,
-                        locationId,
-                        "/menu/coffee/sugar-shaken-espresso.jpg",
-                        170,
-                        "Shaken Espresso"),
-                }))
-            .ToArray();
+	                }))
+	            .Concat(
+	                drinkLocationIds.SelectMany(locationId => new[]
+	                {
+	                    CreateMenuItem(
+	                        "Iced Latte",
+	                        "Drinks",
+	                        "Espresso and milk served over ice for a refreshing coffee drink.",
+	                        5.50m,
+	                        locationId,
+	                        "/menu/drinks/iced-latte.png",
+	                        180,
+	                        "Cold Drinks"),
+	                    CreateMenuItem(
+	                        "Supernova",
+	                        "Drinks",
+	                        "A unique coffee blend with a complex, balanced profile and subtle sweetness. Delicious as espresso or paired with milk.",
+	                        7.95m,
+	                        locationId,
+	                        "/menu/drinks/supernova.png",
+	                        120,
+	                        "Signature Blend"),
+	                    CreateMenuItem(
+	                        "Roaring Frappe",
+	                        "Drinks",
+	                        "Cold brew, milk, and ice blended together with a signature syrup or flavor, topped with whipped cream.",
+	                        6.20m,
+	                        locationId,
+	                        "/menu/drinks/roaring-frappe.png",
+	                        380,
+	                        "Blended"),
+	                    CreateMenuItem(
+	                        "Black & White Cold Brew",
+	                        "Drinks",
+	                        "Cold brew made with both dark and light roast beans, finished with a drizzle of condensed milk.",
+	                        5.15m,
+	                        locationId,
+	                        "/menu/drinks/black-and-white-cold-brew.png",
+	                        70,
+	                        "Cold Brew"),
+	                    CreateMenuItem(
+	                        "Strawberry Limeade",
+	                        "Drinks",
+	                        "Fresh lime juice blended with strawberry purée for a refreshing, tangy drink.",
+	                        5.00m,
+	                        locationId,
+	                        "/menu/drinks/strawberry-limeade.png",
+	                        170,
+	                        "Limeade",
+	                        isFeatured: locationId == 1
+	                    ),
+	                    CreateMenuItem(
+	                        "Shaken Lemonade",
+	                        "Drinks",
+	                        "Fresh lemon juice and simple syrup vigorously shaken for a bright, refreshing lemonade.",
+	                        5.00m,
+	                        locationId,
+	                        "/menu/drinks/shaken-lemonade.png",
+	                        150,
+	                        "Lemonade"
+	                    ),
+	                }))
+	            .ToArray();
 
         var existingMenuItems = await dataContext.MenuItems.ToListAsync();
-        var removedMenuItems = existingMenuItems
-            .Where(existingItem =>
-                !MenuCatalog.IsSupportedCategory(existingItem.Category)
-                || (string.Equals(existingItem.Category, "Coffee", StringComparison.OrdinalIgnoreCase)
-                    && !coffeeMenuNames.Contains(existingItem.Name))
-                || (string.Equals(existingItem.Category, "Lemonade", StringComparison.OrdinalIgnoreCase)
-                    && !lemonadeMenuNames.Contains(existingItem.Name))
-                || (string.Equals(existingItem.Category, "Crepes", StringComparison.OrdinalIgnoreCase)
-                    && !crepeMenuNames.Contains(existingItem.Name))
-                || (string.Equals(existingItem.Category, "Salad & Quiches", StringComparison.OrdinalIgnoreCase)
-                    && !saladAndQuichesMenuNames.Contains(existingItem.Name))
-                || (string.Equals(existingItem.Category, "Sandwiches & Bagels", StringComparison.OrdinalIgnoreCase)
-                    && !sandwichMenuNames.Contains(existingItem.Name))
-                || (string.Equals(existingItem.Category, "Sweet and Pops", StringComparison.OrdinalIgnoreCase)
-                    && !sweetAndPopsMenuNames.Contains(existingItem.Name))
-                || retiredMenuNames.Contains(existingItem.Name))
-            .ToList();
+	        var removedMenuItems = existingMenuItems
+	            .Where(existingItem =>
+	                !MenuCatalog.IsSupportedCategory(existingItem.Category)
+	                || (string.Equals(existingItem.Category, "Drinks", StringComparison.OrdinalIgnoreCase)
+	                    && !drinkMenuNames.Contains(existingItem.Name))
+	                || (string.Equals(existingItem.Category, "Sweet Crepes", StringComparison.OrdinalIgnoreCase)
+	                    && !sweetCrepeMenuNames.Contains(existingItem.Name))
+	                || (string.Equals(existingItem.Category, "Savory Crepes", StringComparison.OrdinalIgnoreCase)
+	                    && !savoryCrepeMenuNames.Contains(existingItem.Name))
+	                || (string.Equals(existingItem.Category, "Bagels", StringComparison.OrdinalIgnoreCase)
+	                    && !bagelMenuNames.Contains(existingItem.Name))
+	                || retiredMenuNames.Contains(existingItem.Name))
+	            .ToList();
 
         if (removedMenuItems.Count > 0)
         {
@@ -715,57 +583,62 @@ public static class SeedHelper
             existingMenuItem.PreparationTag = seededMenuItem.PreparationTag;
         }
 
-        await dataContext.SaveChangesAsync();
+	        await dataContext.SaveChangesAsync();
 
-        var icedLatteIds = await dataContext.MenuItems
-            .Where(x => x.Name == "Iced Latte" && coffeeLocationIds.Contains(x.LocationId))
-            .GroupBy(x => x.LocationId)
-            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
-            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
-        var supernovaIds = await dataContext.MenuItems
-            .Where(x => x.Name == "Supernova" && coffeeLocationIds.Contains(x.LocationId))
-            .GroupBy(x => x.LocationId)
-            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
-            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
-        var roaringFrappeIds = await dataContext.MenuItems
-            .Where(x => x.Name == "Roaring Frappe" && coffeeLocationIds.Contains(x.LocationId))
-            .GroupBy(x => x.LocationId)
-            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
-            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
-        var blackAndWhiteColdBrewIds = await dataContext.MenuItems
-            .Where(x => x.Name == "Black & White Cold Brew" && coffeeLocationIds.Contains(x.LocationId))
-            .GroupBy(x => x.LocationId)
-            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
-            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
-        var sugarShakenEspressoIds = await dataContext.MenuItems
-            .Where(x => x.Name == "Sugar Shaken Espresso" && coffeeLocationIds.Contains(x.LocationId))
-            .GroupBy(x => x.LocationId)
-            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
-            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+	        var icedLatteIds = await dataContext.MenuItems
+	            .Where(x => x.Name == "Iced Latte" && drinkLocationIds.Contains(x.LocationId))
+	            .GroupBy(x => x.LocationId)
+	            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+	            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+	        var supernovaIds = await dataContext.MenuItems
+	            .Where(x => x.Name == "Supernova" && drinkLocationIds.Contains(x.LocationId))
+	            .GroupBy(x => x.LocationId)
+	            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+	            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+	        var roaringFrappeIds = await dataContext.MenuItems
+	            .Where(x => x.Name == "Roaring Frappe" && drinkLocationIds.Contains(x.LocationId))
+	            .GroupBy(x => x.LocationId)
+	            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+	            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+	        var blackAndWhiteColdBrewIds = await dataContext.MenuItems
+	            .Where(x => x.Name == "Black & White Cold Brew" && drinkLocationIds.Contains(x.LocationId))
+	            .GroupBy(x => x.LocationId)
+	            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+	            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+	        var strawberryLimeadeIds = await dataContext.MenuItems
+	            .Where(x => x.Name == "Strawberry Limeade" && drinkLocationIds.Contains(x.LocationId))
+	            .GroupBy(x => x.LocationId)
+	            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+	            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
+	        var shakenLemonadeIds = await dataContext.MenuItems
+	            .Where(x => x.Name == "Shaken Lemonade" && drinkLocationIds.Contains(x.LocationId))
+	            .GroupBy(x => x.LocationId)
+	            .Select(group => new { LocationId = group.Key, Id = group.Min(x => x.Id) })
+	            .ToDictionaryAsync(x => x.LocationId, x => x.Id);
 
-        var seededCustomizations = new List<MenuCustomization>();
+	        var seededCustomizations = new List<MenuCustomization>();
 
-        foreach (var locationId in coffeeLocationIds)
-        {
-            if (icedLatteIds.TryGetValue(locationId, out var icedLatteId))
-            {
-                seededCustomizations.AddRange(
-                [
+	        foreach (var locationId in drinkLocationIds)
+	        {
+	            if (icedLatteIds.TryGetValue(locationId, out var icedLatteId))
+	            {
+	                seededCustomizations.AddRange(
+	                [
                     new MenuCustomization { MenuItemId = icedLatteId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
                     new MenuCustomization { MenuItemId = icedLatteId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
                     new MenuCustomization { MenuItemId = icedLatteId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
                 ]);
             }
 
-            if (supernovaIds.TryGetValue(locationId, out var supernovaId))
-            {
-                seededCustomizations.AddRange(
-                [
-                    new MenuCustomization { MenuItemId = supernovaId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, SortOrder = 1 },
-                    new MenuCustomization { MenuItemId = supernovaId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
-                    new MenuCustomization { MenuItemId = supernovaId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
-                ]);
-            }
+	            if (supernovaIds.TryGetValue(locationId, out var supernovaId))
+	            {
+	                seededCustomizations.AddRange(
+	                [
+	                    new MenuCustomization { MenuItemId = supernovaId, GroupName = "Milk", OptionName = "Whole Milk", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+	                    new MenuCustomization { MenuItemId = supernovaId, GroupName = "Milk", OptionName = "Oatmilk", AdditionalPrice = 0.75m, SortOrder = 2 },
+	                    new MenuCustomization { MenuItemId = supernovaId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 3 },
+	                ]);
+	            }
 
             if (roaringFrappeIds.TryGetValue(locationId, out var roaringFrappeId))
             {
@@ -776,29 +649,181 @@ public static class SeedHelper
                 ]);
             }
 
-            if (blackAndWhiteColdBrewIds.TryGetValue(locationId, out var blackAndWhiteColdBrewId))
-            {
-                seededCustomizations.AddRange(
-                [
-                    new MenuCustomization { MenuItemId = blackAndWhiteColdBrewId, GroupName = "Sweetener", OptionName = "Condensed Milk Drizzle", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
-                    new MenuCustomization { MenuItemId = blackAndWhiteColdBrewId, GroupName = "Sweetener", OptionName = "Vanilla Sweet Cream", AdditionalPrice = 0.75m, SortOrder = 2 },
-                    new MenuCustomization { MenuItemId = blackAndWhiteColdBrewId, GroupName = "Sweetener", OptionName = "Sugar Free Vanilla", AdditionalPrice = 0.50m, SortOrder = 3 },
-                ]);
-            }
+	            if (blackAndWhiteColdBrewIds.TryGetValue(locationId, out var blackAndWhiteColdBrewId))
+	            {
+	                seededCustomizations.AddRange(
+	                [
+	                    new MenuCustomization { MenuItemId = blackAndWhiteColdBrewId, GroupName = "Sweetener", OptionName = "Condensed Milk Drizzle", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+	                    new MenuCustomization { MenuItemId = blackAndWhiteColdBrewId, GroupName = "Sweetener", OptionName = "Vanilla Sweet Cream", AdditionalPrice = 0.75m, SortOrder = 2 },
+	                    new MenuCustomization { MenuItemId = blackAndWhiteColdBrewId, GroupName = "Sweetener", OptionName = "Sugar Free Vanilla", AdditionalPrice = 0.50m, SortOrder = 3 },
+	                ]);
+	            }
 
-            if (sugarShakenEspressoIds.TryGetValue(locationId, out var sugarShakenEspressoId))
-            {
-                seededCustomizations.AddRange(
-                [
-                    new MenuCustomization { MenuItemId = sugarShakenEspressoId, GroupName = "Espresso", OptionName = "Extra Shot", AdditionalPrice = 1.25m, SortOrder = 1 },
-                ]);
-            }
-        }
+	            if (strawberryLimeadeIds.TryGetValue(locationId, out var strawberryLimeadeId))
+	            {
+	                seededCustomizations.AddRange(
+	                [
+	                    new MenuCustomization { MenuItemId = strawberryLimeadeId, GroupName = "Sweetener", OptionName = "Classic", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+	                    new MenuCustomization { MenuItemId = strawberryLimeadeId, GroupName = "Sweetener", OptionName = "Less sweet", AdditionalPrice = 0, SortOrder = 2 },
+	                    new MenuCustomization { MenuItemId = strawberryLimeadeId, GroupName = "Sweetener", OptionName = "No sweetener", AdditionalPrice = 0, SortOrder = 3 },
+	                ]);
 
-        var existingCustomizations = await dataContext.MenuCustomizations.ToListAsync();
+	                seededCustomizations.AddRange(
+	                [
+	                    new MenuCustomization { MenuItemId = strawberryLimeadeId, GroupName = "Ice", OptionName = "Regular ice", AdditionalPrice = 0, IsDefault = true, SortOrder = 10 },
+	                    new MenuCustomization { MenuItemId = strawberryLimeadeId, GroupName = "Ice", OptionName = "Light ice", AdditionalPrice = 0, SortOrder = 11 },
+	                    new MenuCustomization { MenuItemId = strawberryLimeadeId, GroupName = "Ice", OptionName = "No ice", AdditionalPrice = 0, SortOrder = 12 },
+	                ]);
 
-        foreach (var seededCustomization in seededCustomizations)
-        {
+	                seededCustomizations.AddRange(
+	                [
+	                    new MenuCustomization { MenuItemId = strawberryLimeadeId, GroupName = "Add-ons", OptionName = "Add fresh mint", AdditionalPrice = 0.50m, SortOrder = 20 },
+	                    new MenuCustomization { MenuItemId = strawberryLimeadeId, GroupName = "Add-ons", OptionName = "Add extra strawberry purée", AdditionalPrice = 0.75m, SortOrder = 21 },
+	                ]);
+	            }
+
+	            if (shakenLemonadeIds.TryGetValue(locationId, out var shakenLemonadeId))
+	            {
+	                seededCustomizations.AddRange(
+	                [
+	                    new MenuCustomization { MenuItemId = shakenLemonadeId, GroupName = "Sweetener", OptionName = "Classic", AdditionalPrice = 0, IsDefault = true, SortOrder = 1 },
+	                    new MenuCustomization { MenuItemId = shakenLemonadeId, GroupName = "Sweetener", OptionName = "Less sweet", AdditionalPrice = 0, SortOrder = 2 },
+	                    new MenuCustomization { MenuItemId = shakenLemonadeId, GroupName = "Sweetener", OptionName = "No sweetener", AdditionalPrice = 0, SortOrder = 3 },
+	                ]);
+
+	                seededCustomizations.AddRange(
+	                [
+	                    new MenuCustomization { MenuItemId = shakenLemonadeId, GroupName = "Ice", OptionName = "Regular ice", AdditionalPrice = 0, IsDefault = true, SortOrder = 10 },
+	                    new MenuCustomization { MenuItemId = shakenLemonadeId, GroupName = "Ice", OptionName = "Light ice", AdditionalPrice = 0, SortOrder = 11 },
+	                    new MenuCustomization { MenuItemId = shakenLemonadeId, GroupName = "Ice", OptionName = "No ice", AdditionalPrice = 0, SortOrder = 12 },
+	                ]);
+
+	                seededCustomizations.AddRange(
+	                [
+	                    new MenuCustomization { MenuItemId = shakenLemonadeId, GroupName = "Add-ons", OptionName = "Add fresh mint", AdditionalPrice = 0.50m, SortOrder = 20 },
+	                    new MenuCustomization { MenuItemId = shakenLemonadeId, GroupName = "Add-ons", OptionName = "Add strawberry purée", AdditionalPrice = 0.75m, SortOrder = 21 },
+	                ]);
+	            }
+	        }
+
+	        var savoryCrepeNames = new[]
+	        {
+	            "Matt's Scrambled Eggs",
+	            "Meanie Mushroom",
+	            "Turkey Club",
+	            "Green Machine",
+	            "Perfect Pair",
+	            "Crepe Fromage",
+	            "Farmers Market Crepe",
+	        };
+
+	        var savoryCrepeIds = await dataContext.MenuItems
+	            .Where(x =>
+	                x.Category == "Savory Crepes"
+	                && x.PreparationTag == "Savory Crepe"
+	                && crepeLocationIds.Contains(x.LocationId)
+	                && savoryCrepeNames.Contains(x.Name))
+	            .GroupBy(x => new { x.LocationId, x.Name })
+	            .Select(group => new { group.Key.LocationId, group.Key.Name, Id = group.Min(x => x.Id) })
+	            .ToListAsync();
+
+	        foreach (var crepe in savoryCrepeIds)
+	        {
+	            seededCustomizations.AddRange(
+	            [
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Add-ons", OptionName = "Extra cheese", AdditionalPrice = 0.75m, SortOrder = 1 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Add-ons", OptionName = "Add bacon", AdditionalPrice = 1.25m, SortOrder = 2 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Add-ons", OptionName = "Add turkey", AdditionalPrice = 1.50m, SortOrder = 3 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Add-ons", OptionName = "Add egg", AdditionalPrice = 1.00m, SortOrder = 4 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Add-ons", OptionName = "Add spinach", AdditionalPrice = 0.50m, SortOrder = 5 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Add-ons", OptionName = "Add mushrooms", AdditionalPrice = 0.75m, SortOrder = 6 },
+	            ]);
+
+	            seededCustomizations.AddRange(
+	            [
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Sauces", OptionName = "Garlic aioli", AdditionalPrice = 0, SortOrder = 20 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Sauces", OptionName = "Honey mustard", AdditionalPrice = 0, SortOrder = 21 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Sauces", OptionName = "Hot sauce", AdditionalPrice = 0, SortOrder = 22 },
+	            ]);
+
+	            if (string.Equals(crepe.Name, "Perfect Pair", StringComparison.OrdinalIgnoreCase))
+	            {
+	                seededCustomizations.AddRange(
+	                [
+	                    new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Sweet finishes", OptionName = "Extra Nutella drizzle", AdditionalPrice = 0.75m, SortOrder = 30 },
+	                    new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Sweet finishes", OptionName = "Powdered sugar", AdditionalPrice = 0.25m, SortOrder = 31 },
+	                ]);
+	            }
+	        }
+
+	        var sweetCrepeIds = await dataContext.MenuItems
+	            .Where(x =>
+	                x.Category == "Sweet Crepes"
+	                && x.PreparationTag == "Sweet Crepe"
+	                && crepeLocationIds.Contains(x.LocationId)
+	                && sweetCrepeMenuNames.Contains(x.Name))
+	            .GroupBy(x => new { x.LocationId, x.Name })
+	            .Select(group => new { group.Key.LocationId, group.Key.Name, Id = group.Min(x => x.Id) })
+	            .ToListAsync();
+
+	        foreach (var crepe in sweetCrepeIds)
+	        {
+	            seededCustomizations.AddRange(
+	            [
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Toppings", OptionName = "Whipped cream", AdditionalPrice = 0.50m, SortOrder = 1 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Toppings", OptionName = "Powdered sugar", AdditionalPrice = 0.25m, SortOrder = 2 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Toppings", OptionName = "Extra Nutella drizzle", AdditionalPrice = 0.75m, SortOrder = 3 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Toppings", OptionName = "Caramel drizzle", AdditionalPrice = 0.50m, SortOrder = 4 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Toppings", OptionName = "Chocolate drizzle", AdditionalPrice = 0.50m, SortOrder = 5 },
+	            ]);
+
+	            seededCustomizations.AddRange(
+	            [
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Add-ons", OptionName = "Add strawberries", AdditionalPrice = 1.00m, SortOrder = 20 },
+	                new MenuCustomization { MenuItemId = crepe.Id, GroupName = "Add-ons", OptionName = "Add banana slices", AdditionalPrice = 0.75m, SortOrder = 21 },
+	            ]);
+	        }
+
+	        var bagelIds = await dataContext.MenuItems
+	            .Where(x =>
+	                x.Category == "Bagels"
+	                && x.PreparationTag == "Bagel"
+	                && bagelLocationIds.Contains(x.LocationId)
+	                && bagelMenuNames.Contains(x.Name))
+	            .GroupBy(x => new { x.LocationId, x.Name })
+	            .Select(group => new { group.Key.LocationId, group.Key.Name, Id = group.Min(x => x.Id) })
+	            .ToListAsync();
+
+	        foreach (var bagel in bagelIds)
+	        {
+	            seededCustomizations.AddRange(
+	            [
+	                new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Add-ons", OptionName = "Extra cream cheese", AdditionalPrice = 0.75m, SortOrder = 1 },
+	                new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Add-ons", OptionName = "Add egg", AdditionalPrice = 1.00m, SortOrder = 2 },
+	                new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Add-ons", OptionName = "Add bacon", AdditionalPrice = 1.25m, SortOrder = 3 },
+	                new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Add-ons", OptionName = "Add avocado", AdditionalPrice = 1.50m, SortOrder = 4 },
+	                new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Add-ons", OptionName = "Add spinach", AdditionalPrice = 0.50m, SortOrder = 5 },
+	                new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Add-ons", OptionName = "Add tomato", AdditionalPrice = 0.50m, SortOrder = 6 },
+	            ]);
+
+	            seededCustomizations.AddRange(
+	            [
+	                new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Sauces", OptionName = "Garlic aioli", AdditionalPrice = 0, SortOrder = 20 },
+	                new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Sauces", OptionName = "Honey mustard", AdditionalPrice = 0, SortOrder = 21 },
+	                new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Sauces", OptionName = "Hot sauce", AdditionalPrice = 0, SortOrder = 22 },
+	            ]);
+
+	            if (string.Equals(bagel.Name, "Travis Special", StringComparison.OrdinalIgnoreCase)
+	                || string.Equals(bagel.Name, "The Fancy One", StringComparison.OrdinalIgnoreCase))
+	            {
+	                seededCustomizations.Add(new MenuCustomization { MenuItemId = bagel.Id, GroupName = "Add-ons", OptionName = "Extra salmon", AdditionalPrice = 2.50m, SortOrder = 7 });
+	            }
+	        }
+
+	        var existingCustomizations = await dataContext.MenuCustomizations.ToListAsync();
+
+	        foreach (var seededCustomization in seededCustomizations)
+	        {
             var existingCustomization = existingCustomizations.FirstOrDefault(x =>
                 x.MenuItemId == seededCustomization.MenuItemId
                 && string.Equals(x.GroupName, seededCustomization.GroupName, StringComparison.OrdinalIgnoreCase)
@@ -824,51 +849,40 @@ public static class SeedHelper
         // Simplified program:
         // - Earn 10 points per $1
         // - Redeem at 1000 points
-        var seededRewards = new[]
-        {
-            new Reward
-            {
-                Name = "Free Coffee",
-                Description = "Redeem 1000 points for any size coffee.",
-                PointsCost = 1000,
-                IsActive = true,
-                TierName = "Member",
-                OfferType = "Drink",
-                DiscountAmount = null,
-                BonusStars = 0
-            },
-            new Reward
-            {
-                Name = "Free Lemonade",
-                Description = "Redeem 1250 points for any lemonade drink (up to $5.00).",
-                PointsCost = 1250,
-                IsActive = true,
-                TierName = "Member",
-                OfferType = "Drink",
-                DiscountAmount = null,
-                BonusStars = 0
-            },
-            new Reward
-            {
-                Name = "Free Sandwich",
-                Description = "Redeem 1500 points for any sandwich or bagel item (up to $8.50).",
-                PointsCost = 1500,
-                IsActive = true,
-                TierName = "Member",
-                OfferType = "Food",
-                DiscountAmount = null,
-                BonusStars = 0
-            },
-            new Reward
-            {
-                Name = "Free Salad",
-                Description = "Redeem 1750 points for a salad or quiche (up to $11.50).",
-                PointsCost = 1750,
-                IsActive = true,
-                TierName = "Member",
-                OfferType = "Food",
-                DiscountAmount = null,
-                BonusStars = 0
+	        var seededRewards = new[]
+	        {
+	            new Reward
+	            {
+	                Name = "Free Drink",
+	                Description = "Redeem 1000 points for any drink (up to $7.95).",
+	                PointsCost = 1000,
+	                IsActive = true,
+	                TierName = "Member",
+	                OfferType = "Drink",
+	                DiscountAmount = null,
+	                BonusStars = 0
+	            },
+	            new Reward
+	            {
+	                Name = "Free Bagel",
+	                Description = "Redeem 1500 points for any bagel item (up to $14.00).",
+	                PointsCost = 1500,
+	                IsActive = true,
+	                TierName = "Member",
+	                OfferType = "Food",
+	                DiscountAmount = null,
+	                BonusStars = 0
+	            },
+	            new Reward
+	            {
+	                Name = "Free Crepe",
+	                Description = "Redeem 1750 points for any crepe (up to $10.75).",
+	                PointsCost = 1750,
+	                IsActive = true,
+	                TierName = "Member",
+	                OfferType = "Food",
+	                DiscountAmount = null,
+	                BonusStars = 0
             },
             new Reward
             {
@@ -929,14 +943,14 @@ public static class SeedHelper
                 Benefits = "Earn 10 points per $1 spent.",
                 AccentColor = "#65711d"
             },
-            new RewardTier
-            {
-                Name = "Reward",
-                MinPoints = 1000,
-                Benefits = "Redeem a free coffee once you hit 1000 points.",
-                AccentColor = "#d7a526"
-            }
-        };
+	            new RewardTier
+	            {
+	                Name = "Reward",
+	                MinPoints = 1000,
+	                Benefits = "Redeem a free drink once you hit 1000 points.",
+	                AccentColor = "#d7a526"
+	            }
+	        };
 
         var existingTiers = await dataContext.RewardTiers.ToListAsync();
 
@@ -977,19 +991,19 @@ public static class SeedHelper
             .Select(x => x.Id)
             .FirstAsync();
 
-        var locationMenuItems = await dataContext.MenuItems
-            .Where(x => x.LocationId == locationId)
-            .ToListAsync();
+	        var locationMenuItems = await dataContext.MenuItems
+	            .Where(x => x.LocationId == locationId)
+	            .ToListAsync();
 
-        var icedMocha = locationMenuItems.FirstOrDefault(x => x.Name == "Roaring Frappe")
-            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Coffee")
-            ?? await dataContext.MenuItems.FirstAsync();
-        var sugarShakenEspresso = locationMenuItems.FirstOrDefault(x => x.Name == "Sugar Shaken Espresso")
-            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Coffee" && x.Id != icedMocha.Id)
-            ?? icedMocha;
-        var croissant = locationMenuItems.FirstOrDefault(x => x.Name == "CROISSANT")
-            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Pastries")
-            ?? icedMocha;
+	        var icedMocha = locationMenuItems.FirstOrDefault(x => x.Name == "Roaring Frappe")
+	            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Drinks")
+	            ?? await dataContext.MenuItems.FirstAsync();
+	        var secondDrink = locationMenuItems.FirstOrDefault(x => x.Name == "Supernova")
+	            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Drinks" && x.Id != icedMocha.Id)
+	            ?? icedMocha;
+	        var classicBagel = locationMenuItems.FirstOrDefault(x => x.Name == "The Classic")
+	            ?? locationMenuItems.FirstOrDefault(x => x.Category == "Bagels")
+	            ?? icedMocha;
 
         var orders = new[]
         {
@@ -999,7 +1013,7 @@ public static class SeedHelper
                 LocationId = locationId,
                 OrderType = "pickup",
                 Status = "Completed",
-                Total = icedMocha.Price + (croissant.Price * 2),
+                Total = icedMocha.Price + (classicBagel.Price * 2),
                 PaymentStatus = "Paid",
                 PickupName = "Sue",
                 CreatedAt = DateTime.UtcNow.AddHours(-6),
@@ -1017,40 +1031,40 @@ public static class SeedHelper
                     },
                     new OrderItem
                     {
-                        MenuItemId = croissant.Id,
-                        ItemName = croissant.Name,
+                        MenuItemId = classicBagel.Id,
+                        ItemName = classicBagel.Name,
                         Quantity = 2,
-                        UnitPrice = croissant.Price,
-                        Total = croissant.Price * 2,
-                        Customizations = "Warmed"
+                        UnitPrice = classicBagel.Price,
+                        Total = classicBagel.Price * 2,
+                        Customizations = "Toasted"
                     }
                 ]
             },
-            new Order
-            {
-                UserId = sueId,
-                LocationId = locationId,
-                OrderType = "drive-thru",
-                Status = "Ready for pickup",
-                Total = sugarShakenEspresso.Price,
-                PaymentStatus = "Paid",
-                PickupName = "Sue",
-                CreatedAt = DateTime.UtcNow.AddMinutes(-45),
-                StarsEarned = 7,
-                Items =
-                [
-                    new OrderItem
-                    {
-                        MenuItemId = sugarShakenEspresso.Id,
-                        ItemName = sugarShakenEspresso.Name,
-                        Quantity = 1,
-                        UnitPrice = sugarShakenEspresso.Price,
-                        Total = sugarShakenEspresso.Price,
-                        Customizations = "Oatmilk"
-                    }
-                ]
-            }
-        };
+	            new Order
+	            {
+	                UserId = sueId,
+	                LocationId = locationId,
+	                OrderType = "drive-thru",
+	                Status = "Ready for pickup",
+	                Total = secondDrink.Price,
+	                PaymentStatus = "Paid",
+	                PickupName = "Sue",
+	                CreatedAt = DateTime.UtcNow.AddMinutes(-45),
+	                StarsEarned = 7,
+	                Items =
+	                [
+	                    new OrderItem
+	                    {
+	                        MenuItemId = secondDrink.Id,
+	                        ItemName = secondDrink.Name,
+	                        Quantity = 1,
+	                        UnitPrice = secondDrink.Price,
+	                        Total = secondDrink.Price,
+	                        Customizations = "Oatmilk"
+	                    }
+	                ]
+	            }
+	        };
 
         dataContext.Orders.AddRange(orders);
         await dataContext.SaveChangesAsync();
@@ -1096,13 +1110,13 @@ public static class SeedHelper
             .FirstAsync();
 
         dataContext.Notifications.AddRange(
-            new Notification
-            {
-                UserId = null,
-                Channel = "InApp",
-                Title = "Spring menu drop",
-                Message = "Try the Sugar Shaken Espresso and earn bonus Lions this week."
-            },
+	            new Notification
+	            {
+	                UserId = null,
+	                Channel = "InApp",
+	                Title = "Spring menu drop",
+	                Message = "Try the Black & White Cold Brew and earn bonus Lions this week."
+	            },
             new Notification
             {
                 UserId = sueId,
