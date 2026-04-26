@@ -151,7 +151,7 @@ function CheckoutForm({ navigate }: PageProps) {
   return (
     <div className="commerce-page reserve-page">
       <header className="commerce-topbar">
-        <CommerceTopRail activeTab="reserve" navigate={navigate} />
+        <CommerceTopRail activeTab="order" navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">
