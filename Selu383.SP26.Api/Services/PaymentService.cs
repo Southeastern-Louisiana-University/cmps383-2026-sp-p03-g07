@@ -41,7 +41,9 @@ public class PaymentService(
                 Method = string.IsNullOrWhiteSpace(dto.PaymentMethod) ? "Card" : dto.PaymentMethod,
                 Status = "Approved",
                 ProviderReference = $"PAY-{DateTime.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid():N}"[..20],
-                ExternalIntentId = $"pi_{Guid.NewGuid():N}"[..18],
+                ExternalIntentId = !string.IsNullOrWhiteSpace(dto.StripeIntentId)
+                    ? dto.StripeIntentId
+                    : $"pi_{Guid.NewGuid():N}"[..18],
                 CardLastFour = dto.CardLastFour
             }
         };
