@@ -7,12 +7,12 @@ import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
 import type { PageProps } from "../types/router.types";
 import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems";
-import { calculatePointsEarned } from "../utils/rewardsProgram";
 import { CommerceTopRail } from "./commerceShared";
 
 const orderTypes = [
   { value: "pickup", label: "Pickup" },
   { value: "drive-thru", label: "Drive-thru" },
+  { value: "dine-in", label: "Dine-in" },
 ];
 
 export default function CheckoutPage({ navigate }: PageProps) {
@@ -23,10 +23,13 @@ export default function CheckoutPage({ navigate }: PageProps) {
   const [orderType, setOrderType] = useState("pickup");
   const [pickupName, setPickupName] = useState(user?.userName ?? "");
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [giftCardCode, setGiftCardCode] = useState("");
   const [cardLastFour, setCardLastFour] = useState("4242");
   const [statusMessage, setStatusMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
   const visibleItems = useMemo(() => filterRewardsExclusiveNamedItems(items), [items]);
+
   const visibleSubtotal = useMemo(
     () => visibleItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [visibleItems],
@@ -38,9 +41,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
     void locationsApi
       .getLocations()
       .then((nextLocations) => {
-        if (!isMounted) {
-          return;
-        }
+        if (!isMounted) return;
 
         setLocations(nextLocations);
         if (nextLocations[0]) {
@@ -57,12 +58,10 @@ export default function CheckoutPage({ navigate }: PageProps) {
   const isReady = useMemo(() => visibleItems.length > 0, [visibleItems.length]);
   const selectedLocation = locations.find((location) => location.id === locationId);
   const selectedOrderType = orderTypes.find((option) => option.value === orderType)?.label ?? "Pickup";
-  const pointsEarned = calculatePointsEarned(visibleSubtotal);
+  const starsEarned = Math.max(Math.floor(visibleSubtotal), 1);
 
   async function submitCheckout() {
-    if (!isReady) {
-      return;
-    }
+    if (!isReady) return;
 
     setSubmitting(true);
     setStatusMessage("");
@@ -111,7 +110,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
         <section className="commerce-hero reserve-hero">
           <div className="commerce-hero-copy">
             <p className="commerce-kicker">Reservation</p>
-            <h1>BOOK YOUR TABLE</h1>
+            <h1>BOOK YOUR TABLE.</h1>
             <p className="commerce-hero-description">
               Set the store, choose how you want the order handled, and keep payment details ready so the
               checkout feels as smooth as the rest of the experience.
@@ -137,20 +136,18 @@ export default function CheckoutPage({ navigate }: PageProps) {
               <strong>${visibleSubtotal.toFixed(2)}</strong>
             </div>
             <div className="commerce-summary-row">
-              <span>Points after payment</span>
-              <strong>{pointsEarned}</strong>
+              <span>Lions after payment</span>
+              <strong>{starsEarned}</strong>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-              <button
-                className="commerce-primary-button commerce-primary-button-block"
-                disabled={submitting || !isReady}
-                onClick={submitCheckout}
-                type="button"
-              >
-                {submitting ? "Processing..." : "Place order"}
-              </button>
-            </div>
+            <button
+              className="commerce-primary-button commerce-primary-button-block"
+              disabled={submitting || !isReady}
+              onClick={submitCheckout}
+              type="button"
+            >
+              {submitting ? "Processing..." : "Place order"}
+            </button>
           </aside>
         </section>
 
@@ -165,21 +162,29 @@ export default function CheckoutPage({ navigate }: PageProps) {
 
             <div className="reserve-order-type-row">
               {orderTypes.map((option) => (
-                <div style={{ display: "flex", justifyContent: "center", width: "100%" }} key={option.value}>
-                  <button
-                    className={option.value === orderType ? "reserve-type-pill active" : "reserve-type-pill"}
-                    onClick={() => setOrderType(option.value)}
-                    type="button"
-                  >
-                    {option.label}
-                  </button>
-                </div>
+                <button
+                  className={option.value === orderType ? "reserve-type-pill active" : "reserve-type-pill"}
+                  key={option.value}
+                  onClick={() => setOrderType(option.value)}
+                  type="button"
+                >
+                  {option.label}
+                </button>
               ))}
             </div>
 
             {!user && (
               <div style={{ padding: "12px 16px", borderRadius: 10, backgroundColor: "#fff3cd", marginBottom: 8 }}>
-                <strong>Checking out as guest.</strong> <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">Sign in</button> to earn points and save order history.
+                <strong>Checking out as guest.</strong>
+                <button
+                  className="commerce-secondary-button"
+                  style={{ marginLeft: 8, padding: "4px 12px" }}
+                  onClick={() => navigate("/login")}
+                  type="button"
+                >
+                  Sign in
+                </button>
+                to earn Lions and save order history.
               </div>
             )}
 
@@ -203,15 +208,28 @@ export default function CheckoutPage({ navigate }: PageProps) {
                 <span>Pickup name</span>
                 <input
                   className="commerce-input"
+                  placeholder="Enter pickup name"
                   value={pickupName}
                   onChange={(event) => setPickupName(event.target.value)}
                 />
               </label>
+
+              <label className="commerce-field">
+                <span>Gift card code</span>
+                <input
+                  className="commerce-input"
+                  placeholder="Optional gift card code"
+                  value={giftCardCode}
+                  onChange={(event) => setGiftCardCode(event.target.value)}
+                />
+              </label>
+
               <label className="commerce-field">
                 <span>Card last four</span>
                 <input
                   className="commerce-input"
                   maxLength={4}
+                  placeholder="4242"
                   value={cardLastFour}
                   onChange={(event) => setCardLastFour(event.target.value)}
                 />
@@ -221,6 +239,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
                 <span>Special instructions</span>
                 <textarea
                   className="commerce-textarea"
+                  placeholder="Add allergies, pickup notes, or special requests"
                   rows={4}
                   value={specialInstructions}
                   onChange={(event) => setSpecialInstructions(event.target.value)}
@@ -237,22 +256,18 @@ export default function CheckoutPage({ navigate }: PageProps) {
                 <p className="commerce-panel-kicker">Current cart</p>
                 <h2>Your order</h2>
               </div>
-              <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-                <button className="commerce-secondary-button" onClick={() => navigate("/cart")} type="button">
-                  Edit cart
-                </button>
-              </div>
+              <button className="commerce-secondary-button" onClick={() => navigate("/cart")} type="button">
+                Edit cart
+              </button>
             </div>
 
             {visibleItems.length === 0 ? (
               <div className="commerce-empty-state">
                 <h3>Your cart is still empty.</h3>
                 <p>Add menu items first, then come back here to finalize the reservation.</p>
-                <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-                  <button className="commerce-primary-button" onClick={() => navigate("/menu")} type="button">
-                    Browse menu
-                  </button>
-                </div>
+                <button className="commerce-primary-button" onClick={() => navigate("/menu")} type="button">
+                  Browse menu
+                </button>
               </div>
             ) : (
               <div className="reserve-lineup">
