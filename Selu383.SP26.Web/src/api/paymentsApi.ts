@@ -10,6 +10,7 @@ export const paymentsApi = {
     paymentMethod: string;
     amount?: number;
     cardLastFour?: string;
+    stripeIntentId?: string;
   }) {
     return apiRequest<Payment[]>("/api/payments/checkout", {
       method: "POST",

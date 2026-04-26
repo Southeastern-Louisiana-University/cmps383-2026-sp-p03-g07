@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { locationsApi } from "../api/locationsApi";
 import { orderApi } from "../api/orderApi";
 import { paymentsApi } from "../api/paymentsApi";
+import { stripeApi } from "../api/stripeApi";
 import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
@@ -10,12 +13,29 @@ import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems
 import { calculatePointsEarned } from "../utils/rewardsProgram";
 import { CommerceTopRail } from "./commerceShared";
 
+const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
+const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
+
 const orderTypes = [
   { value: "pickup", label: "Pickup" },
   { value: "drive-thru", label: "Drive-thru" },
 ];
 
-export default function CheckoutPage({ navigate }: PageProps) {
+const CARD_ELEMENT_OPTIONS = {
+  style: {
+    base: {
+      color: "#e1e4ad",
+      fontFamily: "'Inter', sans-serif",
+      fontSize: "16px",
+      "::placeholder": { color: "rgba(215,217,161,0.4)" },
+    },
+    invalid: { color: "#f87171" },
+  },
+};
+
+function CheckoutForm({ navigate }: PageProps) {
+  const stripe = useStripe();
+  const elements = useElements();
   const { user } = useAuth();
   const { clear, items } = useCart();
   const [locations, setLocations] = useState<Location[]>([]);
@@ -23,7 +43,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
   const [orderType, setOrderType] = useState("pickup");
   const [pickupName, setPickupName] = useState(user?.userName ?? "");
   const [specialInstructions, setSpecialInstructions] = useState("");
-  const [cardLastFour, setCardLastFour] = useState("4242");
+  const [cardError, setCardError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const visibleItems = useMemo(() => filterRewardsExclusiveNamedItems(items), [items]);
@@ -38,34 +58,27 @@ export default function CheckoutPage({ navigate }: PageProps) {
     void locationsApi
       .getLocations()
       .then((nextLocations) => {
-        if (!isMounted) {
-          return;
-        }
-
+        if (!isMounted) return;
         setLocations(nextLocations);
-        if (nextLocations[0]) {
-          setLocationId(nextLocations[0].id);
-        }
+        if (nextLocations[0]) setLocationId(nextLocations[0].id);
       })
       .catch(() => undefined);
 
-    return () => {
-      isMounted = false;
-    };
+    return () => { isMounted = false; };
   }, []);
 
   const isReady = useMemo(() => visibleItems.length > 0, [visibleItems.length]);
   const selectedLocation = locations.find((location) => location.id === locationId);
   const selectedOrderType = orderTypes.find((option) => option.value === orderType)?.label ?? "Pickup";
   const pointsEarned = calculatePointsEarned(visibleSubtotal);
+  const stripeReady = !!stripePromise;
 
   async function submitCheckout() {
-    if (!isReady) {
-      return;
-    }
+    if (!isReady) return;
 
     setSubmitting(true);
     setStatusMessage("");
+    setCardError("");
 
     try {
       const order = await orderApi.createOrder({
@@ -85,12 +98,46 @@ export default function CheckoutPage({ navigate }: PageProps) {
         })),
       });
 
-      await paymentsApi.checkout({
-        orderId: order.id,
-        paymentMethod: "Card",
-        amount: visibleSubtotal,
-        cardLastFour,
-      });
+      if (stripeReady && stripe && elements) {
+        const cardElement = elements.getElement(CardElement);
+        if (!cardElement) {
+          setStatusMessage("Card element not ready. Please refresh and try again.");
+          setSubmitting(false);
+          return;
+        }
+
+        const { clientSecret, intentId } = await stripeApi.createIntent({
+          orderId: order.id,
+          amount: visibleSubtotal,
+        });
+
+        const { error } = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: { card: cardElement },
+        });
+
+        if (error) {
+          setCardError(error.message ?? "Payment failed. Please try again.");
+          setSubmitting(false);
+          return;
+        }
+
+        const cardLastFour = "0000";
+
+        await paymentsApi.checkout({
+          orderId: order.id,
+          paymentMethod: "Stripe",
+          amount: visibleSubtotal,
+          cardLastFour,
+          stripeIntentId: intentId,
+        });
+      } else {
+        await paymentsApi.checkout({
+          orderId: order.id,
+          paymentMethod: "Card",
+          amount: visibleSubtotal,
+          cardLastFour: "0000",
+        });
+      }
 
       clear();
       navigate(`/orders?id=${order.id}`);
@@ -144,7 +191,7 @@ export default function CheckoutPage({ navigate }: PageProps) {
             <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <button
                 className="commerce-primary-button commerce-primary-button-block"
-                disabled={submitting || !isReady}
+                disabled={submitting || !isReady || (stripeReady && !stripe)}
                 onClick={submitCheckout}
                 type="button"
               >
@@ -207,14 +254,21 @@ export default function CheckoutPage({ navigate }: PageProps) {
                   onChange={(event) => setPickupName(event.target.value)}
                 />
               </label>
-              <label className="commerce-field">
-                <span>Card last four</span>
-                <input
-                  className="commerce-input"
-                  maxLength={4}
-                  value={cardLastFour}
-                  onChange={(event) => setCardLastFour(event.target.value)}
-                />
+
+              <label className="commerce-field commerce-field-full">
+                <span>Card details</span>
+                {stripeReady ? (
+                  <div>
+                    <div className="stripe-card-wrapper">
+                      <CardElement options={CARD_ELEMENT_OPTIONS} onChange={() => setCardError("")} />
+                    </div>
+                    {cardError ? <p className="stripe-card-error">{cardError}</p> : null}
+                  </div>
+                ) : (
+                  <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", margin: "0.25rem 0 0" }}>
+                    Stripe not configured. Add <code>VITE_STRIPE_PUBLISHABLE_KEY</code> to your <code>.env.local</code> file.
+                  </p>
+                )}
               </label>
 
               <label className="commerce-field commerce-field-full">
@@ -275,4 +329,15 @@ export default function CheckoutPage({ navigate }: PageProps) {
       </section>
     </div>
   );
+}
+
+export default function CheckoutPage({ navigate }: PageProps) {
+  if (stripePromise) {
+    return (
+      <Elements stripe={stripePromise}>
+        <CheckoutForm navigate={navigate} query={new URLSearchParams()} />
+      </Elements>
+    );
+  }
+  return <CheckoutForm navigate={navigate} query={new URLSearchParams()} />;
 }

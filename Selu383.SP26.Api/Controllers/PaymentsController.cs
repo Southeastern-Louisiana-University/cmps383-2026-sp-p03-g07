@@ -6,6 +6,7 @@ using Selu383.SP26.Api.Extensions;
 using Selu383.SP26.Api.Features.Auth;
 using Selu383.SP26.Api.Features.Payments;
 using Selu383.SP26.Api.Services;
+using Stripe;
 
 namespace Selu383.SP26.Api.Controllers;
 
@@ -14,7 +15,8 @@ namespace Selu383.SP26.Api.Controllers;
 [Authorize]
 public class PaymentsController(
     DataContext dataContext,
-    PaymentService paymentService) : ControllerBase
+    PaymentService paymentService,
+    IConfiguration configuration) : ControllerBase
 {
     [HttpGet("mine")]
     public async Task<ActionResult<IEnumerable<PaymentDto>>> GetMine()
@@ -45,6 +47,36 @@ public class PaymentsController(
             .ToListAsync();
 
         return Ok(payments);
+    }
+
+    [AllowAnonymous]
+    [HttpPost("create-intent")]
+    public async Task<ActionResult<CreateIntentResponseDto>> CreateIntent([FromBody] CreateIntentDto dto)
+    {
+        var stripeKey = configuration["Stripe:SecretKey"];
+        if (string.IsNullOrWhiteSpace(stripeKey) || stripeKey.Contains("YOUR_STRIPE"))
+        {
+            return BadRequest(new { message = "Stripe is not configured. Add your secret key to appsettings." });
+        }
+
+        StripeConfiguration.ApiKey = stripeKey;
+
+        var options = new PaymentIntentCreateOptions
+        {
+            Amount = (long)(dto.Amount * 100),
+            Currency = "usd",
+            AutomaticPaymentMethods = new PaymentIntentAutomaticPaymentMethodsOptions { Enabled = true },
+            Metadata = new Dictionary<string, string> { { "orderId", dto.OrderId.ToString() } }
+        };
+
+        var service = new PaymentIntentService();
+        var intent = await service.CreateAsync(options);
+
+        return Ok(new CreateIntentResponseDto
+        {
+            ClientSecret = intent.ClientSecret,
+            IntentId = intent.Id
+        });
     }
 
     [AllowAnonymous]

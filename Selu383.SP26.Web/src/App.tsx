@@ -87,6 +87,16 @@ function ShellMarkIcon() {
   );
 }
 
+function CartFloatIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="9" cy="21" r="1" />
+      <circle cx="20" cy="21" r="1" />
+      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
+    </svg>
+  );
+}
+
 function MoonIcon() {
   return (
     <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -250,6 +260,23 @@ function AppLayout() {
           <Page navigate={navigate} query={routeState.query} />
         )}
       </main>
+
+      {cartCount > 0 && routeState.path !== "/cart" && routeState.path !== "/checkout" ? (
+        <button
+          aria-label={`View cart, ${cartCount} item${cartCount !== 1 ? "s" : ""}`}
+          className="cart-float-button"
+          onClick={() => navigate("/cart")}
+          type="button"
+        >
+          <span className="cart-float-icon">
+            <CartFloatIcon />
+          </span>
+          <span className="cart-float-label">Cart</span>
+          <span className="cart-float-badge" key={cartNotice?.id ?? 0}>
+            {cartCount}
+          </span>
+        </button>
+      ) : null}
 
       {cartNotice ? (
         <div

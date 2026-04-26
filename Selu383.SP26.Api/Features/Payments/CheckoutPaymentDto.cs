@@ -12,4 +12,6 @@ public class CheckoutPaymentDto
     public decimal? Amount { get; set; }
 
     public string CardLastFour { get; set; } = string.Empty;
+
+    public string StripeIntentId { get; set; } = string.Empty;
 }
