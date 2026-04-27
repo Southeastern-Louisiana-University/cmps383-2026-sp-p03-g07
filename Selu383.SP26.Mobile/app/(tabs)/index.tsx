@@ -154,7 +154,11 @@ export default function HomeScreen() {
       <View style={[styles.hero, { paddingTop: insets.top + 22 }]}>
         <View style={styles.heroNav}>
           <View style={styles.brandBadge}>
-            <Text style={styles.brandBadgeText}>CL</Text>
+            <Image
+              source={require('../../assets/images/icon.png')}
+              style={{ width: 46, height: 46, borderRadius: 14 }}
+              contentFit="cover"
+            />
           </View>
           <View style={styles.heroNavCopy}>
             <Text style={styles.heroNavKicker}>Fresh roasted daily</Text>

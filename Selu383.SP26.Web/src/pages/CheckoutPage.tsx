@@ -1,10 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import { loadStripe, type Stripe, type StripeElements } from "@stripe/stripe-js";
-import { Elements, CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { locationsApi } from "../api/locationsApi";
 import { orderApi } from "../api/orderApi";
 import { paymentsApi } from "../api/paymentsApi";
-import { stripeApi } from "../api/stripeApi";
 import { useAuth } from "../store/authStore";
 import { useCart } from "../store/cartStore";
 import type { Location } from "../types/location.types";
@@ -13,43 +10,36 @@ import { filterRewardsExclusiveNamedItems } from "../utils/rewardsExclusiveItems
 import { calculatePointsEarned } from "../utils/rewardsProgram";
 import { CommerceTopRail } from "./commerceShared";
 
-const stripePublishableKey = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY as string | undefined;
-const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
-
 const orderTypes = [
   { value: "pickup", label: "Pickup" },
   { value: "drive-thru", label: "Drive-thru" },
 ];
 
-const CARD_ELEMENT_OPTIONS = {
-  style: {
-    base: {
-      color: "#e1e4ad",
-      fontFamily: "'Inter', sans-serif",
-      fontSize: "16px",
-      "::placeholder": { color: "rgba(215,217,161,0.4)" },
-    },
-    invalid: { color: "#f87171" },
-  },
-};
+function formatCardNumber(value: string) {
+  return value.replace(/\D/g, "").slice(0, 16).replace(/(.{4})/g, "$1 ").trim();
+}
 
-type CheckoutFormCommonProps = PageProps & {
-  stripeConfigured: boolean;
-  stripe: Stripe | null;
-  elements: StripeElements | null;
-};
+function formatExpiry(value: string) {
+  const digits = value.replace(/\D/g, "").slice(0, 4);
+  if (digits.length >= 3) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return digits;
+}
 
-function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: CheckoutFormCommonProps) {
+export default function CheckoutPage({ navigate }: PageProps) {
   const { user } = useAuth();
   const { clear, items } = useCart();
   const [locations, setLocations] = useState<Location[]>([]);
   const [locationId, setLocationId] = useState(1);
   const [orderType, setOrderType] = useState("pickup");
   const [pickupName, setPickupName] = useState(user?.userName ?? "");
+  const [pickupNameError, setPickupNameError] = useState("");
   const [specialInstructions, setSpecialInstructions] = useState("");
-  const [cardError, setCardError] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
   const visibleItems = useMemo(() => filterRewardsExclusiveNamedItems(items), [items]);
   const visibleSubtotal = useMemo(
     () => visibleItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
@@ -58,16 +48,11 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
 
   useEffect(() => {
     let isMounted = true;
-
-    void locationsApi
-      .getLocations()
-      .then((nextLocations) => {
-        if (!isMounted) return;
-        setLocations(nextLocations);
-        if (nextLocations[0]) setLocationId(nextLocations[0].id);
-      })
-      .catch(() => undefined);
-
+    void locationsApi.getLocations().then((nextLocations) => {
+      if (!isMounted) return;
+      setLocations(nextLocations);
+      if (nextLocations[0]) setLocationId(nextLocations[0].id);
+    }).catch(() => undefined);
     return () => { isMounted = false; };
   }, []);
 
@@ -79,15 +64,20 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
   async function submitCheckout() {
     if (!isReady) return;
 
+    if (!pickupName.trim()) {
+      setPickupNameError("Pickup name is required.");
+      return;
+    }
+
     setSubmitting(true);
     setStatusMessage("");
-    setCardError("");
+    setPickupNameError("");
 
     try {
       const order = await orderApi.createOrder({
         locationId,
         orderType,
-        pickupName,
+        pickupName: pickupName.trim(),
         specialInstructions,
         total: visibleSubtotal,
         items: visibleItems.map((item) => ({
@@ -101,58 +91,12 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
         })),
       });
 
-      if (stripeConfigured && stripe && elements) {
-        try {
-          const cardElement = elements.getElement(CardElement);
-          if (!cardElement) {
-            setStatusMessage("Card element not ready. Please refresh and try again.");
-            setSubmitting(false);
-            return;
-          }
-
-          const { clientSecret, intentId } = await stripeApi.createIntent({
-            orderId: order.id,
-            amount: visibleSubtotal,
-          });
-
-          const { error } = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: { card: cardElement },
-          });
-
-          if (error) {
-            setCardError(error.message ?? "Payment failed. Please try again.");
-            setSubmitting(false);
-            return;
-          }
-
-          await paymentsApi.checkout({
-            orderId: order.id,
-            paymentMethod: "Stripe",
-            amount: visibleSubtotal,
-            cardLastFour: "0000",
-            stripeIntentId: intentId,
-          });
-        } catch (error) {
-          const message = error instanceof Error ? error.message : "";
-          if (!message.toLowerCase().includes("stripe is not configured")) {
-            throw error;
-          }
-
-          await paymentsApi.checkout({
-            orderId: order.id,
-            paymentMethod: "Demo",
-            amount: visibleSubtotal,
-            cardLastFour: "0000",
-          });
-        }
-      } else {
-        await paymentsApi.checkout({
-          orderId: order.id,
-          paymentMethod: "Demo",
-          amount: visibleSubtotal,
-          cardLastFour: "0000",
-        });
-      }
+      await paymentsApi.checkout({
+        orderId: order.id,
+        paymentMethod: "Card",
+        amount: visibleSubtotal,
+        cardLastFour: cardNumber.replace(/\s/g, "").slice(-4) || "0000",
+      });
 
       clear();
       navigate(`/orders?id=${order.id}`);
@@ -178,7 +122,6 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
               Set the store, choose how you want the order handled, and keep payment details ready so the
               checkout feels as smooth as the rest of the experience.
             </p>
-
             <div className="commerce-hero-pills">
               <span className="commerce-hero-pill">{selectedLocation?.name ?? "Choose a store"}</span>
               <span className="commerce-hero-pill">{selectedOrderType}</span>
@@ -189,7 +132,6 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
           <aside className="commerce-summary-card reserve-summary-card">
             <p className="commerce-panel-kicker">Payment summary</p>
             <h2>Reservation overview</h2>
-
             <div className="commerce-summary-row">
               <span>Items</span>
               <strong>{visibleItems.length}</strong>
@@ -202,15 +144,14 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
               <span>Points after payment</span>
               <strong>{pointsEarned}</strong>
             </div>
-
             <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <button
                 className="commerce-primary-button commerce-primary-button-block"
-                disabled={submitting || !isReady || (stripeConfigured && (!stripe || !elements))}
+                disabled={submitting || !isReady}
                 onClick={submitCheckout}
                 type="button"
               >
-                {submitting ? "Processing..." : stripeConfigured ? "Place order" : "Place order (demo)"}
+                {submitting ? "Processing..." : "Place order"}
               </button>
             </div>
           </aside>
@@ -241,7 +182,11 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
 
             {!user && (
               <div style={{ padding: "12px 16px", borderRadius: 10, backgroundColor: "#fff3cd", marginBottom: 8 }}>
-                <strong>Checking out as guest.</strong> <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">Sign in</button> to earn points and save order history.
+                <strong>Checking out as guest.</strong>{" "}
+                <button className="commerce-secondary-button" style={{ marginLeft: 8, padding: "4px 12px" }} onClick={() => navigate("/login")} type="button">
+                  Sign in
+                </button>{" "}
+                to earn points and save order history.
               </div>
             )}
 
@@ -254,52 +199,98 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
                   onChange={(event) => setLocationId(Number(event.target.value))}
                 >
                   {locations.map((location) => (
-                    <option key={location.id} value={location.id}>
-                      {location.name}
-                    </option>
+                    <option key={location.id} value={location.id}>{location.name}</option>
                   ))}
                 </select>
               </label>
 
               <label className="commerce-field">
-                <span>Pickup name</span>
+                <span>Pickup name <span style={{ color: "#f87171" }}>*</span></span>
                 <input
-                  className="commerce-input"
+                  className={`commerce-input${pickupNameError ? " commerce-input-error" : ""}`}
                   value={pickupName}
-                  onChange={(event) => setPickupName(event.target.value)}
+                  placeholder="Required"
+                  onChange={(event) => {
+                    setPickupName(event.target.value);
+                    if (event.target.value.trim()) setPickupNameError("");
+                  }}
                 />
-              </label>
-
-              <label className="commerce-field commerce-field-full">
-                <span>Payment details</span>
-                {stripeConfigured ? (
-                  <>
-                    <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)", margin: "0 0 10px" }}>
-                      Test checkout (no real charges). Use any Stripe test card.
-                    </p>
-                    <div className="stripe-card-wrapper">
-                      <CardElement options={CARD_ELEMENT_OPTIONS} onChange={() => setCardError("")} />
-                    </div>
-                    {cardError ? <p className="stripe-card-error">{cardError}</p> : null}
-                  </>
-                ) : (
-                  <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", margin: "0.25rem 0 0" }}>
-                    Demo payment mode (no real charge). To enable Stripe test payments, set{" "}
-                    <code>STRIPE_PUBLISHABLE_KEY</code> and <code>STRIPE_SECRET_KEY</code> in <code>.env</code> (see{" "}
-                    <code>.env.example</code>).
-                  </p>
-                )}
+                {pickupNameError ? <span className="commerce-field-error">{pickupNameError}</span> : null}
               </label>
 
               <label className="commerce-field commerce-field-full">
                 <span>Special instructions</span>
                 <textarea
                   className="commerce-textarea"
-                  rows={4}
+                  rows={3}
                   value={specialInstructions}
                   onChange={(event) => setSpecialInstructions(event.target.value)}
                 />
               </label>
+            </div>
+
+            <div className="demo-card-section">
+              <div className="demo-card-header">
+                <span className="demo-card-title">Card details</span>
+              </div>
+
+              <div className="demo-card-body">
+                <div className="demo-card-chip">
+                  <svg viewBox="0 0 36 28" fill="none" aria-hidden="true">
+                    <rect x="1" y="1" width="34" height="26" rx="4" stroke="currentColor" strokeWidth="1.5" fill="rgba(200,168,75,0.12)"/>
+                    <path d="M1 10h34M1 18h34M13 1v26M23 1v26" stroke="currentColor" strokeWidth="1.2"/>
+                  </svg>
+                </div>
+
+                <label className="commerce-field" style={{ marginTop: "0.25rem" }}>
+                  <span>Card number</span>
+                  <input
+                    className="commerce-input demo-card-number"
+                    value={cardNumber}
+                    maxLength={19}
+                    placeholder="0000 0000 0000 0000"
+                    autoComplete="cc-number"
+                    onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                    inputMode="numeric"
+                  />
+                </label>
+
+                <label className="commerce-field">
+                  <span>Cardholder name</span>
+                  <input
+                    className="commerce-input"
+                    placeholder="Name on card"
+                    autoComplete="cc-name"
+                  />
+                </label>
+
+                <div className="demo-card-row">
+                  <label className="commerce-field">
+                    <span>Expiry date</span>
+                    <input
+                      className="commerce-input"
+                      value={cardExpiry}
+                      maxLength={5}
+                      placeholder="MM / YY"
+                      autoComplete="cc-exp"
+                      onChange={(e) => setCardExpiry(formatExpiry(e.target.value))}
+                      inputMode="numeric"
+                    />
+                  </label>
+                  <label className="commerce-field">
+                    <span>Security code</span>
+                    <input
+                      className="commerce-input"
+                      value={cardCvv}
+                      maxLength={3}
+                      placeholder="CVV"
+                      autoComplete="cc-csc"
+                      onChange={(e) => setCardCvv(e.target.value.replace(/\D/g, "").slice(0, 3))}
+                      inputMode="numeric"
+                    />
+                  </label>
+                </div>
+              </div>
             </div>
 
             {statusMessage ? <p className="commerce-inline-status commerce-inline-status-error">{statusMessage}</p> : null}
@@ -349,25 +340,4 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
       </section>
     </div>
   );
-}
-
-function CheckoutFormStripe(props: PageProps) {
-  const stripe = useStripe();
-  const elements = useElements();
-  return <CheckoutFormCommon {...props} stripeConfigured stripe={stripe} elements={elements} />;
-}
-
-function CheckoutFormNoStripe(props: PageProps) {
-  return <CheckoutFormCommon {...props} stripeConfigured={false} stripe={null} elements={null} />;
-}
-
-export default function CheckoutPage({ navigate }: PageProps) {
-  if (stripePromise) {
-    return (
-      <Elements stripe={stripePromise}>
-        <CheckoutFormStripe navigate={navigate} query={new URLSearchParams()} />
-      </Elements>
-    );
-  }
-  return <CheckoutFormNoStripe navigate={navigate} query={new URLSearchParams()} />;
 }
