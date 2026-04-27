@@ -69,24 +69,4 @@ or npm run android
 
 ```
 
-## 4. Admin
-
-
-```bash
-Open:
-http://localhost:5173/#/login
-Sign in with the seeded admin account:
-
-Username: galkadi
-Password: Password123!
-After that, go to:
-
-http://localhost:5173/#/admin
-
-
-
-
-
-```
-
 Then choose one of the Expo targets shown in the terminal.

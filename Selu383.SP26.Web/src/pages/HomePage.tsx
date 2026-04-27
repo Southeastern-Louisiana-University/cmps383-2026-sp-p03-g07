@@ -351,7 +351,7 @@ export default function HomePage({ navigate }: PageProps) {
           </div>
         </div>
         <div className="home-how-cta">
-          <button className="commerce-primary-button" onClick={() => navigate("/checkout")} type="button">
+          <button className="commerce-primary-button" onClick={() => navigate("/reservations")} type="button">
             Reserve a table
           </button>
           <button className="commerce-secondary-button" onClick={() => navigate("/stores")} type="button">

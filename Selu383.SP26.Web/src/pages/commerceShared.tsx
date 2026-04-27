@@ -324,7 +324,7 @@ export function CommerceTopRail({ activeTab, navigate, labels: labelOverrides }:
         <button className={getLinkClass(activeTab === "order")} onClick={() => navigate("/menu")} type="button">
           {resolvedLabels.order}
         </button>
-        <button className={getLinkClass(activeTab === "reserve")} onClick={() => navigate("/checkout")} type="button">
+        <button className={getLinkClass(activeTab === "reserve")} onClick={() => navigate("/reservations")} type="button">
           {resolvedLabels.reserve}
         </button>
         <button className={getLinkClass(activeTab === "locations")} onClick={() => navigate("/stores")} type="button">

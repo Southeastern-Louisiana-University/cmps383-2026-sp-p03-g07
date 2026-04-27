@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Image } from 'expo-image';
 import { Modal, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { resolveApiAssetUrl } from '@/constants/api';
 import { menuService } from '@/services/menuService';
@@ -316,6 +317,7 @@ function MenuCustomizationModal({ item, onAddToCart, onClose }: MenuCustomizatio
 }
 
 export default function MenuScreen() {
+  const insets = useSafeAreaInsets();
   const { addItem } = useCart();
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
@@ -349,7 +351,7 @@ export default function MenuScreen() {
   }, [menuItems, selectedCategory, search]);
 
   return (
-    <View style={styles.screen}>
+    <View style={[styles.screen, { paddingTop: insets.top }]}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <Text style={styles.title}>Menu</Text>
 

@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { resolveApiAssetUrl } from '@/constants/api';
 import { locationService } from '@/services/locationService';
@@ -17,7 +18,7 @@ import { POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
 const PRIMARY_ACTIONS = [
   {
     label: 'Reservation',
-    route: '/checkout' as const,
+    route: '/reservations' as const,
     image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop',
   },
   {
@@ -44,6 +45,7 @@ const SECONDARY_ACTIONS = [
 ];
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { addItem, items } = useCart();
   const { balance, rewards } = useRewards();
@@ -149,7 +151,7 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <StatusBar backgroundColor={OLIVE_LIGHT} style="light" translucent={false} />
-      <View style={styles.hero}>
+      <View style={[styles.hero, { paddingTop: insets.top + 22 }]}>
         <View style={styles.heroNav}>
           <View style={styles.brandBadge}>
             <Image
@@ -183,7 +185,7 @@ export default function HomeScreen() {
             <Pressable style={styles.heroPrimaryButton} onPress={() => router.push('/(tabs)/menu')}>
               <Text style={styles.heroPrimaryButtonText}>Order now</Text>
             </Pressable>
-            <Pressable style={styles.heroSecondaryButton} onPress={() => router.push('/checkout')}>
+            <Pressable style={styles.heroSecondaryButton} onPress={() => router.push('/reservations')}>
               <Text style={styles.heroSecondaryButtonText}>Reserve a table</Text>
             </Pressable>
           </View>
