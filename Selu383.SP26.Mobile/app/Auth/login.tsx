@@ -23,8 +23,27 @@ export default function LoginScreen() {
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <View style={styles.card}>
         <Text style={styles.title}>Login</Text>
-        <TextInput style={styles.input} value={userName} onChangeText={setUserName} placeholder="Username" placeholderTextColor="#8f7d70" />
-        <TextInput style={styles.input} value={password} onChangeText={setPassword} placeholder="Password" placeholderTextColor="#8f7d70" secureTextEntry />
+
+        <Text style={styles.label}>Username</Text>
+        <TextInput
+          style={styles.input}
+          value={userName}
+          onChangeText={setUserName}
+          placeholder="Enter username"
+          placeholderTextColor="#8f7d70"
+          autoCapitalize="none"
+          autoCorrect={false}
+        />
+
+        <Text style={styles.label}>Password</Text>
+        <TextInput
+          style={styles.input}
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Enter password"
+          placeholderTextColor="#8f7d70"
+          secureTextEntry
+        />
         {message ? <Text style={styles.message}>{message}</Text> : null}
         <Pressable style={styles.primaryButton} onPress={submitLogin}>
           <Text style={styles.primaryButtonText}>Sign in</Text>
@@ -45,6 +64,7 @@ const styles = StyleSheet.create({
   content: { flexGrow: 1, justifyContent: 'center', padding: 20 },
   card: { gap: 12, borderRadius: 26, backgroundColor: '#fffaf4', padding: 20 },
   title: { fontSize: 28, fontWeight: '700', color: '#1f1a17' },
+  label: { color: '#6c5b4d', fontWeight: '700', fontSize: 13, marginTop: 6 },
   input: {
     borderRadius: 18,
     backgroundColor: '#f6efe7',

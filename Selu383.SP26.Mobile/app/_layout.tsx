@@ -65,7 +65,7 @@ export default function RootLayout() {
                 <Stack.Screen name="checkout" options={{ title: 'Checkout' }} />
                 <Stack.Screen name="order-confirmation" options={{ title: 'Order confirmed' }} />
                 <Stack.Screen name="order-status" options={{ title: 'Order status' }} />
-                <Stack.Screen name="reservations" options={{ title: 'Reservations' }} />
+                <Stack.Screen name="reservations" options={{ title: 'Reserve a table' }} />
                 <Stack.Screen name="feedback" options={{ title: 'Feedback' }} />
                 <Stack.Screen name="locations" options={{ title: 'Store finder' }} />
                 <Stack.Screen name="favorites" options={{ title: 'Favorites' }} />

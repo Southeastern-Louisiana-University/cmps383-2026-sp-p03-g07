@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Image } from 'expo-image';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/store/authStore';
 
 export default function ProfileScreen() {
+  const insets = useSafeAreaInsets();
   const { logout, updateProfile, user } = useAuth();
   const [editing, setEditing] = useState(false);
   const [displayName, setDisplayName] = useState(user?.displayName ?? '');
@@ -33,7 +35,7 @@ export default function ProfileScreen() {
 
   if (!user) {
     return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20 }]}>
         <View style={styles.heroCard}>
           <Text style={styles.title}>Welcome</Text>
           <Text style={styles.heroCopy}>
@@ -61,7 +63,7 @@ export default function ProfileScreen() {
   }
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20 }]}>
       <View style={styles.heroCard}>
         {user.profilePictureUrl ? (
           <Image

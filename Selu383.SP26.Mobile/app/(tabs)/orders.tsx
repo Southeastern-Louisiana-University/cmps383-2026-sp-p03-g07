@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { orderService } from '@/services/orderService';
 import { useAuth } from '@/store/authStore';
 import type { Order } from '@/types/app';
 
 export default function OrdersScreen() {
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [reordering, setReordering] = useState<number | null>(null);
@@ -18,7 +20,7 @@ export default function OrdersScreen() {
 
   if (!user) {
     return (
-      <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+      <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20 }]}>
         <Text style={styles.title}>Order tracking</Text>
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Sign in to see your orders</Text>
@@ -46,7 +48,7 @@ export default function OrdersScreen() {
   }
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20 }]}>
       <Text style={styles.title}>Order tracking</Text>
       {orders.length === 0 ? (
         <View style={styles.card}>
