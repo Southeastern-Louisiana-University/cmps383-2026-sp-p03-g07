@@ -23,6 +23,13 @@ From the repo root, run:
 docker compose up --build -d
 ```
 
+### Stripe payments (Card / Apple Pay)
+
+To enable Stripe payments in the checkout screen, create a `.env` file at the repo root (see `.env.example`) and set:
+
+- `STRIPE_PUBLISHABLE_KEY` (starts with `pk_...`)
+- `STRIPE_SECRET_KEY` (starts with `sk_...`)
+
 Then open:
 
 - `http://localhost:8080`

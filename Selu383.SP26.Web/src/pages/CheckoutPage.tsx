@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { loadStripe, type CanMakePaymentResult, type PaymentRequest, type PaymentRequestPaymentMethodEvent, type Stripe, type StripeElements } from "@stripe/stripe-js";
+import { Elements, CardElement, PaymentRequestButtonElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { locationsApi } from "../api/locationsApi";
 import { orderApi } from "../api/orderApi";
 import { paymentsApi } from "../api/paymentsApi";
@@ -33,9 +33,13 @@ const CARD_ELEMENT_OPTIONS = {
   },
 };
 
-function CheckoutForm({ navigate }: PageProps) {
-  const stripe = useStripe();
-  const elements = useElements();
+type CheckoutFormCommonProps = PageProps & {
+  stripeConfigured: boolean;
+  stripe: Stripe | null;
+  elements: StripeElements | null;
+};
+
+function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: CheckoutFormCommonProps) {
   const { user } = useAuth();
   const { clear, items } = useCart();
   const [locations, setLocations] = useState<Location[]>([]);
@@ -43,6 +47,8 @@ function CheckoutForm({ navigate }: PageProps) {
   const [orderType, setOrderType] = useState("pickup");
   const [pickupName, setPickupName] = useState(user?.userName ?? "");
   const [specialInstructions, setSpecialInstructions] = useState("");
+  const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(null);
+  const [expressWalletLabel, setExpressWalletLabel] = useState<string | null>(null);
   const [cardError, setCardError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -71,7 +77,162 @@ function CheckoutForm({ navigate }: PageProps) {
   const selectedLocation = locations.find((location) => location.id === locationId);
   const selectedOrderType = orderTypes.find((option) => option.value === orderType)?.label ?? "Pickup";
   const pointsEarned = calculatePointsEarned(visibleSubtotal);
-  const stripeReady = !!stripePromise;
+
+  useEffect(() => {
+    if (!stripeConfigured || !stripe || !isReady || visibleSubtotal <= 0) {
+      setPaymentRequest(null);
+      setExpressWalletLabel(null);
+      return;
+    }
+
+    const totalAmount = Math.round(visibleSubtotal * 100);
+    const request = stripe.paymentRequest({
+      country: "US",
+      currency: "usd",
+      total: { label: "Caffeinated Lions", amount: totalAmount },
+      requestPayerName: true,
+      requestPayerEmail: true,
+    });
+
+    function resolveWalletLabel(result: CanMakePaymentResult) {
+      if (result.applePay) return "Apple Pay";
+      if (result.googlePay) return "Google Pay";
+      if (result.link) return "Link";
+      return "Express checkout";
+    }
+
+    let isMounted = true;
+
+    request
+      .canMakePayment()
+      .then((result) => {
+        if (!isMounted) return;
+        if (!result) {
+          setPaymentRequest(null);
+          setExpressWalletLabel(null);
+          return;
+        }
+        setPaymentRequest(request);
+        setExpressWalletLabel(resolveWalletLabel(result));
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setPaymentRequest(null);
+        setExpressWalletLabel(null);
+      });
+
+    const handlePaymentMethod = async (event: PaymentRequestPaymentMethodEvent) => {
+      if (!stripeConfigured || !stripe) {
+        event.complete("fail");
+        return;
+      }
+
+      if (!isReady) {
+        event.complete("fail");
+        return;
+      }
+
+      let completed = false;
+      setSubmitting(true);
+      setStatusMessage("");
+      setCardError("");
+
+      try {
+        const order = await orderApi.createOrder({
+          locationId,
+          orderType,
+          pickupName,
+          specialInstructions,
+          total: visibleSubtotal,
+          items: visibleItems.map((item) => ({
+            menuItemId: item.menuItemId,
+            itemName: item.name,
+            quantity: item.quantity,
+            unitPrice: item.price,
+            total: item.price * item.quantity,
+            customizations: item.customizations,
+            specialInstructions: "",
+          })),
+        });
+
+        const { clientSecret, intentId } = await stripeApi.createIntent({
+          orderId: order.id,
+          amount: visibleSubtotal,
+        });
+
+        const confirmResult = await stripe.confirmCardPayment(
+          clientSecret,
+          { payment_method: event.paymentMethod.id },
+          { handleActions: false },
+        );
+
+        if (confirmResult.error) {
+          event.complete("fail");
+          completed = true;
+          setStatusMessage(confirmResult.error.message ?? "Payment failed. Please try again.");
+          setSubmitting(false);
+          return;
+        }
+
+        event.complete("success");
+        completed = true;
+
+        if (confirmResult.paymentIntent?.status === "requires_action") {
+          const { error: actionError } = await stripe.confirmCardPayment(clientSecret);
+          if (actionError) {
+            setStatusMessage(actionError.message ?? "Payment failed. Please try again.");
+            setSubmitting(false);
+            return;
+          }
+        }
+
+        const cardLastFour = event.paymentMethod.card?.last4 ?? "0000";
+        const walletMethod =
+          event.walletName === "applePay"
+            ? "Apple Pay"
+            : event.walletName === "googlePay"
+              ? "Google Pay"
+              : "Stripe";
+
+        await paymentsApi.checkout({
+          orderId: order.id,
+          paymentMethod: walletMethod,
+          amount: visibleSubtotal,
+          cardLastFour: cardLastFour ?? "0000",
+          stripeIntentId: intentId,
+        });
+
+        clear();
+        navigate(`/orders?id=${order.id}`);
+      } catch (error) {
+        if (!completed) {
+          event.complete("fail");
+        }
+        setStatusMessage(error instanceof Error ? error.message : "Checkout failed.");
+      } finally {
+        setSubmitting(false);
+      }
+    };
+
+    request.on("paymentmethod", handlePaymentMethod);
+
+    return () => {
+      isMounted = false;
+      request.off("paymentmethod", handlePaymentMethod);
+    };
+  }, [
+    clear,
+    isReady,
+    locationId,
+    navigate,
+    orderType,
+    pickupName,
+    specialInstructions,
+    stripe,
+    stripeConfigured,
+    visibleItems,
+    visibleSubtotal,
+  ]);
 
   async function submitCheckout() {
     if (!isReady) return;
@@ -98,7 +259,7 @@ function CheckoutForm({ navigate }: PageProps) {
         })),
       });
 
-      if (stripeReady && stripe && elements) {
+      if (stripeConfigured && stripe && elements) {
         const cardElement = elements.getElement(CardElement);
         if (!cardElement) {
           setStatusMessage("Card element not ready. Please refresh and try again.");
@@ -191,7 +352,7 @@ function CheckoutForm({ navigate }: PageProps) {
             <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <button
                 className="commerce-primary-button commerce-primary-button-block"
-                disabled={submitting || !isReady || (stripeReady && !stripe)}
+                disabled={submitting || !isReady || (stripeConfigured && !stripe)}
                 onClick={submitCheckout}
                 type="button"
               >
@@ -256,17 +417,41 @@ function CheckoutForm({ navigate }: PageProps) {
               </label>
 
               <label className="commerce-field commerce-field-full">
-                <span>Card details</span>
-                {stripeReady ? (
-                  <div>
+                <span>Payment details</span>
+                {stripeConfigured ? (
+                  <>
+                    {paymentRequest ? (
+                      <div style={{ display: "grid", gap: 10, marginBottom: 12 }}>
+                        <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)", margin: 0 }}>
+                          {expressWalletLabel ?? "Express checkout"}
+                        </p>
+                        <PaymentRequestButtonElement
+                          options={{
+                            paymentRequest,
+                            style: {
+                              paymentRequestButton: {
+                                theme: "dark",
+                                height: "44px",
+                              },
+                            },
+                          }}
+                          onClick={() => {
+                            paymentRequest.update({
+                              total: { label: "Caffeinated Lions", amount: Math.round(visibleSubtotal * 100) },
+                            });
+                          }}
+                        />
+                        <div style={{ height: 1, background: "rgba(255,255,255,0.12)" }} />
+                      </div>
+                    ) : null}
                     <div className="stripe-card-wrapper">
                       <CardElement options={CARD_ELEMENT_OPTIONS} onChange={() => setCardError("")} />
                     </div>
                     {cardError ? <p className="stripe-card-error">{cardError}</p> : null}
-                  </div>
+                  </>
                 ) : (
                   <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", margin: "0.25rem 0 0" }}>
-                    Stripe not configured. Add <code>VITE_STRIPE_PUBLISHABLE_KEY</code> to your <code>.env.local</code> file.
+                    Stripe not configured. For Docker Compose set <code>STRIPE_PUBLISHABLE_KEY</code> and <code>STRIPE_SECRET_KEY</code> in <code>.env</code> (see <code>.env.example</code>).
                   </p>
                 )}
               </label>
@@ -331,13 +516,23 @@ function CheckoutForm({ navigate }: PageProps) {
   );
 }
 
+function CheckoutFormStripe(props: PageProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  return <CheckoutFormCommon {...props} stripeConfigured stripe={stripe} elements={elements} />;
+}
+
+function CheckoutFormNoStripe(props: PageProps) {
+  return <CheckoutFormCommon {...props} stripeConfigured={false} stripe={null} elements={null} />;
+}
+
 export default function CheckoutPage({ navigate }: PageProps) {
   if (stripePromise) {
     return (
       <Elements stripe={stripePromise}>
-        <CheckoutForm navigate={navigate} query={new URLSearchParams()} />
+        <CheckoutFormStripe navigate={navigate} query={new URLSearchParams()} />
       </Elements>
     );
   }
-  return <CheckoutForm navigate={navigate} query={new URLSearchParams()} />;
+  return <CheckoutFormNoStripe navigate={navigate} query={new URLSearchParams()} />;
 }

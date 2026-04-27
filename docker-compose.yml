@@ -22,6 +22,7 @@ services:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DataContext: Server=db,1433;Database=SP26-P03-G07;User Id=sa;Password=Password123!;TrustServerCertificate=True
       Spa__DevServerUrl: http://web:5173
+      Stripe__SecretKey: ${STRIPE_SECRET_KEY:-}
     ports:
       - "8080:8080"
 
@@ -31,6 +32,7 @@ services:
       dockerfile: Dockerfile
     environment:
       VITE_API_PROXY_TARGET: http://api:8080
+      VITE_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY:-}
     ports:
       - "5173:5173"
 
