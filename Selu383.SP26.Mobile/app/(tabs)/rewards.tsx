@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { rewardsService } from '@/services/rewardsService';
 import { useAuth } from '@/store/authStore';
@@ -8,6 +9,7 @@ import { useRewards } from '@/store/rewardsStore';
 import { POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
 
 export default function RewardsScreen() {
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { balance, refresh, rewards } = useRewards();
   const [redeeming, setRedeeming] = useState<number | null>(null);
@@ -64,7 +66,7 @@ export default function RewardsScreen() {
   }
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.screen} contentContainerStyle={[styles.content, { paddingTop: insets.top + 20 }]}>
       <View style={styles.heroCard}>
         <Text style={styles.eyebrow}>Rewards</Text>
         <Text style={styles.balanceValue}>{points}</Text>

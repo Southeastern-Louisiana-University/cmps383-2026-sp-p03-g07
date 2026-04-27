@@ -3,6 +3,7 @@ import { Image } from 'expo-image';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { resolveApiAssetUrl } from '@/constants/api';
 import { locationService } from '@/services/locationService';
@@ -44,6 +45,7 @@ const SECONDARY_ACTIONS = [
 ];
 
 export default function HomeScreen() {
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { addItem, items } = useCart();
   const { balance, rewards } = useRewards();
@@ -149,7 +151,7 @@ export default function HomeScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
       <StatusBar backgroundColor={OLIVE_LIGHT} style="light" translucent={false} />
-      <View style={styles.hero}>
+      <View style={[styles.hero, { paddingTop: insets.top + 22 }]}>
         <View style={styles.heroNav}>
           <View style={styles.brandBadge}>
             <Text style={styles.brandBadgeText}>CL</Text>
