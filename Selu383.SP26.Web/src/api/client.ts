@@ -14,8 +14,8 @@ export async function apiRequest<T>(path: string, init?: RequestInit): Promise<T
     const errorText = await response.text();
     if (errorText) {
       try {
-        const parsed = JSON.parse(errorText) as { title?: string; detail?: string };
-        throw new Error(parsed.detail ?? parsed.title ?? errorText);
+        const parsed = JSON.parse(errorText) as { title?: string; detail?: string; message?: string };
+        throw new Error(parsed.detail ?? parsed.title ?? parsed.message ?? errorText);
       } catch {
         throw new Error(errorText);
       }

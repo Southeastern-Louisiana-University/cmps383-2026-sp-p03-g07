@@ -23,9 +23,11 @@ From the repo root, run:
 docker compose up --build -d
 ```
 
-### Stripe payments (Card / Apple Pay)
+### Payments (Demo or Stripe test)
 
-To enable Stripe payments in the checkout screen, create a `.env` file at the repo root (see `.env.example`) and set:
+By default, the checkout screen uses **Demo payment mode** (no real charge).
+
+To enable **Stripe test payments**, create a `.env` file at the repo root (see `.env.example`) and set:
 
 - `STRIPE_PUBLISHABLE_KEY` (starts with `pk_...`)
 - `STRIPE_SECRET_KEY` (starts with `sk_...`)

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { loadStripe, type CanMakePaymentResult, type PaymentRequest, type PaymentRequestPaymentMethodEvent, type Stripe, type StripeElements } from "@stripe/stripe-js";
-import { Elements, CardElement, PaymentRequestButtonElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { loadStripe, type Stripe, type StripeElements } from "@stripe/stripe-js";
+import { Elements, CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { locationsApi } from "../api/locationsApi";
 import { orderApi } from "../api/orderApi";
 import { paymentsApi } from "../api/paymentsApi";
@@ -47,8 +47,6 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
   const [orderType, setOrderType] = useState("pickup");
   const [pickupName, setPickupName] = useState(user?.userName ?? "");
   const [specialInstructions, setSpecialInstructions] = useState("");
-  const [paymentRequest, setPaymentRequest] = useState<PaymentRequest | null>(null);
-  const [expressWalletLabel, setExpressWalletLabel] = useState<string | null>(null);
   const [cardError, setCardError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -78,162 +76,6 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
   const selectedOrderType = orderTypes.find((option) => option.value === orderType)?.label ?? "Pickup";
   const pointsEarned = calculatePointsEarned(visibleSubtotal);
 
-  useEffect(() => {
-    if (!stripeConfigured || !stripe || !isReady || visibleSubtotal <= 0) {
-      setPaymentRequest(null);
-      setExpressWalletLabel(null);
-      return;
-    }
-
-    const totalAmount = Math.round(visibleSubtotal * 100);
-    const request = stripe.paymentRequest({
-      country: "US",
-      currency: "usd",
-      total: { label: "Caffeinated Lions", amount: totalAmount },
-      requestPayerName: true,
-      requestPayerEmail: true,
-    });
-
-    function resolveWalletLabel(result: CanMakePaymentResult) {
-      if (result.applePay) return "Apple Pay";
-      if (result.googlePay) return "Google Pay";
-      if (result.link) return "Link";
-      return "Express checkout";
-    }
-
-    let isMounted = true;
-
-    request
-      .canMakePayment()
-      .then((result) => {
-        if (!isMounted) return;
-        if (!result) {
-          setPaymentRequest(null);
-          setExpressWalletLabel(null);
-          return;
-        }
-        setPaymentRequest(request);
-        setExpressWalletLabel(resolveWalletLabel(result));
-      })
-      .catch(() => {
-        if (!isMounted) return;
-        setPaymentRequest(null);
-        setExpressWalletLabel(null);
-      });
-
-    const handlePaymentMethod = async (event: PaymentRequestPaymentMethodEvent) => {
-      if (!stripeConfigured || !stripe) {
-        event.complete("fail");
-        return;
-      }
-
-      if (!isReady) {
-        event.complete("fail");
-        return;
-      }
-
-      let completed = false;
-      setSubmitting(true);
-      setStatusMessage("");
-      setCardError("");
-
-      try {
-        const order = await orderApi.createOrder({
-          locationId,
-          orderType,
-          pickupName,
-          specialInstructions,
-          total: visibleSubtotal,
-          items: visibleItems.map((item) => ({
-            menuItemId: item.menuItemId,
-            itemName: item.name,
-            quantity: item.quantity,
-            unitPrice: item.price,
-            total: item.price * item.quantity,
-            customizations: item.customizations,
-            specialInstructions: "",
-          })),
-        });
-
-        const { clientSecret, intentId } = await stripeApi.createIntent({
-          orderId: order.id,
-          amount: visibleSubtotal,
-        });
-
-        const confirmResult = await stripe.confirmCardPayment(
-          clientSecret,
-          { payment_method: event.paymentMethod.id },
-          { handleActions: false },
-        );
-
-        if (confirmResult.error) {
-          event.complete("fail");
-          completed = true;
-          setStatusMessage(confirmResult.error.message ?? "Payment failed. Please try again.");
-          setSubmitting(false);
-          return;
-        }
-
-        event.complete("success");
-        completed = true;
-
-        if (confirmResult.paymentIntent?.status === "requires_action") {
-          const { error: actionError } = await stripe.confirmCardPayment(clientSecret);
-          if (actionError) {
-            setStatusMessage(actionError.message ?? "Payment failed. Please try again.");
-            setSubmitting(false);
-            return;
-          }
-        }
-
-        const cardLastFour = event.paymentMethod.card?.last4 ?? "0000";
-        const walletMethod =
-          event.walletName === "applePay"
-            ? "Apple Pay"
-            : event.walletName === "googlePay"
-              ? "Google Pay"
-              : "Stripe";
-
-        await paymentsApi.checkout({
-          orderId: order.id,
-          paymentMethod: walletMethod,
-          amount: visibleSubtotal,
-          cardLastFour: cardLastFour ?? "0000",
-          stripeIntentId: intentId,
-        });
-
-        clear();
-        navigate(`/orders?id=${order.id}`);
-      } catch (error) {
-        if (!completed) {
-          event.complete("fail");
-        }
-        setStatusMessage(error instanceof Error ? error.message : "Checkout failed.");
-      } finally {
-        setSubmitting(false);
-      }
-    };
-
-    request.on("paymentmethod", handlePaymentMethod);
-
-    return () => {
-      isMounted = false;
-      request.off("paymentmethod", handlePaymentMethod);
-    };
-  }, [
-    clear,
-    isReady,
-    locationId,
-    navigate,
-    orderType,
-    pickupName,
-    specialInstructions,
-    stripe,
-    stripeConfigured,
-    visibleItems,
-    visibleSubtotal,
-  ]);
-
   async function submitCheckout() {
     if (!isReady) return;
 
@@ -260,41 +102,53 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
       });
 
       if (stripeConfigured && stripe && elements) {
-        const cardElement = elements.getElement(CardElement);
-        if (!cardElement) {
-          setStatusMessage("Card element not ready. Please refresh and try again.");
-          setSubmitting(false);
-          return;
+        try {
+          const cardElement = elements.getElement(CardElement);
+          if (!cardElement) {
+            setStatusMessage("Card element not ready. Please refresh and try again.");
+            setSubmitting(false);
+            return;
+          }
+
+          const { clientSecret, intentId } = await stripeApi.createIntent({
+            orderId: order.id,
+            amount: visibleSubtotal,
+          });
+
+          const { error } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: { card: cardElement },
+          });
+
+          if (error) {
+            setCardError(error.message ?? "Payment failed. Please try again.");
+            setSubmitting(false);
+            return;
+          }
+
+          await paymentsApi.checkout({
+            orderId: order.id,
+            paymentMethod: "Stripe",
+            amount: visibleSubtotal,
+            cardLastFour: "0000",
+            stripeIntentId: intentId,
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "";
+          if (!message.toLowerCase().includes("stripe is not configured")) {
+            throw error;
+          }
+
+          await paymentsApi.checkout({
+            orderId: order.id,
+            paymentMethod: "Demo",
+            amount: visibleSubtotal,
+            cardLastFour: "0000",
+          });
         }
-
-        const { clientSecret, intentId } = await stripeApi.createIntent({
-          orderId: order.id,
-          amount: visibleSubtotal,
-        });
-
-        const { error } = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: { card: cardElement },
-        });
-
-        if (error) {
-          setCardError(error.message ?? "Payment failed. Please try again.");
-          setSubmitting(false);
-          return;
-        }
-
-        const cardLastFour = "0000";
-
-        await paymentsApi.checkout({
-          orderId: order.id,
-          paymentMethod: "Stripe",
-          amount: visibleSubtotal,
-          cardLastFour,
-          stripeIntentId: intentId,
-        });
       } else {
         await paymentsApi.checkout({
           orderId: order.id,
-          paymentMethod: "Card",
+          paymentMethod: "Demo",
           amount: visibleSubtotal,
           cardLastFour: "0000",
         });
@@ -352,11 +206,11 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
             <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <button
                 className="commerce-primary-button commerce-primary-button-block"
-                disabled={submitting || !isReady || (stripeConfigured && !stripe)}
+                disabled={submitting || !isReady || (stripeConfigured && (!stripe || !elements))}
                 onClick={submitCheckout}
                 type="button"
               >
-                {submitting ? "Processing..." : "Place order"}
+                {submitting ? "Processing..." : stripeConfigured ? "Place order" : "Place order (demo)"}
               </button>
             </div>
           </aside>
@@ -420,30 +274,9 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
                 <span>Payment details</span>
                 {stripeConfigured ? (
                   <>
-                    {paymentRequest ? (
-                      <div style={{ display: "grid", gap: 10, marginBottom: 12 }}>
-                        <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)", margin: 0 }}>
-                          {expressWalletLabel ?? "Express checkout"}
-                        </p>
-                        <PaymentRequestButtonElement
-                          options={{
-                            paymentRequest,
-                            style: {
-                              paymentRequestButton: {
-                                theme: "dark",
-                                height: "44px",
-                              },
-                            },
-                          }}
-                          onClick={() => {
-                            paymentRequest.update({
-                              total: { label: "Caffeinated Lions", amount: Math.round(visibleSubtotal * 100) },
-                            });
-                          }}
-                        />
-                        <div style={{ height: 1, background: "rgba(255,255,255,0.12)" }} />
-                      </div>
-                    ) : null}
+                    <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)", margin: "0 0 10px" }}>
+                      Test checkout (no real charges). Use any Stripe test card.
+                    </p>
                     <div className="stripe-card-wrapper">
                       <CardElement options={CARD_ELEMENT_OPTIONS} onChange={() => setCardError("")} />
                     </div>
@@ -451,7 +284,9 @@ function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: Ch
                   </>
                 ) : (
                   <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", margin: "0.25rem 0 0" }}>
-                    Stripe not configured. For Docker Compose set <code>STRIPE_PUBLISHABLE_KEY</code> and <code>STRIPE_SECRET_KEY</code> in <code>.env</code> (see <code>.env.example</code>).
+                    Demo payment mode (no real charge). To enable Stripe test payments, set{" "}
+                    <code>STRIPE_PUBLISHABLE_KEY</code> and <code>STRIPE_SECRET_KEY</code> in <code>.env</code> (see{" "}
+                    <code>.env.example</code>).
                   </p>
                 )}
               </label>
