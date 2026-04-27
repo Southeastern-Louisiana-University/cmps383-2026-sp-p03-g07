@@ -18,7 +18,7 @@ import { POINTS_PER_DOLLAR, REWARD_THRESHOLD } from '@/utils/rewardsProgram';
 const PRIMARY_ACTIONS = [
   {
     label: 'Reservation',
-    route: '/checkout' as const,
+    route: '/reservations' as const,
     image: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=200&h=200&fit=crop',
   },
   {
@@ -181,7 +181,7 @@ export default function HomeScreen() {
             <Pressable style={styles.heroPrimaryButton} onPress={() => router.push('/(tabs)/menu')}>
               <Text style={styles.heroPrimaryButtonText}>Order now</Text>
             </Pressable>
-            <Pressable style={styles.heroSecondaryButton} onPress={() => router.push('/checkout')}>
+            <Pressable style={styles.heroSecondaryButton} onPress={() => router.push('/reservations')}>
               <Text style={styles.heroSecondaryButtonText}>Reserve a table</Text>
             </Pressable>
           </View>
