@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { loadStripe, type Stripe, type StripeElements } from "@stripe/stripe-js";
+import { Elements, CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
 import { locationsApi } from "../api/locationsApi";
 import { orderApi } from "../api/orderApi";
 import { paymentsApi } from "../api/paymentsApi";
@@ -33,9 +33,13 @@ const CARD_ELEMENT_OPTIONS = {
   },
 };
 
-function CheckoutForm({ navigate }: PageProps) {
-  const stripe = useStripe();
-  const elements = useElements();
+type CheckoutFormCommonProps = PageProps & {
+  stripeConfigured: boolean;
+  stripe: Stripe | null;
+  elements: StripeElements | null;
+};
+
+function CheckoutFormCommon({ navigate, stripeConfigured, stripe, elements }: CheckoutFormCommonProps) {
   const { user } = useAuth();
   const { clear, items } = useCart();
   const [locations, setLocations] = useState<Location[]>([]);
@@ -71,7 +75,6 @@ function CheckoutForm({ navigate }: PageProps) {
   const selectedLocation = locations.find((location) => location.id === locationId);
   const selectedOrderType = orderTypes.find((option) => option.value === orderType)?.label ?? "Pickup";
   const pointsEarned = calculatePointsEarned(visibleSubtotal);
-  const stripeReady = !!stripePromise;
 
   async function submitCheckout() {
     if (!isReady) return;
@@ -98,42 +101,54 @@ function CheckoutForm({ navigate }: PageProps) {
         })),
       });
 
-      if (stripeReady && stripe && elements) {
-        const cardElement = elements.getElement(CardElement);
-        if (!cardElement) {
-          setStatusMessage("Card element not ready. Please refresh and try again.");
-          setSubmitting(false);
-          return;
+      if (stripeConfigured && stripe && elements) {
+        try {
+          const cardElement = elements.getElement(CardElement);
+          if (!cardElement) {
+            setStatusMessage("Card element not ready. Please refresh and try again.");
+            setSubmitting(false);
+            return;
+          }
+
+          const { clientSecret, intentId } = await stripeApi.createIntent({
+            orderId: order.id,
+            amount: visibleSubtotal,
+          });
+
+          const { error } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: { card: cardElement },
+          });
+
+          if (error) {
+            setCardError(error.message ?? "Payment failed. Please try again.");
+            setSubmitting(false);
+            return;
+          }
+
+          await paymentsApi.checkout({
+            orderId: order.id,
+            paymentMethod: "Stripe",
+            amount: visibleSubtotal,
+            cardLastFour: "0000",
+            stripeIntentId: intentId,
+          });
+        } catch (error) {
+          const message = error instanceof Error ? error.message : "";
+          if (!message.toLowerCase().includes("stripe is not configured")) {
+            throw error;
+          }
+
+          await paymentsApi.checkout({
+            orderId: order.id,
+            paymentMethod: "Demo",
+            amount: visibleSubtotal,
+            cardLastFour: "0000",
+          });
         }
-
-        const { clientSecret, intentId } = await stripeApi.createIntent({
-          orderId: order.id,
-          amount: visibleSubtotal,
-        });
-
-        const { error } = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: { card: cardElement },
-        });
-
-        if (error) {
-          setCardError(error.message ?? "Payment failed. Please try again.");
-          setSubmitting(false);
-          return;
-        }
-
-        const cardLastFour = "0000";
-
-        await paymentsApi.checkout({
-          orderId: order.id,
-          paymentMethod: "Stripe",
-          amount: visibleSubtotal,
-          cardLastFour,
-          stripeIntentId: intentId,
-        });
       } else {
         await paymentsApi.checkout({
           orderId: order.id,
-          paymentMethod: "Card",
+          paymentMethod: "Demo",
           amount: visibleSubtotal,
           cardLastFour: "0000",
         });
@@ -151,7 +166,7 @@ function CheckoutForm({ navigate }: PageProps) {
   return (
     <div className="commerce-page reserve-page">
       <header className="commerce-topbar">
-        <CommerceTopRail activeTab="reserve" navigate={navigate} />
+        <CommerceTopRail activeTab="order" navigate={navigate} />
       </header>
 
       <section className="commerce-canvas">
@@ -191,11 +206,11 @@ function CheckoutForm({ navigate }: PageProps) {
             <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
               <button
                 className="commerce-primary-button commerce-primary-button-block"
-                disabled={submitting || !isReady || (stripeReady && !stripe)}
+                disabled={submitting || !isReady || (stripeConfigured && (!stripe || !elements))}
                 onClick={submitCheckout}
                 type="button"
               >
-                {submitting ? "Processing..." : "Place order"}
+                {submitting ? "Processing..." : stripeConfigured ? "Place order" : "Place order (demo)"}
               </button>
             </div>
           </aside>
@@ -256,17 +271,22 @@ function CheckoutForm({ navigate }: PageProps) {
               </label>
 
               <label className="commerce-field commerce-field-full">
-                <span>Card details</span>
-                {stripeReady ? (
-                  <div>
+                <span>Payment details</span>
+                {stripeConfigured ? (
+                  <>
+                    <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)", margin: "0 0 10px" }}>
+                      Test checkout (no real charges). Use any Stripe test card.
+                    </p>
                     <div className="stripe-card-wrapper">
                       <CardElement options={CARD_ELEMENT_OPTIONS} onChange={() => setCardError("")} />
                     </div>
                     {cardError ? <p className="stripe-card-error">{cardError}</p> : null}
-                  </div>
+                  </>
                 ) : (
                   <p style={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.5)", margin: "0.25rem 0 0" }}>
-                    Stripe not configured. Add <code>VITE_STRIPE_PUBLISHABLE_KEY</code> to your <code>.env.local</code> file.
+                    Demo payment mode (no real charge). To enable Stripe test payments, set{" "}
+                    <code>STRIPE_PUBLISHABLE_KEY</code> and <code>STRIPE_SECRET_KEY</code> in <code>.env</code> (see{" "}
+                    <code>.env.example</code>).
                   </p>
                 )}
               </label>
@@ -331,13 +351,23 @@ function CheckoutForm({ navigate }: PageProps) {
   );
 }
 
+function CheckoutFormStripe(props: PageProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  return <CheckoutFormCommon {...props} stripeConfigured stripe={stripe} elements={elements} />;
+}
+
+function CheckoutFormNoStripe(props: PageProps) {
+  return <CheckoutFormCommon {...props} stripeConfigured={false} stripe={null} elements={null} />;
+}
+
 export default function CheckoutPage({ navigate }: PageProps) {
   if (stripePromise) {
     return (
       <Elements stripe={stripePromise}>
-        <CheckoutForm navigate={navigate} query={new URLSearchParams()} />
+        <CheckoutFormStripe navigate={navigate} query={new URLSearchParams()} />
       </Elements>
     );
   }
-  return <CheckoutForm navigate={navigate} query={new URLSearchParams()} />;
+  return <CheckoutFormNoStripe navigate={navigate} query={new URLSearchParams()} />;
 }
