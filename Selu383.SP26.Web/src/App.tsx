@@ -167,7 +167,6 @@ function AppLayout() {
   }
 
   const isAdmin = !!user?.roles.includes("Admin");
-  const isEmployee = !!user?.roles.includes("Manager");
   const blockedByAuth =
     activeRoute.protected &&
     !user &&
@@ -176,8 +175,7 @@ function AppLayout() {
     activeRoute.path !== "/orders" &&
     activeRoute.path !== "/order-status" &&
     activeRoute.path !== "/reservations";
-  const employeeAllowedPaths = ["/admin/orders", "/admin/reservations", "/admin/menu"];
-  const blockedByRole = activeRoute.adminOnly && !isAdmin && !(isEmployee && employeeAllowedPaths.includes(activeRoute.path));
+  const blockedByRole = activeRoute.adminOnly && !isAdmin;
   const isImmersiveRoute =
     activeRoute.path === "/" ||
     activeRoute.path === "/stores" ||
@@ -212,7 +210,7 @@ function AppLayout() {
           </div>
           <nav className="top-nav">
             {routes
-              .filter((route) => route.showInPrimaryNav && (!route.adminOnly || isAdmin || (isEmployee && employeeAllowedPaths.includes(route.path))))
+              .filter((route) => route.showInPrimaryNav && (!route.adminOnly || isAdmin))
               .map((route) => (
                 <button
                   className={route.path === activeRoute.path ? "nav-link active" : "nav-link"}

@@ -91,13 +91,9 @@ public static class SeedHelper
             bob.PhoneNumber = string.IsNullOrWhiteSpace(bob.PhoneNumber) ? "9855550102" : bob.PhoneNumber;
             await userManager.UpdateAsync(bob);
         }
-        if (await userManager.IsInRoleAsync(bob, RoleNames.User))
+        if (!await userManager.IsInRoleAsync(bob, RoleNames.User))
         {
-            await userManager.RemoveFromRoleAsync(bob, RoleNames.User);
-        }
-        if (!await userManager.IsInRoleAsync(bob, RoleNames.Manager))
-        {
-            await userManager.AddToRoleAsync(bob, RoleNames.Manager);
+            await userManager.AddToRoleAsync(bob, RoleNames.User);
         }
 
         var sue = await userManager.FindByNameAsync("sue");
@@ -117,13 +113,9 @@ public static class SeedHelper
             sue.PhoneNumber = string.IsNullOrWhiteSpace(sue.PhoneNumber) ? "9855550103" : sue.PhoneNumber;
             await userManager.UpdateAsync(sue);
         }
-        if (await userManager.IsInRoleAsync(sue, RoleNames.User))
+        if (!await userManager.IsInRoleAsync(sue, RoleNames.User))
         {
-            await userManager.RemoveFromRoleAsync(sue, RoleNames.User);
-        }
-        if (!await userManager.IsInRoleAsync(sue, RoleNames.Manager))
-        {
-            await userManager.AddToRoleAsync(sue, RoleNames.Manager);
+            await userManager.AddToRoleAsync(sue, RoleNames.User);
         }
     }
 
